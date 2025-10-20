@@ -34,7 +34,6 @@
     30 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     31 => 'Termwind\\Laravel\\TermwindServiceProvider',
     32 => 'Tighten\\Ziggy\\ZiggyServiceProvider',
-    33 => 'App\\Providers\\AppServiceProvider',
   ),
   'eager' => 
   array (
@@ -55,7 +54,6 @@
     14 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     15 => 'Termwind\\Laravel\\TermwindServiceProvider',
     16 => 'Tighten\\Ziggy\\ZiggyServiceProvider',
-    17 => 'App\\Providers\\AppServiceProvider',
   ),
   'deferred' => 
   array (

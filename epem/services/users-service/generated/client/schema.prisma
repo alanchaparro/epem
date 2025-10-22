@@ -1,8 +1,12 @@
+// Genera el cliente en un directorio dedicado del servicio para
+// evitar colisiones con otros microservicios en el monorepo.
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/client"
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "windows"]
 }
 
+// Conexión a MySQL del servicio de usuarios
 datasource db {
   provider = "mysql"
   url      = env("USERS_SERVICE_DATABASE_URL")

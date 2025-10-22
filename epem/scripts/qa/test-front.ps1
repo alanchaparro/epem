@@ -1,4 +1,5 @@
 param()
+. "$PSScriptRoot/utils.ps1"
 
 $results = @()
 
@@ -15,7 +16,8 @@ Check-200 'http://localhost:3000/login' 'Página /login responde 200'
 Check-200 'http://localhost:3000/patients' 'Página /patients responde 200 (HTML)'
 
 New-Item -Force -ItemType Directory -Path "$PSScriptRoot/../../docs/qa" | Out-Null
-$results | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 "$PSScriptRoot/../../docs/qa/front-results.json"
-($results | ForEach-Object { "- [{0}] {1} - expected: {2} actual: {3}" -f (if ($_.pass) { 'PASS' } else { 'FAIL' }), $_.name, $_.expected, $_.actual }) | Out-File -Encoding utf8 "$PSScriptRoot/../../docs/qa/front-report.md"
+$jsonPath = "$PSScriptRoot/../../docs/qa/front-results.json"
+$mdPath = "$PSScriptRoot/../../docs/qa/front-report.md"
+$results | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $jsonPath
+Save-Report -Results $results -JsonPath $jsonPath -MarkdownPath $mdPath
 Write-Host "Front QA terminado. Ver docs/qa/front-report.md" -ForegroundColor Green
-

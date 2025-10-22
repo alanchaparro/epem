@@ -1,6 +1,8 @@
 // Cliente Prisma para patients-service
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/client"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "windows"]
 }
 
 // Conexión a MySQL definida en .env (PATIENTS_SERVICE_DATABASE_URL)

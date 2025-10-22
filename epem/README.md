@@ -58,6 +58,16 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
 - `pnpm dev:web` – Solo interfaz Next.js.
 - `pnpm build` – Compila todos los proyectos.
 - `pnpm --filter @epem/users-service prisma:migrate` – Aplica migraciones en entornos productivos.
+- `pnpm git:hooks` – Configura los hooks de git para bloquear pushes sin aprobación.
+
+## Política de push (aprobación requerida)
+- Este repo bloquea `git push` por defecto mediante un hook (`.githooks/pre-push`).
+- Para permitir UN push:
+  - Opción rápida: `echo ok > .allow-push && git push`
+  - Windows: `powershell -File scripts/approve-push.ps1` y luego `git push`
+  - Unix: `bash scripts/approve-push.sh && git push`
+  - Temporal: `ALLOW_PUSH=1 git push`
+- Instalar hooks (una vez): `pnpm git:hooks`
 
 ### Módulo de usuarios
 - Endpoint de login: `POST /api/auth/login` (body `{ "email": "admin@epem.local", "password": "admin123" }`).

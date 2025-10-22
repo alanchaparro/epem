@@ -1,0 +1,3 @@
+﻿# QA Report
+Resultado: "PASS"
+

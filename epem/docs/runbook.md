@@ -14,14 +14,20 @@ pnpm dev:reset # libera puertos y arranca backend + web
 ## Migraciones / Prisma
 - Users: `pnpm --filter @epem/users-service prisma:generate`
 - Patients: `pnpm --filter @epem/patients-service prisma:generate`
+ - Catalog: `pnpm --filter @epem/catalog-service prisma:generate`
 
 > En Windows, si aparece EPERM durante `prisma generate`, cierre procesos Node, borre `node_modules/.prisma` y reintente.
 
 ## Seeds
 - Admin: `pnpm --filter @epem/users-service seed:admin`
 - Pacientes: `pnpm --filter @epem/patients-service seed:patients`
+ - Catálogo: `pnpm --filter @epem/catalog-service seed:items`
 
 ## Problemas comunes
 - Puertos ocupados → `pnpm dev:reset` (usa PowerShell para matar PIDs por puerto)
 - 500 desde el front con DOCTYPE → asegúrese de usar rutas `/api/...` en los fetch del front (evita colisiones con páginas).
 - CORS → configure `CORS_ORIGIN` con la(s) URL(s) permitidas en producción.
+
+## Bootstrap (DB + tablas + seeds)
+- PowerShell: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/bootstrap.ps1`
+- Crea BDs si faltan (según .env), hace `prisma db push` en cada servicio y ejecuta seeds.

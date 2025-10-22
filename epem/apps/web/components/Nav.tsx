@@ -37,6 +37,7 @@ export default function Nav() {
           <Link href="/" className="text-lg font-semibold text-slate-100">EPEM</Link>
           <div className="ml-4 hidden gap-1 sm:flex">
             <Link href="/patients" className={linkCls("/patients")}>Pacientes</Link>
+            <Link href="/catalog" className={linkCls("/catalog")}>Catálogo</Link>
           </div>
         </div>
         <div className="flex items-center gap-2">

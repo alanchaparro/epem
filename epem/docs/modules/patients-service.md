@@ -11,6 +11,7 @@ Servicio de pacientes (NestJS + Prisma + MySQL).
 - `GET /patients?q=&skip=&take=` → listar/buscar con paginación
 - `GET /patients/:id` → detalle
 - `PATCH /patients/:id` → editar parcialmente
+  - Notas: intentar crear con un DNI existente devuelve 409 (conflict) con mensaje claro
 
 ## Ejemplos
 ```bash

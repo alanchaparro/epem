@@ -9,12 +9,20 @@
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js",
     "lint": "echo \"TODO: add eslint\"",
-    "test": "echo \"TODO: add tests\""
+    "test": "echo \"TODO: add tests\"",
+    "prisma:generate": "dotenv -e ../../.env -- prisma generate",
+    "prisma:migrate:dev": "dotenv -e ../../.env -- prisma migrate dev",
+    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
+    "prisma:push": "dotenv -e ../../.env -- prisma db push --accept-data-loss",
+    "seed:items": "ts-node scripts/seed-items.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@prisma/client": "^5.10.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "dotenv": "^16.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
@@ -22,6 +30,8 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "ts-node": "^10.9.2",
+    "dotenv-cli": "^7.4.1",
+    "prisma": "^5.10.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.0"
   }

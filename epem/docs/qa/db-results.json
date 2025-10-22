@@ -1,0 +1,38 @@
+﻿[
+    {
+        "name":  "Users-service base de datos existe (epem_users)",
+        "expected":  true,
+        "actual":  "epem_users",
+        "pass":  true
+    },
+    {
+        "name":  "Users-service tabla \u0027User\u0027 existe",
+        "expected":  true,
+        "actual":  "user",
+        "pass":  true
+    },
+    {
+        "name":  "Patients-service base de datos existe (epem)",
+        "expected":  true,
+        "actual":  "epem",
+        "pass":  true
+    },
+    {
+        "name":  "Patients-service tabla \u0027Patient\u0027 existe",
+        "expected":  true,
+        "actual":  "patient",
+        "pass":  true
+    },
+    {
+        "name":  "Catalog-service base de datos existe (epem_catalog)",
+        "expected":  true,
+        "actual":  "epem_catalog",
+        "pass":  true
+    },
+    {
+        "name":  "Catalog-service tabla \u0027ServiceItem\u0027 existe",
+        "expected":  true,
+        "actual":  "serviceitem",
+        "pass":  true
+    }
+]

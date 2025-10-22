@@ -20,7 +20,8 @@
     "test": "pnpm -r run test",
     "test:e2e": "pnpm --filter @epem/web test:e2e",
     "test:e2e:ui": "pnpm --filter @epem/web test:e2e:ui",
-    "pw:install": "pnpm --filter @epem/web pw:install"
+    "pw:install": "pnpm --filter @epem/web pw:install",
+    "git:hooks": "git config core.hooksPath .githooks"
   },
   "engines": {
     "node": ">=18.18.0",

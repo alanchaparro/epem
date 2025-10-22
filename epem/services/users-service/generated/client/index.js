@@ -141,6 +141,14 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "windows"
       }
     ],
     "previewFeatures": [],
@@ -157,7 +165,6 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -166,8 +173,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/client\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"USERS_SERVICE_DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  SUPERVISOR\n  DOCTOR\n  NURSE\n  STAFF\n  BILLING\n}\n\nmodel User {\n  id           String   @id @default(uuid())\n  email        String   @unique\n  passwordHash String\n  firstName    String\n  lastName     String\n  role         UserRole @default(STAFF)\n  isActive     Boolean  @default(true)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n",
-  "inlineSchemaHash": "eda87c04043702bb7d53fe810de79a167470c8e88d4ef76aa8ab29fdb09c57b6",
+  "inlineSchema": "// Genera el cliente en un directorio dedicado del servicio para\n// evitar colisiones con otros microservicios en el monorepo.\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"windows\"]\n}\n\n// Conexión a MySQL del servicio de usuarios\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"USERS_SERVICE_DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  SUPERVISOR\n  DOCTOR\n  NURSE\n  STAFF\n  BILLING\n}\n\nmodel User {\n  id           String   @id @default(uuid())\n  email        String   @unique\n  passwordHash String\n  firstName    String\n  lastName     String\n  role         UserRole @default(STAFF)\n  isActive     Boolean  @default(true)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n",
+  "inlineSchemaHash": "d4b8194f5c8235f59254297b6710a4d5c83d81517871954757166b48d93bf0dc",
   "copyEngine": true
 }
 
@@ -207,6 +214,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "generated/client/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/client/schema.prisma")

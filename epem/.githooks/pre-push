@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+# Gatekeeper hook: bloquea los pushes a menos que exista una aprobación explícita.
+# Permite trabajar y ejecutar libremente todo, excepto "git push".
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$REPO_ROOT" ]; then
+  echo "[pre-push] No se pudo resolver la raíz del repo. Bloqueando por seguridad." 1>&2
+  exit 1
+fi
+
+# 1) Variable de entorno permite saltar el bloqueo (uso consciente)
+if [ "${ALLOW_PUSH}" = "1" ] || [ "${ALLOW_GIT_PUSH}" = "1" ]; then
+  echo "[pre-push] Push permitido por ALLOW_PUSH=1"
+  exit 0
+fi
+
+# 2) Archivo único-use en la raíz del repo
+ALLOW_FILE="${REPO_ROOT}/.allow-push"
+if [ -f "$ALLOW_FILE" ]; then
+  echo "[pre-push] Aprobación detectada en .allow-push. Permitiendo push y retirando aprobación de un solo uso."
+  rm -f "$ALLOW_FILE" >/dev/null 2>&1 || true
+  exit 0
+fi
+
+cat 1>&2 <<'EOF'
+[pre-push] Push bloqueado por política del proyecto.
+- Este proyecto permite editar y ejecutar libremente, pero requiere aprobación explícita para 'git push'.
+Para permitir UN solo push, elige una opción:
+  1) Crear archivo '.allow-push' en la raíz del repo (se consume en el push):
+       echo ok > .allow-push
+  2) Ejecutar (Linux/Mac): scripts/approve-push.sh
+  3) Ejecutar (Windows PowerShell): scripts\approve-push.ps1
+  4) Establecer env var solo para esta ejecución:
+       ALLOW_PUSH=1 git push
+EOF
+exit 1
+

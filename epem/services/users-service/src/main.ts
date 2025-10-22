@@ -26,7 +26,7 @@ async function bootstrap() {
   const adminSeeder = app.get(AdminSeederService);
   await adminSeeder.run();
 
-  const port = process.env.PORT ?? process.env.USERS_SERVICE_PORT ?? 3020;
+  const port = process.env.USERS_SERVICE_PORT ?? 3020;
   await app.listen(port);
   console.log(`Users service ready on port ${port}`);
 }

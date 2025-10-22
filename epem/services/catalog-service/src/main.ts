@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  const port = process.env.PORT ?? process.env.CATALOG_SERVICE_PORT ?? 3030;
+  const port = process.env.CATALOG_SERVICE_PORT ?? 3030;
   await app.listen(port);
   console.log(`Catalog service ready on port ${port}`);
 }

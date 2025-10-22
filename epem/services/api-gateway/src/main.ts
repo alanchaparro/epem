@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: origins && origins.length > 0 ? { origin: origins, credentials: true } : { origin: true, credentials: true },
   });
-  const port = process.env.PORT ?? process.env.API_GATEWAY_PORT ?? 4000;
+  const port = process.env.API_GATEWAY_PORT ?? 4000;
   await app.listen(port);
   console.log(`API Gateway ready on port ${port}`);
 }

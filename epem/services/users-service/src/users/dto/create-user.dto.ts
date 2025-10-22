@@ -1,5 +1,6 @@
-import { UserRole } from '@prisma/client';
-import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+
+const ROLE_VALUES = ['ADMIN', 'SUPERVISOR', 'DOCTOR', 'NURSE', 'STAFF', 'BILLING'] as const;
 
 export class CreateUserDto {
   @IsEmail()
@@ -15,9 +16,9 @@ export class CreateUserDto {
   @IsString()
   lastName!: string;
 
-  @IsEnum(UserRole)
+  @IsIn(ROLE_VALUES as readonly string[])
   @IsOptional()
-  role?: UserRole;
+  role?: (typeof ROLE_VALUES)[number];
 
   @IsBoolean()
   @IsOptional()

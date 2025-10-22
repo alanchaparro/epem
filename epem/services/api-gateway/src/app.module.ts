@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
 import { UsersProxyController } from './users/users.controller';
+import { PatientsProxyController } from './patients/patients.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { UsersProxyController } from './users/users.controller';
     }),
     HttpModule,
   ],
-  controllers: [AppController, AuthController, UsersProxyController],
+  controllers: [AppController, AuthController, UsersProxyController, PatientsProxyController],
   providers: [AppService],
 })
 export class AppModule {}

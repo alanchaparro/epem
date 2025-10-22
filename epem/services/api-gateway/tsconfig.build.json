@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "removeComments": true,
+    "sourceMap": false
+  },
+  "exclude": ["src/**/*.spec.ts", "test", "node_modules"]
+}

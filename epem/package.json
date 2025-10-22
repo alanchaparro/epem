@@ -1,0 +1,25 @@
+{
+  "name": "epem",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma de servicios de emergencias médicas basada en microservicios.",
+  "packageManager": "pnpm@8.15.6",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev",
+    "dev:all": "pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev",
+    "dev:backend": "pnpm -r --parallel --filter=./services/* run dev",
+    "dev:gateway": "pnpm --filter @epem/api-gateway run dev",
+    "dev:users": "pnpm --filter @epem/users-service run dev",
+    "dev:patients": "pnpm --filter @epem/patients-service run dev",
+    "dev:catalog": "pnpm --filter @epem/catalog-service run dev",
+    "dev:billing": "pnpm --filter @epem/billing-service run dev",
+    "dev:web": "pnpm --filter @epem/web run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test"
+  },
+  "engines": {
+    "node": ">=18.18.0",
+    "pnpm": ">=8.0.0"
+  }
+}

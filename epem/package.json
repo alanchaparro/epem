@@ -8,6 +8,7 @@
     "dev": "pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev",
     "dev:all": "pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev",
     "dev:backend": "pnpm -r --parallel --filter=./services/* run dev",
+    "dev:reset": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-reset.ps1",
     "dev:gateway": "pnpm --filter @epem/api-gateway run dev",
     "dev:users": "pnpm --filter @epem/users-service run dev",
     "dev:patients": "pnpm --filter @epem/patients-service run dev",

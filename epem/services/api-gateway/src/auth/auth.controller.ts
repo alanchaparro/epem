@@ -30,10 +30,13 @@ export class AuthController {
     );
     if (data?.refreshToken) {
       const ttl = parseInt(process.env.REFRESH_TOKEN_TTL ?? '604800', 10);
+      const secure = (process.env.NODE_ENV === 'production');
+      const domain = process.env.COOKIE_DOMAIN || undefined;
       res.cookie('epem_rt', data.refreshToken, {
         httpOnly: true,
         sameSite: 'lax',
-        secure: false,
+        secure,
+        domain,
         maxAge: ttl * 1000,
         path: '/',
       });
@@ -62,10 +65,13 @@ export class AuthController {
     );
     if (data?.refreshToken) {
       const ttl = parseInt(process.env.REFRESH_TOKEN_TTL ?? '604800', 10);
+      const secure = (process.env.NODE_ENV === 'production');
+      const domain = process.env.COOKIE_DOMAIN || undefined;
       res.cookie('epem_rt', data.refreshToken, {
         httpOnly: true,
         sameSite: 'lax',
-        secure: false,
+        secure,
+        domain,
         maxAge: ttl * 1000,
         path: '/',
       });

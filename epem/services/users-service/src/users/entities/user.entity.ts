@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User } from '../../generated/client';
 
 export type SafeUser = Omit<User, 'passwordHash'>;
 

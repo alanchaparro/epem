@@ -1,5 +1,5 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, UserRole } from '@prisma/client';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '../../generated/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,7 +7,7 @@ import { SafeUser, toSafeUser } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async create(dto: CreateUserDto): Promise<SafeUser> {
     const normalizedEmail = dto.email.toLowerCase();
@@ -20,7 +20,7 @@ export class UsersService {
           passwordHash,
           firstName: dto.firstName,
           lastName: dto.lastName,
-          role: dto.role ?? UserRole.STAFF,
+          role: (dto.role as any) ?? 'STAFF',
           isActive: dto.isActive ?? true,
         },
       });
@@ -58,10 +58,10 @@ export class UsersService {
     const existing = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
 
     if (existing) {
-      if (existing.role !== UserRole.ADMIN || !existing.isActive) {
+      if (existing.role !== 'ADMIN' || !existing.isActive) {
         const updated = await this.prisma.user.update({
           where: { id: existing.id },
-          data: { role: UserRole.ADMIN, isActive: true },
+          data: { role: 'ADMIN' as any, isActive: true },
         });
         return toSafeUser(updated);
       }
@@ -75,7 +75,7 @@ export class UsersService {
         passwordHash,
         firstName: payload.firstName,
         lastName: payload.lastName,
-        role: UserRole.ADMIN,
+        role: 'ADMIN' as any,
         isActive: true,
       },
     });

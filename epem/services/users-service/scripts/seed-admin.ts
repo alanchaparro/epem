@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient } from '../generated/client';
 
 const candidates = [
   path.resolve(__dirname, '../../../.env'),
@@ -26,7 +26,7 @@ async function main() {
   const normalizedEmail = email.toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
-    const data: any = { role: UserRole.ADMIN, isActive: true };
+    const data: any = { role: 'ADMIN', isActive: true };
     if (process.env.ADMIN_RESET_PASSWORD === 'true') {
       data.passwordHash = await bcrypt.hash(password, 10);
     }
@@ -37,7 +37,7 @@ async function main() {
 
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.create({
-    data: { email: normalizedEmail, passwordHash, firstName, lastName, role: UserRole.ADMIN, isActive: true },
+    data: { email: normalizedEmail, passwordHash, firstName, lastName, role: 'ADMIN', isActive: true },
   });
   console.log(`Usuario administrador creado: ${normalizedEmail}`);
 }
@@ -50,4 +50,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-

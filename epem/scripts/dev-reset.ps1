@@ -1,17 +1,28 @@
 $ErrorActionPreference = 'SilentlyContinue'
 
-# Puertos del stack
-$ports = @(3000,3001,4000,3010,3020,3030,3040)
-
-Write-Host "Cerrando procesos en puertos: $($ports -join ', ')" -ForegroundColor Cyan
-foreach ($p in $ports) {
-  netstat -ano | findstr ":$p" | ForEach-Object {
-    $pid = ($_ -split '\s+')[-1]
-    if ($pid -match '^[0-9]+$') {
-      try { taskkill /PID $pid /F | Out-Null } catch {}
+function Kill-Port {
+  param([int]$Port)
+  try {
+    $conns = Get-NetTCPConnection -LocalPort $Port -ErrorAction Stop
+    if ($conns) {
+      $pids = $conns.OwningProcess | Sort-Object -Unique
+      foreach ($pid in $pids) { try { Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue } catch {} }
+    }
+  } catch {
+    $lines = netstat -ano | Select-String ":$Port"
+    foreach ($line in $lines) {
+      $pid = ($line.ToString() -split '\s+')[-1]
+      if ($pid -match '^[0-9]+$') { try { taskkill /PID $pid /F | Out-Null } catch {} }
     }
   }
 }
+
+$ports = @(3000,3001,4000,3010,3020,3030,3040)
+Write-Host "Cerrando procesos en puertos: $($ports -join ', ')" -ForegroundColor Cyan
+foreach ($p in $ports) { Kill-Port -Port $p }
+
+# Asegura que códigos de salida de findstr/netstat no corten el script
+$global:LASTEXITCODE = 0
 
 Write-Host "Levantando servicios y frontend (pnpm dev)" -ForegroundColor Green
 pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev

@@ -6,6 +6,12 @@ import { AppModule } from './app.module';
 import { AdminSeederService } from './bootstrap/admin-seeder.service';
 import { PrismaService } from './prisma/prisma.service';
 
+/**
+ * Bootstrap del Users Service.
+ * - Global prefix: /api
+ * - Pipes de validación para DTOs
+ * - Ejecuta un seeder para garantizar el usuario ADMIN inicial
+ */
 async function bootstrap() {
   const origins = process.env.CORS_ORIGIN?.split(',').map((s) => s.trim()).filter(Boolean);
   const app = await NestFactory.create(AppModule, {

@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 
+/** Servicio de dominio para Pacientes (CRUD + búsqueda paginada). */
 @Injectable()
 export class PatientsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -21,7 +22,15 @@ export class PatientsService {
       allergies: dto.allergies,
       notes: dto.notes,
     };
-    return this.prisma.patient.create({ data });
+    try {
+      return await this.prisma.patient.create({ data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        // DNI único duplicado
+        throw new ConflictException('Paciente ya existe (DNI duplicado)');
+      }
+      throw e;
+    }
   }
 
   async findAll(params: { q?: string; skip?: number; take?: number }) {

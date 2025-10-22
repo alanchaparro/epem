@@ -8,10 +8,17 @@ type LoginDto = {
   password: string;
 };
 
+/**
+ * Controlador de autenticación del Gateway.
+ * - /auth/login: reenvía credenciales al users-service y setea cookie httpOnly con refresh token.
+ * - /auth/refresh: renueva access token a partir de cookie httpOnly.
+ * - /auth/logout: invalida la cookie httpOnly en el navegador.
+ */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly http: HttpService) {}
 
+  /** Login con email/password. Devuelve accessToken y user. */
   @Post('login')
   async login(@Body() payload: LoginDto, @Res({ passthrough: true }) res: Response) {
     const rawUrl = process.env.USERS_SERVICE_URL;
@@ -45,6 +52,7 @@ export class AuthController {
     return data;
   }
 
+  /** Renueva el access token a partir del refresh token en cookie httpOnly. */
   @Post('refresh')
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const usersServiceUrl = process.env.USERS_SERVICE_URL ?? 'http://localhost:3020';
@@ -80,6 +88,7 @@ export class AuthController {
     return data;
   }
 
+  /** Elimina la cookie httpOnly del refresh token. */
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     res.cookie('epem_rt', '', { httpOnly: true, expires: new Date(0), path: '/' });

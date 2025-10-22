@@ -1,5 +1,7 @@
 import { IsDateString, IsEmail, IsOptional, IsString, Length, MaxLength } from 'class-validator';
 
+// DTO de creación de paciente. Validado por class-validator en el controller.
+
 export class CreatePatientDto {
   @IsString()
   @Length(6, 20)

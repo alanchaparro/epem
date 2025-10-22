@@ -2,6 +2,11 @@ import { Body, Controller, Get, Headers, HttpException, HttpStatus, Param, Patch
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
+/**
+ * Proxy /patients hacia patients-service.
+ * - Implementa create, list, get y patch.
+ * - Acepta query params (q, skip, take) para la búsqueda paginada.
+ */
 @Controller('patients')
 export class PatientsProxyController {
   constructor(private readonly http: HttpService) {}
@@ -72,4 +77,3 @@ export class PatientsProxyController {
     return data;
   }
 }
-

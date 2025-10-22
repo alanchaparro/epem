@@ -1,12 +1,15 @@
+// Cliente Prisma para patients-service
 generator client {
   provider = "prisma-client-js"
 }
 
+// Conexión a MySQL definida en .env (PATIENTS_SERVICE_DATABASE_URL)
 datasource db {
   provider = "mysql"
   url      = env("PATIENTS_SERVICE_DATABASE_URL")
 }
 
+// Modelo principal de pacientes
 model Patient {
   id               String   @id @default(uuid())
   dni              String   @unique

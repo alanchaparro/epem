@@ -7,6 +7,12 @@ import { AuthController } from './auth/auth.controller';
 import { UsersProxyController } from './users/users.controller';
 import { PatientsProxyController } from './patients/patients.controller';
 
+/**
+ * Módulo raíz del API Gateway.
+ * - Carga variables de entorno (.env) a nivel global.
+ * - Registra HttpModule para comunicarse con los microservicios.
+ * - Declara controladores de salud, auth, users-proxy y patients-proxy.
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({

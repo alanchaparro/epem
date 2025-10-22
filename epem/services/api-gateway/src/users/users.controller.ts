@@ -2,6 +2,11 @@ import { Controller, Get, Headers, HttpException, HttpStatus } from '@nestjs/com
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
+/**
+ * Proxy /users hacia el users-service.
+ * - Reenvía el header Authorization.
+ * - Ejemplo: GET /users/me → users-service /api/users/me
+ */
 @Controller('users')
 export class UsersProxyController {
   constructor(private readonly http: HttpService) {}

@@ -1,6 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
+import Providers from './providers';
+import Nav from '@/components/Nav';
 
 export const metadata: Metadata = {
   title: 'EPEM | Plataforma de emergencias',
@@ -12,7 +14,12 @@ type RootLayoutProps = { children: ReactNode };
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="es">
-      <body className="min-h-screen bg-slate-950 text-slate-100">{children}</body>
+      <body className="min-h-screen bg-slate-950 text-slate-100">
+        <Providers>
+          <Nav />
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

@@ -17,6 +17,8 @@ function Kill-Port {
   }
 }
 
+# Puertos del stack
+# 3000/3001 -> Next.js, 4000 -> Gateway, 3010/3020/3030/3040 -> microservicios NestJS
 $ports = @(3000,3001,4000,3010,3020,3030,3040)
 Write-Host "Cerrando procesos en puertos: $($ports -join ', ')" -ForegroundColor Cyan
 foreach ($p in $ports) { Kill-Port -Port $p }

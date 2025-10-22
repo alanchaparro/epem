@@ -13,6 +13,9 @@ type LoginResponse = {
   };
 };
 
+// Página de login administrativa.
+// - Envío a /auth/login del gateway
+// - Guarda accessToken en localStorage y redirige a /profile
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@epem.local');
   const [password, setPassword] = useState('');

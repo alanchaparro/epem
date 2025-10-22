@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SafeUser, toSafeUser } from './entities/user.entity';
 
+/** Servicio de dominio de usuarios (alta, búsqueda y seeding de ADMIN). */
 @Injectable()
 export class UsersService {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}

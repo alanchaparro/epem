@@ -3,6 +3,14 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PatientsService } from './patients.service';
 
+/**
+ * Controlador REST de pacientes.
+ * Rutas:
+ * - POST /patients     → crear
+ * - GET  /patients     → listar/buscar (q, skip, take)
+ * - GET  /patients/:id → detalle
+ * - PATCH /patients/:id→ editar parcialmente
+ */
 @Controller('patients')
 export class PatientsController {
   constructor(private readonly patients: PatientsService) {}

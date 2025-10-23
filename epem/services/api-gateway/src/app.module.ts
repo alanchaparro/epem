@@ -7,6 +7,7 @@ import { AuthController } from './auth/auth.controller';
 import { UsersProxyController } from './users/users.controller';
 import { PatientsProxyController } from './patients/patients.controller';
 import { CatalogProxyController } from './catalog/catalog.controller';
+import { BillingProxyController } from './billing/billing.controller';
 
 /**
  * Módulo raíz del API Gateway.
@@ -22,7 +23,7 @@ import { CatalogProxyController } from './catalog/catalog.controller';
     }),
     HttpModule,
   ],
-  controllers: [AppController, AuthController, UsersProxyController, PatientsProxyController, CatalogProxyController],
+  controllers: [AppController, AuthController, UsersProxyController, PatientsProxyController, CatalogProxyController, BillingProxyController],
   providers: [AppService],
 })
 export class AppModule {}

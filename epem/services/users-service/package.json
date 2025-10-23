@@ -13,6 +13,7 @@
     "prisma:generate": "dotenv -e ../../.env -- prisma generate",
     "prisma:migrate:dev": "dotenv -e ../../.env -- prisma migrate dev",
     "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
+    "prisma:push": "dotenv -e ../../.env -- prisma db push --accept-data-loss",
     "seed:admin": "ts-node scripts/seed-admin.ts"
   },
   "dependencies": {

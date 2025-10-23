@@ -38,6 +38,7 @@ export default function Nav() {
           <div className="ml-4 hidden gap-1 sm:flex">
             <Link href="/patients" className={linkCls("/patients")}>Pacientes</Link>
             <Link href="/catalog" className={linkCls("/catalog")}>Catálogo</Link>
+            <Link href="/insurers" className={linkCls("/insurers")}>Aseguradoras</Link>
           </div>
         </div>
         <div className="flex items-center gap-2">

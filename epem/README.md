@@ -100,6 +100,7 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
 - Usuarios (admin): `pnpm --filter @epem/users-service seed:admin`
 - Pacientes demo: `pnpm --filter @epem/patients-service seed:patients`
 - Catálogo demo: `pnpm --filter @epem/catalog-service seed:items`
+- Aseguradoras demo: `pnpm --filter @epem/billing-service seed:insurers`
 
 ## Seguridad
 - Antes de desplegar, reemplaza los valores por defecto de `JWT_SECRET` y `JWT_REFRESH_SECRET` en `.env`.
@@ -114,6 +115,9 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
 ### Frontend – vistas
 - `/login` consume `http://localhost:4000/auth/login` vía rewrite.
 - `/profile` está protegido por `middleware.ts` (requiere cookie `epem_rt`).
+- `/patients`, `/patients/new`, `/patients/:id`
+- `/catalog`, `/catalog/new`, `/catalog/:id`
+- `/insurers`, `/insurers/:id/coverage`
 
 ## Migración a VPS (resumen)
 1. Contenerizar con Docker Compose (MySQL + microservicios + frontend).  

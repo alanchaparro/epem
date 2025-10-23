@@ -24,7 +24,7 @@ No hay hallazgos abiertos que bloqueen la transición a la fase siguiente.
 ## Hallazgos de Disponibilidad (Ejecución actual)
 
 - Servicios disponibles durante QA
-  - Estado: Corregido (health de gateway, users, patients y catalog responden 200).
+  - Estado: Corregido (health de gateway, users, patients, catalog y billing responden 200).
   - Severidad: Alta
   - Owner: Ingeniero
   - Acción: mantener `pnpm dev:reset` en ejecución durante QA; sin pendientes.
@@ -110,7 +110,7 @@ No hay hallazgos abiertos que bloqueen la transición a la fase siguiente.
   - `pnpm install`
   - `pnpm dev:reset` (libera puertos y arranca backend + web)
   - Opcional: `pnpm --filter @epem/users-service prisma:generate` y `pnpm --filter @epem/patients-service prisma:generate`
-  - Seeds: `pnpm --filter @epem/users-service seed:admin` y `pnpm --filter @epem/patients-service seed:patients`
+- Seeds: `pnpm --filter @epem/users-service seed:admin`, `pnpm --filter @epem/patients-service seed:patients`, `pnpm --filter @epem/catalog-service seed:items`, `pnpm --filter @epem/billing-service seed:insurers`
 - QA Backend
   - PowerShell: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/test-back.ps1`
   - Resultados: `docs/qa/back-report.md` y `docs/qa/back-results.json`

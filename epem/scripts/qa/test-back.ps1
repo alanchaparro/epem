@@ -86,6 +86,35 @@ try {
   }
 } catch { $results += Assert-True $false "Catálogo CRUD" ($_.Exception.Message) }
 
+# 7) Billing-service (aseguradoras + coberturas)
+try {
+  $okBilling = $false
+  try { $r = Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:3040/health' -TimeoutSec 15; $okBilling = ($r.StatusCode -eq 200) } catch {}
+  $results += Assert-True $okBilling "Billing-service /health responde" ($okBilling)
+  if ($okBilling) {
+    $planCode = "PLAN-QA-" + (Get-Date).ToString('HHmmss')
+    $insurerBody = @{ name = 'QA Aseguradora'; planCode = $planCode; active = $true } | ConvertTo-Json
+    $insurer = Invoke-RestMethod -Method Post -Uri 'http://localhost:4000/billing/insurers' -ContentType 'application/json' -Body $insurerBody -TimeoutSec 10
+    $results += Assert-True ($null -ne $insurer.id) "Crear aseguradora devuelve id" $insurer.id
+
+    $toggleBody = @{ active = $false } | ConvertTo-Json
+    $insurer2 = Invoke-RestMethod -Method Patch -Uri "http://localhost:4000/billing/insurers/$($insurer.id)" -ContentType 'application/json' -Body $toggleBody -TimeoutSec 10
+    $results += Assert-True (-not $insurer2.active) "Actualizar aseguradora cambia active" $insurer2.active
+
+    $coverageList = Invoke-RestMethod -Uri ("http://localhost:4000/billing/coverage?insurerId=$($insurer.id)") -TimeoutSec 10
+    $results += Assert-True ($coverageList -is [System.Collections.IEnumerable]) "Listado de coberturas responde" ($coverageList.Count)
+
+    $coveragePayload = @{ insurerId = $insurer.id; serviceItemId = 'LAB01'; copay = 456.78; requiresAuth = $true } | ConvertTo-Json
+    $coverage = Invoke-RestMethod -Method Post -Uri 'http://localhost:4000/billing/coverage' -ContentType 'application/json' -Body $coveragePayload -TimeoutSec 10
+    $results += Assert-True ($null -ne $coverage.id) "Crear cobertura devuelve id" $coverage.id
+
+    $updateCoverage = @{ copay = 500; requiresAuth = $false } | ConvertTo-Json
+    $coverage2 = Invoke-RestMethod -Method Patch -Uri ("http://localhost:4000/billing/coverage/$($coverage.id)") -ContentType 'application/json' -Body $updateCoverage -TimeoutSec 10
+    $results += Assert-Equal 500 ([int][double]$coverage2.copay) "Editar cobertura actualiza copago" ($coverage2.copay)
+    $results += Assert-True (-not [bool]$coverage2.requiresAuth) "Editar cobertura actualiza requiresAuth" ($coverage2.requiresAuth)
+  }
+} catch { $results += Assert-True $false "Billing CRUD" ($_.Exception.Message) }
+
 New-Item -Force -ItemType Directory -Path "$PSScriptRoot/../../docs/qa" | Out-Null
 Save-Report -Results $results -JsonPath "$PSScriptRoot/../../docs/qa/back-results.json" -MarkdownPath "$PSScriptRoot/../../docs/qa/back-report.md"
 Write-Host "Back QA terminado. Ver docs/qa/back-report.md" -ForegroundColor Green

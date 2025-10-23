@@ -12,6 +12,9 @@
 - `/patients` – lista/búsqueda + paginación
 - `/patients/new` – alta con validaciones y toasts
 - `/patients/:id` – edición con validaciones y toasts
+- `/catalog` / `/catalog/new` / `/catalog/:id` – gestión de prestaciones
+- `/insurers` – listado/alta de aseguradoras
+- `/insurers/:id/coverage` – gestión de coberturas por aseguradora
 
 ## Ejemplo de fetch
 ```ts

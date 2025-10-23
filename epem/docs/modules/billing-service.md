@@ -1,17 +1,45 @@
 # Billing Service
 
-Servicio de facturación y visaciones (NestJS + MySQL). Actualmente expone un health básico y es el punto de partida para órdenes, autorizaciones y facturas en fases posteriores.
+Servicio de facturación y visaciones (NestJS + Prisma + MySQL).
 
 - Puerto: `BILLING_SERVICE_PORT` (3040 por defecto)
-- Base: reutiliza el mismo MySQL definido en `.env` (pendiente de esquema propio en fases futuras)
+- Base: `BILLING_SERVICE_DATABASE_URL` (ej: mysql://root:@localhost:3306/epem)
 
 ## Endpoints
 - `GET /health` → estado del servicio
+- `GET /insurers` → lista aseguradoras
+- `GET /insurers/:id` → detalle
+- `POST /insurers` → alta (body: `{ name, planCode, active? }`)
+- `PATCH /insurers/:id` → edición parcial (activar/desactivar, actualizar nombre)
+- `GET /coverage?insurerId=` → coberturas por aseguradora
+- `POST /coverage` → alta (body: `{ insurerId, serviceItemId, copay, requiresAuth? }`)
+- `PATCH /coverage/:id` → edición (copay, requiresAuth, serviceItemId)
+
+Todos los endpoints responden 4xx con mensaje descriptivo cuando la aseguradora o cobertura no existen.
+
+## Ejemplos
+```bash
+# Listado de aseguradoras
+curl http://localhost:3040/insurers
+
+# Crear aseguradora
+curl -X POST http://localhost:3040/insurers \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Cobertura QA","planCode":"PLAN-QA","active":true}'
+
+# Crear cobertura
+curl -X POST http://localhost:3040/coverage \
+  -H 'Content-Type: application/json' \
+  -d '{"insurerId":"<uuid>","serviceItemId":"LAB01","copay":450,"requiresAuth":false}'
+```
+
+## Seeds
+- `pnpm --filter @epem/billing-service seed:insurers` — crea 3 aseguradoras demo + coberturas básicas.
 
 ## Roadmap funcional
-- Visaciones y coberturas se gestionarán a través del billing-service cuando los módulos de órdenes/autorizaciones estén disponibles.
-- Documentar nuevos endpoints aquí a medida que se incorporen (por ejemplo: `/insurers`, `/coverage`, `/invoices`).
+- Próximas fases agregarán órdenes, autorizaciones y facturas sobre esta base (ver fase 4+ de la hoja de ruta).
 
 ## Desarrollo local
-- Arranque rápido: `pnpm --filter @epem/billing-service run dev`
-- Al trabajar en nuevos endpoints, añade las dependencias necesarias a `services/billing-service/package.json` y ejecuta `pnpm install --filter @epem/billing-service`.
+- `pnpm --filter @epem/billing-service prisma:generate`
+- `pnpm --filter @epem/billing-service prisma:push`
+- `pnpm --filter @epem/billing-service run dev`

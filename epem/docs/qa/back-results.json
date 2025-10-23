@@ -32,13 +32,13 @@
     {
         "name":  "Listado de pacientes devuelve items",
         "expected":  true,
-        "actual":  5,
+        "actual":  1,
         "pass":  true
     },
     {
         "name":  "Crear paciente devuelve id",
         "expected":  true,
-        "actual":  "85446786-3162-4f68-b675-c2c217a0618a",
+        "actual":  "0c86ce72-430c-4a3b-8db9-8a406e687354",
         "pass":  true
     },
     {
@@ -62,7 +62,7 @@
     {
         "name":  "Crear prestaciÃ³n devuelve id",
         "expected":  true,
-        "actual":  "ba96e25d-9340-4f63-887c-90a7216577a8",
+        "actual":  "ccc40d42-bb12-4ca3-a9cd-594cff65b91f",
         "pass":  true
     },
     {
@@ -75,6 +75,48 @@
         "name":  "Crear prestaciÃ³n duplicada devuelve 409",
         "expected":  409,
         "actual":  409,
+        "pass":  true
+    },
+    {
+        "name":  "Billing-service /health responde",
+        "expected":  true,
+        "actual":  true,
+        "pass":  true
+    },
+    {
+        "name":  "Crear aseguradora devuelve id",
+        "expected":  true,
+        "actual":  "3709a0bd-dddf-452f-bb66-2be53196c6a0",
+        "pass":  true
+    },
+    {
+        "name":  "Actualizar aseguradora cambia active",
+        "expected":  true,
+        "actual":  false,
+        "pass":  true
+    },
+    {
+        "name":  "Listado de coberturas responde",
+        "expected":  true,
+        "actual":  0,
+        "pass":  true
+    },
+    {
+        "name":  "Crear cobertura devuelve id",
+        "expected":  true,
+        "actual":  "13b2b95a-e5bf-4139-8044-4a1e37ed99d2",
+        "pass":  true
+    },
+    {
+        "name":  "Editar cobertura actualiza copago",
+        "expected":  500,
+        "actual":  500,
+        "pass":  true
+    },
+    {
+        "name":  "Editar cobertura actualiza requiresAuth",
+        "expected":  true,
+        "actual":  false,
         "pass":  true
     }
 ]

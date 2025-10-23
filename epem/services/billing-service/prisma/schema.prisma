@@ -1,0 +1,34 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "windows"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("BILLING_SERVICE_DATABASE_URL")
+}
+
+model Insurer {
+  id        String    @id @default(uuid())
+  name      String
+  planCode  String    @unique
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  coverages Coverage[]
+}
+
+model Coverage {
+  id            String   @id @default(uuid())
+  insurerId     String
+  serviceItemId String
+  copay         Decimal  @db.Decimal(10,2)
+  requiresAuth  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  insurer Insurer @relation(fields: [insurerId], references: [id], onDelete: Cascade)
+  @@index([insurerId])
+  @@index([serviceItemId])
+}

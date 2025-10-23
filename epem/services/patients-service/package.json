@@ -9,7 +9,12 @@
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js",
     "lint": "echo \"TODO: add eslint\"",
-    "test": "echo \"TODO: add tests\""
+    "test": "echo \"TODO: add tests\"",
+    "prisma:generate": "dotenv -e ../../.env -- prisma generate",
+    "prisma:migrate:dev": "dotenv -e ../../.env -- prisma migrate dev",
+    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
+    "prisma:push": "dotenv -e ../../.env -- prisma db push --accept-data-loss",
+    "seed:patients": "ts-node scripts/seed-patients.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -31,18 +36,5 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.0"
-  }
-  ,
-  "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main.js",
-    "start:prod": "node dist/main.js",
-    "lint": "echo \"TODO: add eslint\"",
-    "test": "echo \"TODO: add tests\"",
-    "prisma:generate": "dotenv -e ../../.env -- prisma generate",
-    "prisma:migrate:dev": "dotenv -e ../../.env -- prisma migrate dev",
-    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
-    "seed:patients": "ts-node scripts/seed-patients.ts"
   }
 }

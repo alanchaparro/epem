@@ -7,16 +7,17 @@ import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
 
 type Item = { id: string; code: string; name: string; basePrice: string | number; active: boolean };
+type CatalogResponse = { items: Item[]; total: number };
 const PAGE = 20;
 
 export default function CatalogListPage() {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(0);
-  const { data, isFetching } = useQuery({
+  const { data, isFetching } = useQuery<CatalogResponse>({
     queryKey: ['catalog', { q, page }],
     queryFn: async () => {
       const params = new URLSearchParams({ q, skip: String(page * PAGE), take: String(PAGE) });
-      try { return await apiFetch(`/api/catalog/items?${params.toString()}`); }
+      try { return await apiFetch<CatalogResponse>(`/api/catalog/items?${params.toString()}`); }
       catch (e: any) { toast.error(e?.message ?? 'Error al cargar catálogo'); throw e; }
     }
   });
@@ -33,7 +34,7 @@ export default function CatalogListPage() {
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por código o nombre" className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+        <input value={q} onChange={(event: any) => setQ(event.target?.value ?? '')} placeholder="Buscar por código o nombre" className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
         <button onClick={() => setPage(0)} className="rounded bg-slate-700 px-4 py-2 text-sm">Buscar</button>
       </div>
 
@@ -69,4 +70,3 @@ export default function CatalogListPage() {
     </main>
   );
 }
-

@@ -50,7 +50,7 @@ export default function LoginPage() {
         throw new Error(message);
       }
 
-      const data: LoginResponse = await response.json();
+      const data = await response.json() as LoginResponse;
       setSuccess(data);
       window.localStorage.setItem('epem_token', data.accessToken);
       setTimeout(() => { window.location.href = '/profile'; }, 400);

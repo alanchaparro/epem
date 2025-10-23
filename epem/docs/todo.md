@@ -32,5 +32,8 @@
 
 ### 5. Seguridad
 - [x] JWT + refresh httpOnly en gateway.
+- [ ] Actualizar Next.js a >= 14.2.32 para mitigar CVEs.
+- [ ] Ejecutar `pnpm audit` tras cada actualización crítica y documentar remanentes.
+- [ ] Monitorear advisory GHSA-9965-vmph-33xx (validator) hasta que exista parche.
 - [ ] Auditoría y trazabilidad.
 - [ ] Cifrado de campos sensibles.

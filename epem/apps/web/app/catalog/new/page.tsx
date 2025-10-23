@@ -17,14 +17,15 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+type Item = FormValues & { id: string };
 
 export default function NewItemPage() {
   const router = useRouter();
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { active: true } });
-  const mutation = useMutation({
-    mutationFn: (data: FormValues) => apiFetch('/api/catalog/items', { method: 'POST', body: JSON.stringify(data) }),
+  const mutation = useMutation<Item, Error, FormValues>({
+    mutationFn: (data) => apiFetch<Item>('/api/catalog/items', { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: (created) => { toast.success('Prestación creada'); router.push(`/catalog/${created.id}`); },
-    onError: (e: any) => toast.error(e?.message ?? 'Error al crear prestación'),
+    onError: (e) => toast.error(e?.message ?? 'Error al crear prestación'),
   });
 
   return (
@@ -44,4 +45,3 @@ export default function NewItemPage() {
     </main>
   );
 }
-

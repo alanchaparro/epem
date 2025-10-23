@@ -24,7 +24,8 @@ $loginBody = @{ email = 'admin@epem.local'; password = 'admin123' } | ConvertTo-
 try {
   $login = Invoke-RestMethod -Method Post -Uri 'http://localhost:4000/auth/login' -ContentType 'application/json' -Body $loginBody -TimeoutSec 10
   $hasToken = [bool]$login.accessToken
-  $results += Assert-True $hasToken "Login devuelve accessToken" $login.accessToken
+  $tokenDisplay = if ($hasToken) { '[REDACTED]' } else { $login.accessToken }
+  $results += Assert-True $hasToken "Login devuelve accessToken" $tokenDisplay
 } catch { $results += Assert-True $false "Login devuelve accessToken" ($_.Exception.Message) }
 
 $token = if ($login) { $login.accessToken } else { $null }
@@ -66,9 +67,9 @@ $results += Assert-Equal '11-0000-0000' $patched.phone "Patch de paciente actual
 
 # 6) Catalog-service (opcional si está listo)
 try {
-  # Health directo al servicio
+  # Health directo al servicio (espera ampliada)
   $okCat = $false
-  try { $r = Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:3030/health' -TimeoutSec 5; $okCat = ($r.StatusCode -eq 200) } catch {}
+  try { $r = Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:3030/health' -TimeoutSec 15; $okCat = ($r.StatusCode -eq 200) } catch {}
   $results += Assert-True $okCat "Catalog-service /health responde" ($okCat)
   if ($okCat) {
     $code = "QA" + (Get-Date).ToString('HHmmss');

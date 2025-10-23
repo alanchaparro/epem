@@ -1,6 +1,6 @@
 // apiFetch adjunta el token Bearer al header Authorization y devuelve JSON.
 // Lanza Error con el body (texto) si la respuesta no es 2xx.
-export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}) {
+export async function apiFetch<T = unknown>(input: RequestInfo | URL, init: RequestInit = {}): Promise<T> {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('epem_token') : null;
   const headers = new Headers(init.headers);
   if (!headers.has('Content-Type') && init.body) headers.set('Content-Type', 'application/json');
@@ -10,5 +10,6 @@ export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {})
     const txt = await res.text();
     throw new Error(txt || res.statusText);
   }
-  return res.json();
+  const data = await res.json();
+  return data as T;
 }

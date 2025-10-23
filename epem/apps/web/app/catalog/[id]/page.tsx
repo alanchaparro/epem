@@ -16,16 +16,17 @@ const schema = z.object({
   active: z.boolean().optional(),
 });
 type FormValues = z.infer<typeof schema>;
+type Item = FormValues & { id?: string };
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>() as any;
-  const { data, isFetching } = useQuery({ queryKey: ['item', id], queryFn: () => apiFetch(`/api/catalog/items/${id}`), enabled: !!id });
+  const { data, isFetching } = useQuery<Item>({ queryKey: ['item', id], queryFn: () => apiFetch<Item>(`/api/catalog/items/${id}`), enabled: !!id });
   const form = useForm<FormValues>({ resolver: zodResolver(schema), values: data ? {
     code: data.code ?? '', name: data.name ?? '', description: data.description ?? '', basePrice: Number(data.basePrice ?? 0), active: data.active ?? true
   } : undefined });
 
   const mutation = useMutation({
-    mutationFn: (payload: FormValues) => apiFetch(`/api/catalog/items/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+    mutationFn: (payload: FormValues) => apiFetch<Item>(`/api/catalog/items/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
     onSuccess: () => toast.success('Prestación actualizada'),
     onError: (e: any) => toast.error(e?.message ?? 'Error al guardar'),
   });
@@ -48,4 +49,3 @@ export default function ItemDetailPage() {
     </main>
   );
 }
-

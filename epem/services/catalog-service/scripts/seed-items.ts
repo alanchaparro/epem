@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/client';
 
 // Carga .env raíz
 const candidates = [path.resolve(__dirname, '../../../.env'), path.resolve(process.cwd(), '../../.env'), path.resolve(process.cwd(), '.env')];
@@ -34,4 +34,3 @@ async function main() {
 }
 
 main().catch((e) => { console.error(e); process.exitCode = 1; }).finally(async () => { await prisma.$disconnect(); });
-

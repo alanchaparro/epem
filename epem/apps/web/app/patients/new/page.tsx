@@ -18,6 +18,7 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+type Patient = FormValues & { id: string };
 
 export default function NewPatientPage() {
   const router = useRouter();
@@ -27,13 +28,13 @@ export default function NewPatientPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  const mutation = useMutation({
-    mutationFn: (data: FormValues) => apiFetch('/api/patients', { method: 'POST', body: JSON.stringify(data) }),
+  const mutation = useMutation<Patient, Error, FormValues>({
+    mutationFn: (data) => apiFetch<Patient>('/api/patients', { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: (created) => {
       toast.success('Paciente creado');
       router.push(`/patients/${created.id}`);
     },
-    onError: (e: any) => toast.error(e?.message ?? 'Error al crear paciente'),
+    onError: (e) => toast.error(e?.message ?? 'Error al crear paciente'),
   });
 
   return (

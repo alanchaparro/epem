@@ -1,16 +1,14 @@
-// Prisma client para catalog-service
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/client"
   binaryTargets = ["native", "debian-openssl-3.0.x", "windows"]
 }
 
-// Conexión a MySQL (epem), variable dedicada para el servicio de catálogo
 datasource db {
   provider = "mysql"
   url      = env("CATALOG_SERVICE_DATABASE_URL")
 }
 
-// Ítems de catálogo de prestaciones clínicas
 model ServiceItem {
   id          String   @id @default(uuid())
   code        String   @unique

@@ -82,6 +82,23 @@ foreach ($u in $urls) {
   if ($u) { $cfg = Parse-MySqlUrl -Url $u; if ($cfg) { Ensure-Database -MysqlExe $mysql -Cfg $cfg } }
 }
 
+function Invoke-PrismaGenerateWithRetry {
+  param([string]$ServicePath, [int]$Max = 3)
+  pushd $ServicePath
+  for ($i = 1; $i -le $Max; $i++) {
+    try {
+      $engine = Join-Path $ServicePath 'generated/client/query_engine-windows.dll.node'
+      if (Test-Path $engine) { Remove-Item -Force $engine -ErrorAction SilentlyContinue }
+      npx prisma generate --schema prisma/schema.prisma
+      popd
+      return
+    } catch {
+      if ($i -eq $Max) { popd; throw }
+      Start-Sleep -Milliseconds 700
+    }
+  }
+}
+
 Write-Host 'Ejecutando Prisma db push (crear/actualizar tablas)' -ForegroundColor Green
 # Exporta variables de entorno para prisma CLI
 $env:USERS_SERVICE_DATABASE_URL   = $envs['USERS_SERVICE_DATABASE_URL']
@@ -89,8 +106,12 @@ $env:PATIENTS_SERVICE_DATABASE_URL = $envs['PATIENTS_SERVICE_DATABASE_URL']
 $env:CATALOG_SERVICE_DATABASE_URL  = $envs['CATALOG_SERVICE_DATABASE_URL']
 
 pushd "$root/services/users-service";    npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
-pushd "$root/services/patients-service"; npx prisma db push --skip-generate --schema prisma/schema.prisma; npx prisma generate --schema prisma/schema.prisma; popd
+pushd "$root/services/patients-service"; npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
 pushd "$root/services/catalog-service";  npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
+
+# Generar clientes Prisma con retry (mitiga EPERM en Windows)
+Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/patients-service')
+Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/catalog-service')
 
 if (-not $NoSeeds) {
   Write-Host 'Seeds iniciales (admin, pacientes, catálogo)' -ForegroundColor Green

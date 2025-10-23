@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
 
 type Patient = { id: string; dni: string; firstName: string; lastName: string; birthDate: string };
+type PatientsResponse = { items: Patient[]; total: number };
 
 const PAGE_SIZE = 20;
 
@@ -14,7 +15,7 @@ export default function PatientsListPage() {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(0);
 
-  const { data, isFetching } = useQuery({
+  const { data, isFetching } = useQuery<PatientsResponse>({
     queryKey: ['patients', { q, page }],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -22,7 +23,7 @@ export default function PatientsListPage() {
       params.set('skip', String(page * PAGE_SIZE));
       params.set('take', String(PAGE_SIZE));
       try {
-        return await apiFetch(`/api/patients?${params.toString()}`);
+        return await apiFetch<PatientsResponse>(`/api/patients?${params.toString()}`);
       } catch (e: any) {
         toast.error(e?.message ?? 'Error al cargar pacientes');
         throw e;
@@ -42,7 +43,7 @@ export default function PatientsListPage() {
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por DNI o Apellido" className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+        <input value={q} onChange={(event: any) => setQ(event.target?.value ?? '')} placeholder="Buscar por DNI o Apellido" className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
         <button onClick={() => setPage(0)} className="rounded bg-slate-700 px-4 py-2 text-sm">Buscar</button>
       </div>
 

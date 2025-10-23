@@ -23,14 +23,15 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+type Patient = FormValues & { id: string };
 
 // Página de detalle/edición de paciente
 export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>() as any;
 
-  const { data, isFetching } = useQuery({
+  const { data, isFetching } = useQuery<Patient>({
     queryKey: ['patient', id],
-    queryFn: () => apiFetch(`/api/patients/${id}`),
+    queryFn: () => apiFetch<Patient>(`/api/patients/${id}`),
     enabled: !!id,
   });
 
@@ -47,10 +48,10 @@ export default function PatientDetailPage() {
     notes: data.notes ?? '',
   } : undefined });
 
-  const mutation = useMutation({
-    mutationFn: (payload: FormValues) => apiFetch(`/api/patients/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  const mutation = useMutation<Patient, Error, FormValues>({
+    mutationFn: (payload) => apiFetch<Patient>(`/api/patients/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
     onSuccess: () => toast.success('Cambios guardados'),
-    onError: (e: any) => toast.error(e?.message ?? 'Error al guardar'),
+    onError: (e) => toast.error(e?.message ?? 'Error al guardar'),
   });
 
   if (!data || isFetching) return <main className="p-6">Cargando…</main>;

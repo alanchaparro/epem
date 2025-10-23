@@ -21,26 +21,29 @@ function Parse-MySqlUrl {
   try {
     $uri = [Uri]$Url
     $user = $uri.UserInfo
-    $userName = $null; $password = $null
+    $userName = $null
+    $password = $null
     if ($user) {
-      $parts = $user.Split(':',2)
+      $parts = $user.Split(':', 2)
       $userName = $parts[0]
       if ($parts.Count -gt 1) { $password = $parts[1] }
     }
     return [pscustomobject]@{
-      Host = $uri.Host
-      Port = if ($uri.Port -gt 0) { $uri.Port } else { 3306 }
-      User = $userName
+      Host     = $uri.Host
+      Port     = if ($uri.Port -gt 0) { $uri.Port } else { 3306 }
+      User     = $userName
       Password = $password
       Database = $uri.AbsolutePath.TrimStart('/')
     }
-  } catch { return $null }
+  } catch {
+    return $null
+  }
 }
 
 function Find-MySqlExe {
   $candidates = @(
-    'C:\\xampp\\mysql\\bin\\mysql.exe',
-    'C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe',
+    'C:\xampp\mysql\bin\mysql.exe',
+    'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe',
     'mysql'
   )
   foreach ($candidate in $candidates) {
@@ -55,7 +58,7 @@ function Find-MySqlExe {
 
 function Ensure-Database {
   param($MysqlExe, $Cfg)
-  $args = @('-N','-s','-e')
+  $args = @('-N', '-s', '-e')
   if ($Cfg.Host) { $args += @('-h', $Cfg.Host) }
   if ($Cfg.Port) { $args += @('-P', $Cfg.Port) }
   if ($Cfg.User) { $args += @('-u', $Cfg.User) }
@@ -71,7 +74,7 @@ function Ensure-Database {
 
 function Table-Exists {
   param($MysqlExe, $Cfg, [string]$Table)
-  $args = @('-N','-s','-e')
+  $args = @('-N', '-s', '-e')
   if ($Cfg.Host) { $args += @('-h', $Cfg.Host) }
   if ($Cfg.Port) { $args += @('-P', $Cfg.Port) }
   if ($Cfg.User) { $args += @('-u', $Cfg.User) }
@@ -94,21 +97,21 @@ function Run-PrismaPush {
 }
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$root = Resolve-Path (Join-Path $scriptRoot '..\..' ) | ForEach-Object { $_.Path }
+$root = Resolve-Path (Join-Path $scriptRoot '..\..') | ForEach-Object { $_.Path }
 $envPath = Join-Path $root '.env'
 $envs = Load-DotEnv -Path $envPath
 
 $mysqlExe = Find-MySqlExe
 if (-not $mysqlExe) {
-  Write-Error 'mysql.exe no encontrado. Instala MySQL o define una ruta válida.'
+  Write-Error 'mysql.exe no encontrado. Instala MySQL o define una ruta valida.'
   exit 1
 }
 
 $services = @(
-  [pscustomobject]@{ Name='Users-service'; UrlVar='USERS_SERVICE_DATABASE_URL'; Tables=@('User'); Filter='@epem/users-service' },
-  [pscustomobject]@{ Name='Patients-service'; UrlVar='PATIENTS_SERVICE_DATABASE_URL'; Tables=@('Patient'); Filter='@epem/patients-service' },
-  [pscustomobject]@{ Name='Catalog-service'; UrlVar='CATALOG_SERVICE_DATABASE_URL'; Tables=@('ServiceItem'); Filter='@epem/catalog-service' },
-  [pscustomobject]@{ Name='Billing-service'; UrlVar='BILLING_SERVICE_DATABASE_URL'; Tables=@('Insurer','Coverage'); Filter='@epem/billing-service' }
+  [pscustomobject]@{ Name = 'Users-service'; UrlVar = 'USERS_SERVICE_DATABASE_URL'; Tables = @('User'); Filter = '@epem/users-service' },
+  [pscustomobject]@{ Name = 'Patients-service'; UrlVar = 'PATIENTS_SERVICE_DATABASE_URL'; Tables = @('Patient', 'Order'); Filter = '@epem/patients-service' },
+  [pscustomobject]@{ Name = 'Catalog-service'; UrlVar = 'CATALOG_SERVICE_DATABASE_URL'; Tables = @('ServiceItem'); Filter = '@epem/catalog-service' },
+  [pscustomobject]@{ Name = 'Billing-service'; UrlVar = 'BILLING_SERVICE_DATABASE_URL'; Tables = @('Insurer', 'Coverage', 'Authorization', 'Invoice'); Filter = '@epem/billing-service' }
 )
 
 $summary = @()
@@ -117,13 +120,13 @@ foreach ($svc in $services) {
   $url = $envs[$svc.UrlVar]
   if (-not $url) {
     Write-Warning "[$($svc.Name)] Variable $($svc.UrlVar) no definida en .env"
-    $summary += [pscustomobject]@{ service=$svc.Name; status='MISSING_URL'; action='Definir URL en .env' }
+    $summary += [pscustomobject]@{ service = $svc.Name; status = 'MISSING_URL'; action = 'Definir URL en .env' }
     continue
   }
   $cfg = Parse-MySqlUrl -Url $url
   if (-not $cfg) {
-    Write-Warning "[$($svc.Name)] URL inválida: $url"
-    $summary += [pscustomobject]@{ service=$svc.Name; status='INVALID_URL'; action='Corregir URL en .env' }
+    Write-Warning "[$($svc.Name)] URL invalida: $url"
+    $summary += [pscustomobject]@{ service = $svc.Name; status = 'INVALID_URL'; action = 'Corregir URL en .env' }
     continue
   }
 
@@ -139,11 +142,15 @@ foreach ($svc in $services) {
   if ($missing.Count -gt 0) {
     Write-Host "[$($svc.Name)] Tablas faltantes: $($missing -join ', ')" -ForegroundColor Yellow
     Run-PrismaPush -Root $root -Filter $svc.Filter
-    $summary += [pscustomobject]@{ service=$svc.Name; status='PUSHED'; action="Se ejecutó prisma:push (verificar tablas manualmente si es necesario)" }
+    $summary += [pscustomobject]@{
+      service = $svc.Name
+      status  = 'PUSHED'
+      action  = 'Se ejecuto prisma:push (verificar tablas manualmente si es necesario)'
+    }
   } else {
-    $summary += [pscustomobject]@{ service=$svc.Name; status='OK'; action='Sin cambios' }
+    $summary += [pscustomobject]@{ service = $svc.Name; status = 'OK'; action = 'Sin cambios' }
   }
 }
 
-Write-Host "--- Resumen ---" -ForegroundColor Cyan
+Write-Host '--- Resumen ---' -ForegroundColor Cyan
 $summary | Format-Table -AutoSize

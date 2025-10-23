@@ -7,6 +7,9 @@ Servicio de facturación y visaciones (NestJS + Prisma + MySQL).
 
 ## Endpoints
 - `GET /health` → estado del servicio
+- `GET /authorizations?status=` → listar autorizaciones por estado
+- `POST /authorizations` → crear autorización (desde pacientes cuando se crea una orden)
+- `PATCH /authorizations/:id` → aprobar/denegar autorización (actualiza orden en pacientes)
 - `GET /insurers` → lista aseguradoras
 - `GET /insurers/:id` → detalle
 - `POST /insurers` → alta (body: `{ name, planCode, active? }`)
@@ -31,6 +34,11 @@ curl -X POST http://localhost:3040/insurers \
 curl -X POST http://localhost:3040/coverage \
   -H 'Content-Type: application/json' \
   -d '{"insurerId":"<uuid>","serviceItemId":"LAB01","copay":450,"requiresAuth":false}'
+
+# Aprobar autorización
+curl -X PATCH http://localhost:3040/authorizations/<id> \
+  -H 'Content-Type: application/json' \
+  -d '{"status":"APPROVED","authCode":"AUTH123"}'
 ```
 
 ## Seeds

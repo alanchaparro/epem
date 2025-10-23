@@ -23,6 +23,46 @@ export type Insurer = $Result.DefaultSelection<Prisma.$InsurerPayload>
  * 
  */
 export type Coverage = $Result.DefaultSelection<Prisma.$CoveragePayload>
+/**
+ * Model Authorization
+ * 
+ */
+export type Authorization = $Result.DefaultSelection<Prisma.$AuthorizationPayload>
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = $Result.DefaultSelection<Prisma.$InvoicePayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const AuthorizationStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  DENIED: 'DENIED'
+};
+
+export type AuthorizationStatus = (typeof AuthorizationStatus)[keyof typeof AuthorizationStatus]
+
+
+export const InvoiceStatus: {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED'
+};
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+}
+
+export type AuthorizationStatus = $Enums.AuthorizationStatus
+
+export const AuthorizationStatus: typeof $Enums.AuthorizationStatus
+
+export type InvoiceStatus = $Enums.InvoiceStatus
+
+export const InvoiceStatus: typeof $Enums.InvoiceStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -166,6 +206,26 @@ export class PrismaClient<
     * ```
     */
   get coverage(): Prisma.CoverageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.authorization`: Exposes CRUD operations for the **Authorization** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Authorizations
+    * const authorizations = await prisma.authorization.findMany()
+    * ```
+    */
+  get authorization(): Prisma.AuthorizationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.invoice`: Exposes CRUD operations for the **Invoice** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Invoices
+    * const invoices = await prisma.invoice.findMany()
+    * ```
+    */
+  get invoice(): Prisma.InvoiceDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -608,7 +668,9 @@ export namespace Prisma {
 
   export const ModelName: {
     Insurer: 'Insurer',
-    Coverage: 'Coverage'
+    Coverage: 'Coverage',
+    Authorization: 'Authorization',
+    Invoice: 'Invoice'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -624,7 +686,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "insurer" | "coverage"
+      modelProps: "insurer" | "coverage" | "authorization" | "invoice"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -757,6 +819,138 @@ export namespace Prisma {
           count: {
             args: Prisma.CoverageCountArgs<ExtArgs>
             result: $Utils.Optional<CoverageCountAggregateOutputType> | number
+          }
+        }
+      }
+      Authorization: {
+        payload: Prisma.$AuthorizationPayload<ExtArgs>
+        fields: Prisma.AuthorizationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthorizationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthorizationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          findFirst: {
+            args: Prisma.AuthorizationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthorizationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          findMany: {
+            args: Prisma.AuthorizationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>[]
+          }
+          create: {
+            args: Prisma.AuthorizationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          createMany: {
+            args: Prisma.AuthorizationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.AuthorizationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          update: {
+            args: Prisma.AuthorizationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthorizationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthorizationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuthorizationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthorizationPayload>
+          }
+          aggregate: {
+            args: Prisma.AuthorizationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthorization>
+          }
+          groupBy: {
+            args: Prisma.AuthorizationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthorizationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuthorizationCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthorizationCountAggregateOutputType> | number
+          }
+        }
+      }
+      Invoice: {
+        payload: Prisma.$InvoicePayload<ExtArgs>
+        fields: Prisma.InvoiceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvoiceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvoiceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          findFirst: {
+            args: Prisma.InvoiceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvoiceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          findMany: {
+            args: Prisma.InvoiceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>[]
+          }
+          create: {
+            args: Prisma.InvoiceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          createMany: {
+            args: Prisma.InvoiceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.InvoiceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          update: {
+            args: Prisma.InvoiceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          deleteMany: {
+            args: Prisma.InvoiceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvoiceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InvoiceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoicePayload>
+          }
+          aggregate: {
+            args: Prisma.InvoiceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvoice>
+          }
+          groupBy: {
+            args: Prisma.InvoiceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvoiceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvoiceCountArgs<ExtArgs>
+            result: $Utils.Optional<InvoiceCountAggregateOutputType> | number
           }
         }
       }
@@ -2799,6 +2993,1803 @@ export namespace Prisma {
 
 
   /**
+   * Model Authorization
+   */
+
+  export type AggregateAuthorization = {
+    _count: AuthorizationCountAggregateOutputType | null
+    _min: AuthorizationMinAggregateOutputType | null
+    _max: AuthorizationMaxAggregateOutputType | null
+  }
+
+  export type AuthorizationMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    patientId: string | null
+    serviceItemId: string | null
+    insurerId: string | null
+    status: $Enums.AuthorizationStatus | null
+    authCode: string | null
+    requestedAt: Date | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AuthorizationMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    patientId: string | null
+    serviceItemId: string | null
+    insurerId: string | null
+    status: $Enums.AuthorizationStatus | null
+    authCode: string | null
+    requestedAt: Date | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AuthorizationCountAggregateOutputType = {
+    id: number
+    orderId: number
+    patientId: number
+    serviceItemId: number
+    insurerId: number
+    status: number
+    authCode: number
+    requestedAt: number
+    resolvedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AuthorizationMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    patientId?: true
+    serviceItemId?: true
+    insurerId?: true
+    status?: true
+    authCode?: true
+    requestedAt?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AuthorizationMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    patientId?: true
+    serviceItemId?: true
+    insurerId?: true
+    status?: true
+    authCode?: true
+    requestedAt?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AuthorizationCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    patientId?: true
+    serviceItemId?: true
+    insurerId?: true
+    status?: true
+    authCode?: true
+    requestedAt?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AuthorizationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Authorization to aggregate.
+     */
+    where?: AuthorizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Authorizations to fetch.
+     */
+    orderBy?: AuthorizationOrderByWithRelationInput | AuthorizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthorizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Authorizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Authorizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Authorizations
+    **/
+    _count?: true | AuthorizationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthorizationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthorizationMaxAggregateInputType
+  }
+
+  export type GetAuthorizationAggregateType<T extends AuthorizationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthorization]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthorization[P]>
+      : GetScalarType<T[P], AggregateAuthorization[P]>
+  }
+
+
+
+
+  export type AuthorizationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthorizationWhereInput
+    orderBy?: AuthorizationOrderByWithAggregationInput | AuthorizationOrderByWithAggregationInput[]
+    by: AuthorizationScalarFieldEnum[] | AuthorizationScalarFieldEnum
+    having?: AuthorizationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthorizationCountAggregateInputType | true
+    _min?: AuthorizationMinAggregateInputType
+    _max?: AuthorizationMaxAggregateInputType
+  }
+
+  export type AuthorizationGroupByOutputType = {
+    id: string
+    orderId: string
+    patientId: string
+    serviceItemId: string
+    insurerId: string | null
+    status: $Enums.AuthorizationStatus
+    authCode: string | null
+    requestedAt: Date
+    resolvedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AuthorizationCountAggregateOutputType | null
+    _min: AuthorizationMinAggregateOutputType | null
+    _max: AuthorizationMaxAggregateOutputType | null
+  }
+
+  type GetAuthorizationGroupByPayload<T extends AuthorizationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthorizationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthorizationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthorizationGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthorizationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthorizationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    patientId?: boolean
+    serviceItemId?: boolean
+    insurerId?: boolean
+    status?: boolean
+    authCode?: boolean
+    requestedAt?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["authorization"]>
+
+
+  export type AuthorizationSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    patientId?: boolean
+    serviceItemId?: boolean
+    insurerId?: boolean
+    status?: boolean
+    authCode?: boolean
+    requestedAt?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $AuthorizationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Authorization"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      patientId: string
+      serviceItemId: string
+      insurerId: string | null
+      status: $Enums.AuthorizationStatus
+      authCode: string | null
+      requestedAt: Date
+      resolvedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["authorization"]>
+    composites: {}
+  }
+
+  type AuthorizationGetPayload<S extends boolean | null | undefined | AuthorizationDefaultArgs> = $Result.GetResult<Prisma.$AuthorizationPayload, S>
+
+  type AuthorizationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AuthorizationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AuthorizationCountAggregateInputType | true
+    }
+
+  export interface AuthorizationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Authorization'], meta: { name: 'Authorization' } }
+    /**
+     * Find zero or one Authorization that matches the filter.
+     * @param {AuthorizationFindUniqueArgs} args - Arguments to find a Authorization
+     * @example
+     * // Get one Authorization
+     * const authorization = await prisma.authorization.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthorizationFindUniqueArgs>(args: SelectSubset<T, AuthorizationFindUniqueArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Authorization that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AuthorizationFindUniqueOrThrowArgs} args - Arguments to find a Authorization
+     * @example
+     * // Get one Authorization
+     * const authorization = await prisma.authorization.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthorizationFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthorizationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Authorization that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationFindFirstArgs} args - Arguments to find a Authorization
+     * @example
+     * // Get one Authorization
+     * const authorization = await prisma.authorization.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthorizationFindFirstArgs>(args?: SelectSubset<T, AuthorizationFindFirstArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Authorization that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationFindFirstOrThrowArgs} args - Arguments to find a Authorization
+     * @example
+     * // Get one Authorization
+     * const authorization = await prisma.authorization.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthorizationFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthorizationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Authorizations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Authorizations
+     * const authorizations = await prisma.authorization.findMany()
+     * 
+     * // Get first 10 Authorizations
+     * const authorizations = await prisma.authorization.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const authorizationWithIdOnly = await prisma.authorization.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuthorizationFindManyArgs>(args?: SelectSubset<T, AuthorizationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Authorization.
+     * @param {AuthorizationCreateArgs} args - Arguments to create a Authorization.
+     * @example
+     * // Create one Authorization
+     * const Authorization = await prisma.authorization.create({
+     *   data: {
+     *     // ... data to create a Authorization
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthorizationCreateArgs>(args: SelectSubset<T, AuthorizationCreateArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Authorizations.
+     * @param {AuthorizationCreateManyArgs} args - Arguments to create many Authorizations.
+     * @example
+     * // Create many Authorizations
+     * const authorization = await prisma.authorization.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthorizationCreateManyArgs>(args?: SelectSubset<T, AuthorizationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Authorization.
+     * @param {AuthorizationDeleteArgs} args - Arguments to delete one Authorization.
+     * @example
+     * // Delete one Authorization
+     * const Authorization = await prisma.authorization.delete({
+     *   where: {
+     *     // ... filter to delete one Authorization
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthorizationDeleteArgs>(args: SelectSubset<T, AuthorizationDeleteArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Authorization.
+     * @param {AuthorizationUpdateArgs} args - Arguments to update one Authorization.
+     * @example
+     * // Update one Authorization
+     * const authorization = await prisma.authorization.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthorizationUpdateArgs>(args: SelectSubset<T, AuthorizationUpdateArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Authorizations.
+     * @param {AuthorizationDeleteManyArgs} args - Arguments to filter Authorizations to delete.
+     * @example
+     * // Delete a few Authorizations
+     * const { count } = await prisma.authorization.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthorizationDeleteManyArgs>(args?: SelectSubset<T, AuthorizationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Authorizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Authorizations
+     * const authorization = await prisma.authorization.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthorizationUpdateManyArgs>(args: SelectSubset<T, AuthorizationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Authorization.
+     * @param {AuthorizationUpsertArgs} args - Arguments to update or create a Authorization.
+     * @example
+     * // Update or create a Authorization
+     * const authorization = await prisma.authorization.upsert({
+     *   create: {
+     *     // ... data to create a Authorization
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Authorization we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthorizationUpsertArgs>(args: SelectSubset<T, AuthorizationUpsertArgs<ExtArgs>>): Prisma__AuthorizationClient<$Result.GetResult<Prisma.$AuthorizationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Authorizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationCountArgs} args - Arguments to filter Authorizations to count.
+     * @example
+     * // Count the number of Authorizations
+     * const count = await prisma.authorization.count({
+     *   where: {
+     *     // ... the filter for the Authorizations we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthorizationCountArgs>(
+      args?: Subset<T, AuthorizationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthorizationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Authorization.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthorizationAggregateArgs>(args: Subset<T, AuthorizationAggregateArgs>): Prisma.PrismaPromise<GetAuthorizationAggregateType<T>>
+
+    /**
+     * Group by Authorization.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthorizationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthorizationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthorizationGroupByArgs['orderBy'] }
+        : { orderBy?: AuthorizationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthorizationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthorizationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Authorization model
+   */
+  readonly fields: AuthorizationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Authorization.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthorizationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Authorization model
+   */ 
+  interface AuthorizationFieldRefs {
+    readonly id: FieldRef<"Authorization", 'String'>
+    readonly orderId: FieldRef<"Authorization", 'String'>
+    readonly patientId: FieldRef<"Authorization", 'String'>
+    readonly serviceItemId: FieldRef<"Authorization", 'String'>
+    readonly insurerId: FieldRef<"Authorization", 'String'>
+    readonly status: FieldRef<"Authorization", 'AuthorizationStatus'>
+    readonly authCode: FieldRef<"Authorization", 'String'>
+    readonly requestedAt: FieldRef<"Authorization", 'DateTime'>
+    readonly resolvedAt: FieldRef<"Authorization", 'DateTime'>
+    readonly createdAt: FieldRef<"Authorization", 'DateTime'>
+    readonly updatedAt: FieldRef<"Authorization", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Authorization findUnique
+   */
+  export type AuthorizationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter, which Authorization to fetch.
+     */
+    where: AuthorizationWhereUniqueInput
+  }
+
+  /**
+   * Authorization findUniqueOrThrow
+   */
+  export type AuthorizationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter, which Authorization to fetch.
+     */
+    where: AuthorizationWhereUniqueInput
+  }
+
+  /**
+   * Authorization findFirst
+   */
+  export type AuthorizationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter, which Authorization to fetch.
+     */
+    where?: AuthorizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Authorizations to fetch.
+     */
+    orderBy?: AuthorizationOrderByWithRelationInput | AuthorizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Authorizations.
+     */
+    cursor?: AuthorizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Authorizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Authorizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Authorizations.
+     */
+    distinct?: AuthorizationScalarFieldEnum | AuthorizationScalarFieldEnum[]
+  }
+
+  /**
+   * Authorization findFirstOrThrow
+   */
+  export type AuthorizationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter, which Authorization to fetch.
+     */
+    where?: AuthorizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Authorizations to fetch.
+     */
+    orderBy?: AuthorizationOrderByWithRelationInput | AuthorizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Authorizations.
+     */
+    cursor?: AuthorizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Authorizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Authorizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Authorizations.
+     */
+    distinct?: AuthorizationScalarFieldEnum | AuthorizationScalarFieldEnum[]
+  }
+
+  /**
+   * Authorization findMany
+   */
+  export type AuthorizationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter, which Authorizations to fetch.
+     */
+    where?: AuthorizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Authorizations to fetch.
+     */
+    orderBy?: AuthorizationOrderByWithRelationInput | AuthorizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Authorizations.
+     */
+    cursor?: AuthorizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Authorizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Authorizations.
+     */
+    skip?: number
+    distinct?: AuthorizationScalarFieldEnum | AuthorizationScalarFieldEnum[]
+  }
+
+  /**
+   * Authorization create
+   */
+  export type AuthorizationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * The data needed to create a Authorization.
+     */
+    data: XOR<AuthorizationCreateInput, AuthorizationUncheckedCreateInput>
+  }
+
+  /**
+   * Authorization createMany
+   */
+  export type AuthorizationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Authorizations.
+     */
+    data: AuthorizationCreateManyInput | AuthorizationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Authorization update
+   */
+  export type AuthorizationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * The data needed to update a Authorization.
+     */
+    data: XOR<AuthorizationUpdateInput, AuthorizationUncheckedUpdateInput>
+    /**
+     * Choose, which Authorization to update.
+     */
+    where: AuthorizationWhereUniqueInput
+  }
+
+  /**
+   * Authorization updateMany
+   */
+  export type AuthorizationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Authorizations.
+     */
+    data: XOR<AuthorizationUpdateManyMutationInput, AuthorizationUncheckedUpdateManyInput>
+    /**
+     * Filter which Authorizations to update
+     */
+    where?: AuthorizationWhereInput
+  }
+
+  /**
+   * Authorization upsert
+   */
+  export type AuthorizationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * The filter to search for the Authorization to update in case it exists.
+     */
+    where: AuthorizationWhereUniqueInput
+    /**
+     * In case the Authorization found by the `where` argument doesn't exist, create a new Authorization with this data.
+     */
+    create: XOR<AuthorizationCreateInput, AuthorizationUncheckedCreateInput>
+    /**
+     * In case the Authorization was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthorizationUpdateInput, AuthorizationUncheckedUpdateInput>
+  }
+
+  /**
+   * Authorization delete
+   */
+  export type AuthorizationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+    /**
+     * Filter which Authorization to delete.
+     */
+    where: AuthorizationWhereUniqueInput
+  }
+
+  /**
+   * Authorization deleteMany
+   */
+  export type AuthorizationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Authorizations to delete
+     */
+    where?: AuthorizationWhereInput
+  }
+
+  /**
+   * Authorization without action
+   */
+  export type AuthorizationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Authorization
+     */
+    select?: AuthorizationSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Invoice
+   */
+
+  export type AggregateInvoice = {
+    _count: InvoiceCountAggregateOutputType | null
+    _avg: InvoiceAvgAggregateOutputType | null
+    _sum: InvoiceSumAggregateOutputType | null
+    _min: InvoiceMinAggregateOutputType | null
+    _max: InvoiceMaxAggregateOutputType | null
+  }
+
+  export type InvoiceAvgAggregateOutputType = {
+    total: Decimal | null
+  }
+
+  export type InvoiceSumAggregateOutputType = {
+    total: Decimal | null
+  }
+
+  export type InvoiceMinAggregateOutputType = {
+    id: string | null
+    patientId: string | null
+    orderId: string | null
+    total: Decimal | null
+    status: $Enums.InvoiceStatus | null
+    issuedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvoiceMaxAggregateOutputType = {
+    id: string | null
+    patientId: string | null
+    orderId: string | null
+    total: Decimal | null
+    status: $Enums.InvoiceStatus | null
+    issuedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvoiceCountAggregateOutputType = {
+    id: number
+    patientId: number
+    orderId: number
+    total: number
+    status: number
+    issuedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvoiceAvgAggregateInputType = {
+    total?: true
+  }
+
+  export type InvoiceSumAggregateInputType = {
+    total?: true
+  }
+
+  export type InvoiceMinAggregateInputType = {
+    id?: true
+    patientId?: true
+    orderId?: true
+    total?: true
+    status?: true
+    issuedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvoiceMaxAggregateInputType = {
+    id?: true
+    patientId?: true
+    orderId?: true
+    total?: true
+    status?: true
+    issuedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvoiceCountAggregateInputType = {
+    id?: true
+    patientId?: true
+    orderId?: true
+    total?: true
+    status?: true
+    issuedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvoiceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Invoice to aggregate.
+     */
+    where?: InvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Invoices to fetch.
+     */
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Invoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Invoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Invoices
+    **/
+    _count?: true | InvoiceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvoiceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvoiceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvoiceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvoiceMaxAggregateInputType
+  }
+
+  export type GetInvoiceAggregateType<T extends InvoiceAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvoice]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvoice[P]>
+      : GetScalarType<T[P], AggregateInvoice[P]>
+  }
+
+
+
+
+  export type InvoiceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvoiceWhereInput
+    orderBy?: InvoiceOrderByWithAggregationInput | InvoiceOrderByWithAggregationInput[]
+    by: InvoiceScalarFieldEnum[] | InvoiceScalarFieldEnum
+    having?: InvoiceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvoiceCountAggregateInputType | true
+    _avg?: InvoiceAvgAggregateInputType
+    _sum?: InvoiceSumAggregateInputType
+    _min?: InvoiceMinAggregateInputType
+    _max?: InvoiceMaxAggregateInputType
+  }
+
+  export type InvoiceGroupByOutputType = {
+    id: string
+    patientId: string
+    orderId: string
+    total: Decimal
+    status: $Enums.InvoiceStatus
+    issuedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: InvoiceCountAggregateOutputType | null
+    _avg: InvoiceAvgAggregateOutputType | null
+    _sum: InvoiceSumAggregateOutputType | null
+    _min: InvoiceMinAggregateOutputType | null
+    _max: InvoiceMaxAggregateOutputType | null
+  }
+
+  type GetInvoiceGroupByPayload<T extends InvoiceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvoiceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvoiceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvoiceGroupByOutputType[P]>
+            : GetScalarType<T[P], InvoiceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvoiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    patientId?: boolean
+    orderId?: boolean
+    total?: boolean
+    status?: boolean
+    issuedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["invoice"]>
+
+
+  export type InvoiceSelectScalar = {
+    id?: boolean
+    patientId?: boolean
+    orderId?: boolean
+    total?: boolean
+    status?: boolean
+    issuedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $InvoicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Invoice"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      patientId: string
+      orderId: string
+      total: Prisma.Decimal
+      status: $Enums.InvoiceStatus
+      issuedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["invoice"]>
+    composites: {}
+  }
+
+  type InvoiceGetPayload<S extends boolean | null | undefined | InvoiceDefaultArgs> = $Result.GetResult<Prisma.$InvoicePayload, S>
+
+  type InvoiceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InvoiceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InvoiceCountAggregateInputType | true
+    }
+
+  export interface InvoiceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Invoice'], meta: { name: 'Invoice' } }
+    /**
+     * Find zero or one Invoice that matches the filter.
+     * @param {InvoiceFindUniqueArgs} args - Arguments to find a Invoice
+     * @example
+     * // Get one Invoice
+     * const invoice = await prisma.invoice.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvoiceFindUniqueArgs>(args: SelectSubset<T, InvoiceFindUniqueArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Invoice that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InvoiceFindUniqueOrThrowArgs} args - Arguments to find a Invoice
+     * @example
+     * // Get one Invoice
+     * const invoice = await prisma.invoice.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvoiceFindUniqueOrThrowArgs>(args: SelectSubset<T, InvoiceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Invoice that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceFindFirstArgs} args - Arguments to find a Invoice
+     * @example
+     * // Get one Invoice
+     * const invoice = await prisma.invoice.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvoiceFindFirstArgs>(args?: SelectSubset<T, InvoiceFindFirstArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Invoice that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceFindFirstOrThrowArgs} args - Arguments to find a Invoice
+     * @example
+     * // Get one Invoice
+     * const invoice = await prisma.invoice.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvoiceFindFirstOrThrowArgs>(args?: SelectSubset<T, InvoiceFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Invoices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Invoices
+     * const invoices = await prisma.invoice.findMany()
+     * 
+     * // Get first 10 Invoices
+     * const invoices = await prisma.invoice.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const invoiceWithIdOnly = await prisma.invoice.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvoiceFindManyArgs>(args?: SelectSubset<T, InvoiceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Invoice.
+     * @param {InvoiceCreateArgs} args - Arguments to create a Invoice.
+     * @example
+     * // Create one Invoice
+     * const Invoice = await prisma.invoice.create({
+     *   data: {
+     *     // ... data to create a Invoice
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvoiceCreateArgs>(args: SelectSubset<T, InvoiceCreateArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Invoices.
+     * @param {InvoiceCreateManyArgs} args - Arguments to create many Invoices.
+     * @example
+     * // Create many Invoices
+     * const invoice = await prisma.invoice.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvoiceCreateManyArgs>(args?: SelectSubset<T, InvoiceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Invoice.
+     * @param {InvoiceDeleteArgs} args - Arguments to delete one Invoice.
+     * @example
+     * // Delete one Invoice
+     * const Invoice = await prisma.invoice.delete({
+     *   where: {
+     *     // ... filter to delete one Invoice
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvoiceDeleteArgs>(args: SelectSubset<T, InvoiceDeleteArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Invoice.
+     * @param {InvoiceUpdateArgs} args - Arguments to update one Invoice.
+     * @example
+     * // Update one Invoice
+     * const invoice = await prisma.invoice.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvoiceUpdateArgs>(args: SelectSubset<T, InvoiceUpdateArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Invoices.
+     * @param {InvoiceDeleteManyArgs} args - Arguments to filter Invoices to delete.
+     * @example
+     * // Delete a few Invoices
+     * const { count } = await prisma.invoice.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvoiceDeleteManyArgs>(args?: SelectSubset<T, InvoiceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Invoices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Invoices
+     * const invoice = await prisma.invoice.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvoiceUpdateManyArgs>(args: SelectSubset<T, InvoiceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Invoice.
+     * @param {InvoiceUpsertArgs} args - Arguments to update or create a Invoice.
+     * @example
+     * // Update or create a Invoice
+     * const invoice = await prisma.invoice.upsert({
+     *   create: {
+     *     // ... data to create a Invoice
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Invoice we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvoiceUpsertArgs>(args: SelectSubset<T, InvoiceUpsertArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Invoices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceCountArgs} args - Arguments to filter Invoices to count.
+     * @example
+     * // Count the number of Invoices
+     * const count = await prisma.invoice.count({
+     *   where: {
+     *     // ... the filter for the Invoices we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvoiceCountArgs>(
+      args?: Subset<T, InvoiceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvoiceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Invoice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvoiceAggregateArgs>(args: Subset<T, InvoiceAggregateArgs>): Prisma.PrismaPromise<GetInvoiceAggregateType<T>>
+
+    /**
+     * Group by Invoice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvoiceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvoiceGroupByArgs['orderBy'] }
+        : { orderBy?: InvoiceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvoiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Invoice model
+   */
+  readonly fields: InvoiceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Invoice.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Invoice model
+   */ 
+  interface InvoiceFieldRefs {
+    readonly id: FieldRef<"Invoice", 'String'>
+    readonly patientId: FieldRef<"Invoice", 'String'>
+    readonly orderId: FieldRef<"Invoice", 'String'>
+    readonly total: FieldRef<"Invoice", 'Decimal'>
+    readonly status: FieldRef<"Invoice", 'InvoiceStatus'>
+    readonly issuedAt: FieldRef<"Invoice", 'DateTime'>
+    readonly createdAt: FieldRef<"Invoice", 'DateTime'>
+    readonly updatedAt: FieldRef<"Invoice", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Invoice findUnique
+   */
+  export type InvoiceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter, which Invoice to fetch.
+     */
+    where: InvoiceWhereUniqueInput
+  }
+
+  /**
+   * Invoice findUniqueOrThrow
+   */
+  export type InvoiceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter, which Invoice to fetch.
+     */
+    where: InvoiceWhereUniqueInput
+  }
+
+  /**
+   * Invoice findFirst
+   */
+  export type InvoiceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter, which Invoice to fetch.
+     */
+    where?: InvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Invoices to fetch.
+     */
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Invoices.
+     */
+    cursor?: InvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Invoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Invoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Invoices.
+     */
+    distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Invoice findFirstOrThrow
+   */
+  export type InvoiceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter, which Invoice to fetch.
+     */
+    where?: InvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Invoices to fetch.
+     */
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Invoices.
+     */
+    cursor?: InvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Invoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Invoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Invoices.
+     */
+    distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Invoice findMany
+   */
+  export type InvoiceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter, which Invoices to fetch.
+     */
+    where?: InvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Invoices to fetch.
+     */
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Invoices.
+     */
+    cursor?: InvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Invoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Invoices.
+     */
+    skip?: number
+    distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Invoice create
+   */
+  export type InvoiceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * The data needed to create a Invoice.
+     */
+    data: XOR<InvoiceCreateInput, InvoiceUncheckedCreateInput>
+  }
+
+  /**
+   * Invoice createMany
+   */
+  export type InvoiceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Invoices.
+     */
+    data: InvoiceCreateManyInput | InvoiceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Invoice update
+   */
+  export type InvoiceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * The data needed to update a Invoice.
+     */
+    data: XOR<InvoiceUpdateInput, InvoiceUncheckedUpdateInput>
+    /**
+     * Choose, which Invoice to update.
+     */
+    where: InvoiceWhereUniqueInput
+  }
+
+  /**
+   * Invoice updateMany
+   */
+  export type InvoiceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Invoices.
+     */
+    data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyInput>
+    /**
+     * Filter which Invoices to update
+     */
+    where?: InvoiceWhereInput
+  }
+
+  /**
+   * Invoice upsert
+   */
+  export type InvoiceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * The filter to search for the Invoice to update in case it exists.
+     */
+    where: InvoiceWhereUniqueInput
+    /**
+     * In case the Invoice found by the `where` argument doesn't exist, create a new Invoice with this data.
+     */
+    create: XOR<InvoiceCreateInput, InvoiceUncheckedCreateInput>
+    /**
+     * In case the Invoice was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvoiceUpdateInput, InvoiceUncheckedUpdateInput>
+  }
+
+  /**
+   * Invoice delete
+   */
+  export type InvoiceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Filter which Invoice to delete.
+     */
+    where: InvoiceWhereUniqueInput
+  }
+
+  /**
+   * Invoice deleteMany
+   */
+  export type InvoiceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Invoices to delete
+     */
+    where?: InvoiceWhereInput
+  }
+
+  /**
+   * Invoice without action
+   */
+  export type InvoiceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -2837,12 +4828,51 @@ export namespace Prisma {
   export type CoverageScalarFieldEnum = (typeof CoverageScalarFieldEnum)[keyof typeof CoverageScalarFieldEnum]
 
 
+  export const AuthorizationScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    patientId: 'patientId',
+    serviceItemId: 'serviceItemId',
+    insurerId: 'insurerId',
+    status: 'status',
+    authCode: 'authCode',
+    requestedAt: 'requestedAt',
+    resolvedAt: 'resolvedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AuthorizationScalarFieldEnum = (typeof AuthorizationScalarFieldEnum)[keyof typeof AuthorizationScalarFieldEnum]
+
+
+  export const InvoiceScalarFieldEnum: {
+    id: 'id',
+    patientId: 'patientId',
+    orderId: 'orderId',
+    total: 'total',
+    status: 'status',
+    issuedAt: 'issuedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -2875,6 +4905,20 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'AuthorizationStatus'
+   */
+  export type EnumAuthorizationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthorizationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'InvoiceStatus'
+   */
+  export type EnumInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceStatus'>
     
 
 
@@ -3015,6 +5059,157 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Coverage"> | Date | string
   }
 
+  export type AuthorizationWhereInput = {
+    AND?: AuthorizationWhereInput | AuthorizationWhereInput[]
+    OR?: AuthorizationWhereInput[]
+    NOT?: AuthorizationWhereInput | AuthorizationWhereInput[]
+    id?: StringFilter<"Authorization"> | string
+    orderId?: StringFilter<"Authorization"> | string
+    patientId?: StringFilter<"Authorization"> | string
+    serviceItemId?: StringFilter<"Authorization"> | string
+    insurerId?: StringNullableFilter<"Authorization"> | string | null
+    status?: EnumAuthorizationStatusFilter<"Authorization"> | $Enums.AuthorizationStatus
+    authCode?: StringNullableFilter<"Authorization"> | string | null
+    requestedAt?: DateTimeFilter<"Authorization"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"Authorization"> | Date | string | null
+    createdAt?: DateTimeFilter<"Authorization"> | Date | string
+    updatedAt?: DateTimeFilter<"Authorization"> | Date | string
+  }
+
+  export type AuthorizationOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    patientId?: SortOrder
+    serviceItemId?: SortOrder
+    insurerId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    authCode?: SortOrderInput | SortOrder
+    requestedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthorizationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuthorizationWhereInput | AuthorizationWhereInput[]
+    OR?: AuthorizationWhereInput[]
+    NOT?: AuthorizationWhereInput | AuthorizationWhereInput[]
+    orderId?: StringFilter<"Authorization"> | string
+    patientId?: StringFilter<"Authorization"> | string
+    serviceItemId?: StringFilter<"Authorization"> | string
+    insurerId?: StringNullableFilter<"Authorization"> | string | null
+    status?: EnumAuthorizationStatusFilter<"Authorization"> | $Enums.AuthorizationStatus
+    authCode?: StringNullableFilter<"Authorization"> | string | null
+    requestedAt?: DateTimeFilter<"Authorization"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"Authorization"> | Date | string | null
+    createdAt?: DateTimeFilter<"Authorization"> | Date | string
+    updatedAt?: DateTimeFilter<"Authorization"> | Date | string
+  }, "id">
+
+  export type AuthorizationOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    patientId?: SortOrder
+    serviceItemId?: SortOrder
+    insurerId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    authCode?: SortOrderInput | SortOrder
+    requestedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AuthorizationCountOrderByAggregateInput
+    _max?: AuthorizationMaxOrderByAggregateInput
+    _min?: AuthorizationMinOrderByAggregateInput
+  }
+
+  export type AuthorizationScalarWhereWithAggregatesInput = {
+    AND?: AuthorizationScalarWhereWithAggregatesInput | AuthorizationScalarWhereWithAggregatesInput[]
+    OR?: AuthorizationScalarWhereWithAggregatesInput[]
+    NOT?: AuthorizationScalarWhereWithAggregatesInput | AuthorizationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Authorization"> | string
+    orderId?: StringWithAggregatesFilter<"Authorization"> | string
+    patientId?: StringWithAggregatesFilter<"Authorization"> | string
+    serviceItemId?: StringWithAggregatesFilter<"Authorization"> | string
+    insurerId?: StringNullableWithAggregatesFilter<"Authorization"> | string | null
+    status?: EnumAuthorizationStatusWithAggregatesFilter<"Authorization"> | $Enums.AuthorizationStatus
+    authCode?: StringNullableWithAggregatesFilter<"Authorization"> | string | null
+    requestedAt?: DateTimeWithAggregatesFilter<"Authorization"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"Authorization"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Authorization"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Authorization"> | Date | string
+  }
+
+  export type InvoiceWhereInput = {
+    AND?: InvoiceWhereInput | InvoiceWhereInput[]
+    OR?: InvoiceWhereInput[]
+    NOT?: InvoiceWhereInput | InvoiceWhereInput[]
+    id?: StringFilter<"Invoice"> | string
+    patientId?: StringFilter<"Invoice"> | string
+    orderId?: StringFilter<"Invoice"> | string
+    total?: DecimalFilter<"Invoice"> | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
+    issuedAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    createdAt?: DateTimeFilter<"Invoice"> | Date | string
+    updatedAt?: DateTimeFilter<"Invoice"> | Date | string
+  }
+
+  export type InvoiceOrderByWithRelationInput = {
+    id?: SortOrder
+    patientId?: SortOrder
+    orderId?: SortOrder
+    total?: SortOrder
+    status?: SortOrder
+    issuedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orderId?: string
+    AND?: InvoiceWhereInput | InvoiceWhereInput[]
+    OR?: InvoiceWhereInput[]
+    NOT?: InvoiceWhereInput | InvoiceWhereInput[]
+    patientId?: StringFilter<"Invoice"> | string
+    total?: DecimalFilter<"Invoice"> | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
+    issuedAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    createdAt?: DateTimeFilter<"Invoice"> | Date | string
+    updatedAt?: DateTimeFilter<"Invoice"> | Date | string
+  }, "id" | "orderId">
+
+  export type InvoiceOrderByWithAggregationInput = {
+    id?: SortOrder
+    patientId?: SortOrder
+    orderId?: SortOrder
+    total?: SortOrder
+    status?: SortOrder
+    issuedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvoiceCountOrderByAggregateInput
+    _avg?: InvoiceAvgOrderByAggregateInput
+    _max?: InvoiceMaxOrderByAggregateInput
+    _min?: InvoiceMinOrderByAggregateInput
+    _sum?: InvoiceSumOrderByAggregateInput
+  }
+
+  export type InvoiceScalarWhereWithAggregatesInput = {
+    AND?: InvoiceScalarWhereWithAggregatesInput | InvoiceScalarWhereWithAggregatesInput[]
+    OR?: InvoiceScalarWhereWithAggregatesInput[]
+    NOT?: InvoiceScalarWhereWithAggregatesInput | InvoiceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Invoice"> | string
+    patientId?: StringWithAggregatesFilter<"Invoice"> | string
+    orderId?: StringWithAggregatesFilter<"Invoice"> | string
+    total?: DecimalWithAggregatesFilter<"Invoice"> | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
+    issuedAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
+  }
+
   export type InsurerCreateInput = {
     id?: string
     name: string
@@ -3147,6 +5342,181 @@ export namespace Prisma {
     serviceItemId?: StringFieldUpdateOperationsInput | string
     copay?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     requiresAuth?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthorizationCreateInput = {
+    id?: string
+    orderId: string
+    patientId: string
+    serviceItemId: string
+    insurerId?: string | null
+    status?: $Enums.AuthorizationStatus
+    authCode?: string | null
+    requestedAt?: Date | string
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthorizationUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    patientId: string
+    serviceItemId: string
+    insurerId?: string | null
+    status?: $Enums.AuthorizationStatus
+    authCode?: string | null
+    requestedAt?: Date | string
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthorizationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    serviceItemId?: StringFieldUpdateOperationsInput | string
+    insurerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAuthorizationStatusFieldUpdateOperationsInput | $Enums.AuthorizationStatus
+    authCode?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthorizationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    serviceItemId?: StringFieldUpdateOperationsInput | string
+    insurerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAuthorizationStatusFieldUpdateOperationsInput | $Enums.AuthorizationStatus
+    authCode?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthorizationCreateManyInput = {
+    id?: string
+    orderId: string
+    patientId: string
+    serviceItemId: string
+    insurerId?: string | null
+    status?: $Enums.AuthorizationStatus
+    authCode?: string | null
+    requestedAt?: Date | string
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthorizationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    serviceItemId?: StringFieldUpdateOperationsInput | string
+    insurerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAuthorizationStatusFieldUpdateOperationsInput | $Enums.AuthorizationStatus
+    authCode?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthorizationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    serviceItemId?: StringFieldUpdateOperationsInput | string
+    insurerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAuthorizationStatusFieldUpdateOperationsInput | $Enums.AuthorizationStatus
+    authCode?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceCreateInput = {
+    id?: string
+    patientId: string
+    orderId: string
+    total: Decimal | DecimalJsLike | number | string
+    status?: $Enums.InvoiceStatus
+    issuedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceUncheckedCreateInput = {
+    id?: string
+    patientId: string
+    orderId: string
+    total: Decimal | DecimalJsLike | number | string
+    status?: $Enums.InvoiceStatus
+    issuedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    issuedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    issuedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceCreateManyInput = {
+    id?: string
+    patientId: string
+    orderId: string
+    total: Decimal | DecimalJsLike | number | string
+    status?: $Enums.InvoiceStatus
+    issuedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    issuedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    patientId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    issuedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3327,6 +5697,184 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type EnumAuthorizationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthorizationStatus | EnumAuthorizationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthorizationStatus[]
+    notIn?: $Enums.AuthorizationStatus[]
+    not?: NestedEnumAuthorizationStatusFilter<$PrismaModel> | $Enums.AuthorizationStatus
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type AuthorizationCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    patientId?: SortOrder
+    serviceItemId?: SortOrder
+    insurerId?: SortOrder
+    status?: SortOrder
+    authCode?: SortOrder
+    requestedAt?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthorizationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    patientId?: SortOrder
+    serviceItemId?: SortOrder
+    insurerId?: SortOrder
+    status?: SortOrder
+    authCode?: SortOrder
+    requestedAt?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthorizationMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    patientId?: SortOrder
+    serviceItemId?: SortOrder
+    insurerId?: SortOrder
+    status?: SortOrder
+    authCode?: SortOrder
+    requestedAt?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumAuthorizationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthorizationStatus | EnumAuthorizationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthorizationStatus[]
+    notIn?: $Enums.AuthorizationStatus[]
+    not?: NestedEnumAuthorizationStatusWithAggregatesFilter<$PrismaModel> | $Enums.AuthorizationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAuthorizationStatusFilter<$PrismaModel>
+    _max?: NestedEnumAuthorizationStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumInvoiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceStatus | EnumInvoiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceStatus[]
+    notIn?: $Enums.InvoiceStatus[]
+    not?: NestedEnumInvoiceStatusFilter<$PrismaModel> | $Enums.InvoiceStatus
+  }
+
+  export type InvoiceCountOrderByAggregateInput = {
+    id?: SortOrder
+    patientId?: SortOrder
+    orderId?: SortOrder
+    total?: SortOrder
+    status?: SortOrder
+    issuedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvoiceAvgOrderByAggregateInput = {
+    total?: SortOrder
+  }
+
+  export type InvoiceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    patientId?: SortOrder
+    orderId?: SortOrder
+    total?: SortOrder
+    status?: SortOrder
+    issuedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvoiceMinOrderByAggregateInput = {
+    id?: SortOrder
+    patientId?: SortOrder
+    orderId?: SortOrder
+    total?: SortOrder
+    status?: SortOrder
+    issuedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvoiceSumOrderByAggregateInput = {
+    total?: SortOrder
+  }
+
+  export type EnumInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceStatus | EnumInvoiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceStatus[]
+    notIn?: $Enums.InvoiceStatus[]
+    not?: NestedEnumInvoiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceStatusFilter<$PrismaModel>
+  }
+
   export type CoverageCreateNestedManyWithoutInsurerInput = {
     create?: XOR<CoverageCreateWithoutInsurerInput, CoverageUncheckedCreateWithoutInsurerInput> | CoverageCreateWithoutInsurerInput[] | CoverageUncheckedCreateWithoutInsurerInput[]
     connectOrCreate?: CoverageCreateOrConnectWithoutInsurerInput | CoverageCreateOrConnectWithoutInsurerInput[]
@@ -3401,6 +5949,22 @@ export namespace Prisma {
     upsert?: InsurerUpsertWithoutCoveragesInput
     connect?: InsurerWhereUniqueInput
     update?: XOR<XOR<InsurerUpdateToOneWithWhereWithoutCoveragesInput, InsurerUpdateWithoutCoveragesInput>, InsurerUncheckedUpdateWithoutCoveragesInput>
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type EnumAuthorizationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AuthorizationStatus
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type EnumInvoiceStatusFieldUpdateOperationsInput = {
+    set?: $Enums.InvoiceStatus
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -3508,6 +6072,107 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumAuthorizationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthorizationStatus | EnumAuthorizationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthorizationStatus[]
+    notIn?: $Enums.AuthorizationStatus[]
+    not?: NestedEnumAuthorizationStatusFilter<$PrismaModel> | $Enums.AuthorizationStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumAuthorizationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthorizationStatus | EnumAuthorizationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthorizationStatus[]
+    notIn?: $Enums.AuthorizationStatus[]
+    not?: NestedEnumAuthorizationStatusWithAggregatesFilter<$PrismaModel> | $Enums.AuthorizationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAuthorizationStatusFilter<$PrismaModel>
+    _max?: NestedEnumAuthorizationStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumInvoiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceStatus | EnumInvoiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceStatus[]
+    notIn?: $Enums.InvoiceStatus[]
+    not?: NestedEnumInvoiceStatusFilter<$PrismaModel> | $Enums.InvoiceStatus
+  }
+
+  export type NestedEnumInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceStatus | EnumInvoiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceStatus[]
+    notIn?: $Enums.InvoiceStatus[]
+    not?: NestedEnumInvoiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceStatusFilter<$PrismaModel>
   }
 
   export type CoverageCreateWithoutInsurerInput = {
@@ -3672,6 +6337,14 @@ export namespace Prisma {
      * @deprecated Use CoverageDefaultArgs instead
      */
     export type CoverageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CoverageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AuthorizationDefaultArgs instead
+     */
+    export type AuthorizationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuthorizationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvoiceDefaultArgs instead
+     */
+    export type InvoiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvoiceDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

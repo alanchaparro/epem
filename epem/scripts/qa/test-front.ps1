@@ -15,6 +15,8 @@ function Check-200($url, $name){
 Check-200 'http://localhost:3000/login' 'Página /login responde 200'
 Check-200 'http://localhost:3000/patients' 'Página /patients responde 200 (HTML)'
 Check-200 'http://localhost:3000/insurers' 'Página /insurers responde 200 (HTML)'
+Check-200 'http://localhost:3000/orders' 'Página /orders responde 200 (HTML)'
+Check-200 'http://localhost:3000/authorizations' 'Página /authorizations responde 200 (HTML)'
 
 New-Item -Force -ItemType Directory -Path "$PSScriptRoot/../../docs/qa" | Out-Null
 $jsonPath = "$PSScriptRoot/../../docs/qa/front-results.json"

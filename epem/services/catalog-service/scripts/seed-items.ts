@@ -1,36 +1,65 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
-import { PrismaClient } from '../generated/client';
+import { PrismaClient, Prisma } from '../generated/client';
 
-// Carga .env raíz
-const candidates = [path.resolve(__dirname, '../../../.env'), path.resolve(process.cwd(), '../../.env'), path.resolve(process.cwd(), '.env')];
-for (const p of candidates) { if (fs.existsSync(p)) dotenv.config({ path: p }); }
+const candidates = [
+  path.resolve(__dirname, '../../../.env'),
+  path.resolve(process.cwd(), '../../.env'),
+  path.resolve(process.cwd(), '.env'),
+];
+for (const candidate of candidates) {
+  if (fs.existsSync(candidate)) {
+    dotenv.config({ path: candidate });
+  }
+}
 
 const prisma = new PrismaClient();
 
+const items: Array<[string, string, number]> = [
+  ['GUA01', 'Consulta de guardia', 3000],
+  ['LAB01', 'Laboratorio basico', 5500],
+  ['LAB02', 'Laboratorio avanzado', 9000],
+  ['RX01', 'Radiografia simple', 4500],
+  ['RX02', 'Radiografia contrastada', 8000],
+  ['ECG01', 'Electrocardiograma', 3500],
+  ['ECO01', 'Ecografia abdominal', 12000],
+  ['ECO02', 'Ecografia doppler', 16000],
+  ['FAR01', 'Medicamentos kit emergencia', 2000],
+  ['ENF01', 'Curaciones y enfermeria', 2500],
+  ['AMB01', 'Traslado ambulatorio', 20000],
+  ['AMB02', 'Traslado urgente', 40000],
+  ['OXI01', 'Oxigenoterapia', 3000],
+  ['TER01', 'Terapia respiratoria', 5000],
+  ['VAC01', 'Vacunacion', 3500],
+];
+
 async function main() {
-  const count = await prisma.serviceItem.count();
-  if (count > 0) { console.log(`ServiceItem ya tiene ${count} registros. Omitiendo seed.`); return; }
-  const items = [
-    ['GUA01','Consulta de guardia',3000],
-    ['LAB01','Laboratorio básico',5500],
-    ['LAB02','Laboratorio avanzado',9000],
-    ['RX01','Radiografía simple',4500],
-    ['RX02','Radiografía contrastada',8000],
-    ['ECG01','Electrocardiograma',3500],
-    ['ECO01','Ecografía abdominal',12000],
-    ['ECO02','Ecografía doppler',16000],
-    ['FAR01','Medicamentos (kit emergencia)',2000],
-    ['ENF01','Curaciones y enfermería',2500],
-    ['AMB01','Traslado ambulatorio',20000],
-    ['AMB02','Traslado urgente',40000],
-    ['OXI01','Oxigenoterapia',3000],
-    ['TER01','Terapia respiratoria',5000],
-    ['VAC01','Vacunación',3500],
-  ];
-  await prisma.serviceItem.createMany({ data: items.map(([code,name,price]) => ({ code: code as string, name: name as string, basePrice: price as number })) });
-  console.log('Seed de catálogo (15 prestaciones) completado.');
+  for (const [code, name, price] of items) {
+    await prisma.serviceItem.upsert({
+      where: { code },
+      update: {
+        name,
+        basePrice: new Prisma.Decimal(price),
+        active: true,
+      },
+      create: {
+        code,
+        name,
+        basePrice: new Prisma.Decimal(price),
+        active: true,
+      },
+    });
+  }
+
+  console.log('Seed de catalogo sincronizado (15 prestaciones).');
 }
 
-main().catch((e) => { console.error(e); process.exitCode = 1; }).finally(async () => { await prisma.$disconnect(); });
+main()
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

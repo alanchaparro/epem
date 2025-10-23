@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 
-/** Servicio de dominio para Pacientes (CRUD + búsqueda paginada). */
+/** Servicio de dominio para Pacientes (CRUD + busqueda paginada). */
 @Injectable()
 export class PatientsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -24,12 +24,12 @@ export class PatientsService {
     };
     try {
       return await this.prisma.patient.create({ data });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-        // DNI único duplicado
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        // DNI unico duplicado
         throw new ConflictException('Paciente ya existe (DNI duplicado)');
       }
-      throw e;
+      throw error;
     }
   }
 
@@ -49,22 +49,28 @@ export class PatientsService {
       const takeClamped = Math.max(0, Math.min(100, take ?? 20));
       const skipClamped = Math.max(0, skip ?? 0);
       // Consultas separadas para evitar issues de transacciones en algunos setups de MySQL/MariaDB
-      const items = await this.prisma.patient.findMany({ where, skip: skipClamped, take: takeClamped, orderBy: { id: 'asc' } });
+      const items = await this.prisma.patient.findMany({
+        where,
+        skip: skipClamped,
+        take: takeClamped,
+        orderBy: { id: 'asc' },
+      });
       const total = await this.prisma.patient.count({ where });
       return { items, total, skip: skipClamped, take: takeClamped };
-    } catch (e) {
-      // Log para diagnóstico en dev
+    } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error en PatientsService.findAll', e);
-      throw e;
+      console.error('Error en PatientsService.findAll', error);
+      throw error;
     }
   }
 
   async findOne(id: string) {
     const item = await this.prisma.patient.findUnique({ where: { id } });
-    if (!item) throw new NotFoundException('Paciente no encontrado');
-    return item;
+    if (!item) {
+      throw new NotFoundException('Paciente no encontrado');
     }
+    return item;
+  }
 
   async update(id: string, dto: UpdatePatientDto) {
     await this.findOne(id);

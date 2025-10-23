@@ -33,3 +33,44 @@ model Coverage {
   @@index([insurerId])
   @@index([serviceItemId])
 }
+
+model Authorization {
+  id            String              @id @default(uuid())
+  orderId       String
+  patientId     String
+  serviceItemId String
+  insurerId     String?
+  status        AuthorizationStatus @default(PENDING)
+  authCode      String?
+  requestedAt   DateTime            @default(now())
+  resolvedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([status])
+  @@index([orderId])
+}
+
+enum AuthorizationStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model Invoice {
+  id        String        @id @default(uuid())
+  patientId String
+  orderId   String        @unique
+  total     Decimal       @db.Decimal(10, 2)
+  status    InvoiceStatus @default(DRAFT)
+  issuedAt  DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+}

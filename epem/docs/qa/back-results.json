@@ -32,13 +32,13 @@
     {
         "name":  "Listado de pacientes devuelve items",
         "expected":  true,
-        "actual":  1,
+        "actual":  5,
         "pass":  true
     },
     {
         "name":  "Crear paciente devuelve id",
         "expected":  true,
-        "actual":  "0c86ce72-430c-4a3b-8db9-8a406e687354",
+        "actual":  "a17f36a5-5017-4569-b346-407073a1f2c1",
         "pass":  true
     },
     {
@@ -60,33 +60,27 @@
         "pass":  true
     },
     {
-        "name":  "Crear prestaciÃ³n devuelve id",
+        "name":  "Crear prestacion devuelve id",
         "expected":  true,
-        "actual":  "ccc40d42-bb12-4ca3-a9cd-594cff65b91f",
+        "actual":  "31d97e17-ae26-4aa2-8e31-024e1142581b",
         "pass":  true
     },
     {
-        "name":  "Editar prestaciÃ³n actualiza nombre",
+        "name":  "Editar prestacion actualiza nombre",
         "expected":  "Prestacion QA Edit",
         "actual":  "Prestacion QA Edit",
         "pass":  true
     },
     {
-        "name":  "Crear prestaciÃ³n duplicada devuelve 409",
+        "name":  "Crear prestacion duplicada devuelve 409",
         "expected":  409,
         "actual":  409,
         "pass":  true
     },
     {
-        "name":  "Billing-service /health responde",
-        "expected":  true,
-        "actual":  true,
-        "pass":  true
-    },
-    {
         "name":  "Crear aseguradora devuelve id",
         "expected":  true,
-        "actual":  "3709a0bd-dddf-452f-bb66-2be53196c6a0",
+        "actual":  "c6963563-5bfb-43c2-9773-cd80a92832ff",
         "pass":  true
     },
     {
@@ -96,15 +90,9 @@
         "pass":  true
     },
     {
-        "name":  "Listado de coberturas responde",
-        "expected":  true,
-        "actual":  0,
-        "pass":  true
-    },
-    {
         "name":  "Crear cobertura devuelve id",
         "expected":  true,
-        "actual":  "13b2b95a-e5bf-4139-8044-4a1e37ed99d2",
+        "actual":  "74acd84b-46fd-4e43-95a2-a56d06ed4a3c",
         "pass":  true
     },
     {
@@ -117,6 +105,72 @@
         "name":  "Editar cobertura actualiza requiresAuth",
         "expected":  true,
         "actual":  false,
+        "pass":  true
+    },
+    {
+        "name":  "Crear orden con requiereAuth deja status PENDING",
+        "expected":  "PENDING",
+        "actual":  "PENDING",
+        "pass":  true
+    },
+    {
+        "name":  "Listado de ordenes incluye orden pendiente",
+        "expected":  true,
+        "actual":  true,
+        "pass":  true
+    },
+    {
+        "name":  "Se creo autorizacion vinculada a la orden",
+        "expected":  true,
+        "actual":  "0c2d8e64-4182-40de-8518-17c16e5f9df6",
+        "pass":  true
+    },
+    {
+        "name":  "Aprobar autorizacion actualiza status",
+        "expected":  "APPROVED",
+        "actual":  "APPROVED",
+        "pass":  true
+    },
+    {
+        "name":  "Orden pasa a IN_PROGRESS tras aprobacion",
+        "expected":  true,
+        "actual":  true,
+        "pass":  true
+    },
+    {
+        "name":  "Completar orden actualiza status",
+        "expected":  "COMPLETED",
+        "actual":  "COMPLETED",
+        "pass":  true
+    },
+    {
+        "name":  "Crear factura deja status DRAFT",
+        "expected":  "DRAFT",
+        "actual":  "DRAFT",
+        "pass":  true
+    },
+    {
+        "name":  "Factura calcula total",
+        "expected":  true,
+        "actual":  "5000",
+        "pass":  true
+    },
+    {
+        "name":  "Listado de facturas incluye factura en DRAFT",
+        "expected":  true,
+        "actual":  true,
+        "pass":  true
+    },
+    {
+        "name":  "Emitir factura actualiza estado",
+        "expected":  "ISSUED",
+        "actual":  "ISSUED",
+        "pass":  true
+    },
+    {
+        "name":  "Emitir factura setea issuedAt",
+        "expected":  true,
+        "actual":  "2025-10-23T20:01:56.655Z",
         "pass":  true
     }
 ]

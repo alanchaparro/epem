@@ -12,6 +12,9 @@ Servicio de pacientes (NestJS + Prisma + MySQL).
 - `GET /patients/:id` → detalle
 - `PATCH /patients/:id` → editar parcialmente
   - Notas: intentar crear con un DNI existente devuelve 409 (conflict) con mensaje claro
+- `POST /orders` → crear orden clínica (requiere `patientId`, `serviceItemId`, `insurerId?`, `requiresAuth?`)
+- `GET /orders?status=` → listar órdenes (filtrado opcional por estado)
+- `PATCH /orders/:id/status` → transición de estado (`PENDING`, `IN_PROGRESS`, `COMPLETED`)
 
 ## Ejemplos
 ```bash
@@ -22,6 +25,11 @@ curl "http://localhost:3010/patients?q=perez&skip=0&take=20"
 curl -X POST http://localhost:3010/patients \
   -H 'Content-Type: application/json' \
   -d '{"dni":"20333444","firstName":"Juan","lastName":"Pérez","birthDate":"1990-01-01"}'
+
+# Crear orden con autorización
+curl -X POST http://localhost:3010/orders \
+  -H 'Content-Type: application/json' \
+  -d '{"patientId":"<uuid>","serviceItemId":"LAB01","insurerId":"<uuid>","requiresAuth":true}'
 ```
 
 ## Seed

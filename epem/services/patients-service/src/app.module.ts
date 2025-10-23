@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PatientsController } from './patients/patients.controller';
 import { PatientsService } from './patients/patients.service';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PatientsService } from './patients/patients.service';
       envFilePath: ['../../.env', '.env'],
     }),
     PrismaModule,
+    OrdersModule,
   ],
   controllers: [AppController, PatientsController],
   providers: [AppService, PatientsService],

@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { InsurersModule } from './insurers/insurers.module';
 import { CoverageModule } from './coverage/coverage.module';
+import { AuthorizationsModule } from './authorizations/authorizations.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { CoverageModule } from './coverage/coverage.module';
     PrismaModule,
     InsurersModule,
     CoverageModule,
+    AuthorizationsModule,
+    InvoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

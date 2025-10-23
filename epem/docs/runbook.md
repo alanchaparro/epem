@@ -33,3 +33,4 @@ pnpm dev:reset # libera puertos y arranca backend + web
 ## Bootstrap (DB + tablas + seeds)
 - PowerShell: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/bootstrap.ps1`
 - Crea BDs si faltan (según .env), hace `prisma db push` en cada servicio y ejecuta seeds.
+- Diagnóstico rápido: `powershell -File scripts/db/ensure-tables.ps1`

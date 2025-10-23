@@ -6,18 +6,27 @@ Resultado: "PASS"
 - [PASS] Patients-service /health responde - expected: True actual: http://localhost:3010/health
 - [PASS] Login devuelve accessToken - expected: True actual: [REDACTED]
 - [PASS] Perfil /users/me email coincide - expected: admin@epem.local actual: admin@epem.local
-- [PASS] Listado de pacientes devuelve items - expected: True actual: 1
-- [PASS] Crear paciente devuelve id - expected: True actual: 0c86ce72-430c-4a3b-8db9-8a406e687354
+- [PASS] Listado de pacientes devuelve items - expected: True actual: 5
+- [PASS] Crear paciente devuelve id - expected: True actual: a17f36a5-5017-4569-b346-407073a1f2c1
 - [PASS] Patch de paciente actualiza phone - expected: 11-0000-0000 actual: 11-0000-0000
 - [PASS] Crear paciente duplicado devuelve 409 - expected: 409 actual: 409
 - [PASS] Catalog-service /health responde - expected: True actual: True
-- [PASS] Crear prestaciÃ³n devuelve id - expected: True actual: ccc40d42-bb12-4ca3-a9cd-594cff65b91f
-- [PASS] Editar prestaciÃ³n actualiza nombre - expected: Prestacion QA Edit actual: Prestacion QA Edit
-- [PASS] Crear prestaciÃ³n duplicada devuelve 409 - expected: 409 actual: 409
-- [PASS] Billing-service /health responde - expected: True actual: True
-- [PASS] Crear aseguradora devuelve id - expected: True actual: 3709a0bd-dddf-452f-bb66-2be53196c6a0
+- [PASS] Crear prestacion devuelve id - expected: True actual: 31d97e17-ae26-4aa2-8e31-024e1142581b
+- [PASS] Editar prestacion actualiza nombre - expected: Prestacion QA Edit actual: Prestacion QA Edit
+- [PASS] Crear prestacion duplicada devuelve 409 - expected: 409 actual: 409
+- [PASS] Crear aseguradora devuelve id - expected: True actual: c6963563-5bfb-43c2-9773-cd80a92832ff
 - [PASS] Actualizar aseguradora cambia active - expected: True actual: False
-- [PASS] Listado de coberturas responde - expected: True actual: 0
-- [PASS] Crear cobertura devuelve id - expected: True actual: 13b2b95a-e5bf-4139-8044-4a1e37ed99d2
+- [PASS] Crear cobertura devuelve id - expected: True actual: 74acd84b-46fd-4e43-95a2-a56d06ed4a3c
 - [PASS] Editar cobertura actualiza copago - expected: 500 actual: 500
 - [PASS] Editar cobertura actualiza requiresAuth - expected: True actual: False
+- [PASS] Crear orden con requiereAuth deja status PENDING - expected: PENDING actual: PENDING
+- [PASS] Listado de ordenes incluye orden pendiente - expected: True actual: True
+- [PASS] Se creo autorizacion vinculada a la orden - expected: True actual: 0c2d8e64-4182-40de-8518-17c16e5f9df6
+- [PASS] Aprobar autorizacion actualiza status - expected: APPROVED actual: APPROVED
+- [PASS] Orden pasa a IN_PROGRESS tras aprobacion - expected: True actual: True
+- [PASS] Completar orden actualiza status - expected: COMPLETED actual: COMPLETED
+- [PASS] Crear factura deja status DRAFT - expected: DRAFT actual: DRAFT
+- [PASS] Factura calcula total - expected: True actual: 5000
+- [PASS] Listado de facturas incluye factura en DRAFT - expected: True actual: True
+- [PASS] Emitir factura actualiza estado - expected: ISSUED actual: ISSUED
+- [PASS] Emitir factura setea issuedAt - expected: True actual: 2025-10-23T20:01:56.655Z

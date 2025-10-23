@@ -60,4 +60,41 @@ export class BillingProxyController {
   updateCoverage(@Param('id') id: string, @Body() payload: any, @Headers('authorization') authorization?: string) {
     return this.forward('patch', `/coverage/${id}`, payload, authorization);
   }
+
+  @Get('authorizations')
+  listAuthorizations(@Query('status') status?: string, @Headers('authorization') authorization?: string) {
+    const path = status ? `/authorizations?status=${encodeURIComponent(status)}` : '/authorizations';
+    return this.forward('get', path, undefined, authorization);
+  }
+
+  @Post('authorizations')
+  createAuthorization(@Body() payload: any, @Headers('authorization') authorization?: string) {
+    return this.forward('post', '/authorizations', payload, authorization);
+  }
+
+  @Patch('authorizations/:id')
+  updateAuthorization(@Param('id') id: string, @Body() payload: any, @Headers('authorization') authorization?: string) {
+    return this.forward('patch', `/authorizations/${id}`, payload, authorization);
+  }
+
+  @Get('invoices')
+  listInvoices(@Query('status') status?: string, @Headers('authorization') authorization?: string) {
+    const path = status ? `/invoices?status=${encodeURIComponent(status)}` : '/invoices';
+    return this.forward('get', path, undefined, authorization);
+  }
+
+  @Get('invoices/:id')
+  getInvoice(@Param('id') id: string, @Headers('authorization') authorization?: string) {
+    return this.forward('get', `/invoices/${id}`, undefined, authorization);
+  }
+
+  @Post('invoices')
+  createInvoice(@Body() payload: any, @Headers('authorization') authorization?: string) {
+    return this.forward('post', '/invoices', payload, authorization);
+  }
+
+  @Patch('invoices/:id/issue')
+  issueInvoice(@Param('id') id: string, @Headers('authorization') authorization?: string) {
+    return this.forward('patch', `/invoices/${id}/issue`, {}, authorization);
+  }
 }

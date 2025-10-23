@@ -94,6 +94,7 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
   node scripts/qa/test-front.js   # frontend
   powershell -File scripts/qa/check-db.ps1  # estructura de BD (en Windows)
   ```
+- **DB helper (Windows):** `powershell -File scripts/db/ensure-tables.ps1` verifica que todas las bases/tablas existan y ejecuta `prisma:push` si hace falta.
 - **Gate:** `powershell -File scripts/qa/require-pass.ps1` devuelve 0 cuando todos los reportes están en PASS.
 
 ## Seeds disponibles

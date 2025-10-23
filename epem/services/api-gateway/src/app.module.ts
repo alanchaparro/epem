@@ -8,9 +8,10 @@ import { UsersProxyController } from './users/users.controller';
 import { PatientsProxyController } from './patients/patients.controller';
 import { CatalogProxyController } from './catalog/catalog.controller';
 import { BillingProxyController } from './billing/billing.controller';
+import { OrdersProxyController } from './orders/orders.controller';
 
 /**
- * Módulo raíz del API Gateway.
+ * Modulo raiz del API Gateway.
  * - Carga variables de entorno (.env) a nivel global.
  * - Registra HttpModule para comunicarse con los microservicios.
  * - Declara controladores de salud, auth, users-proxy y patients-proxy.
@@ -23,7 +24,15 @@ import { BillingProxyController } from './billing/billing.controller';
     }),
     HttpModule,
   ],
-  controllers: [AppController, AuthController, UsersProxyController, PatientsProxyController, CatalogProxyController, BillingProxyController],
+  controllers: [
+    AppController,
+    AuthController,
+    UsersProxyController,
+    PatientsProxyController,
+    CatalogProxyController,
+    BillingProxyController,
+    OrdersProxyController,
+  ],
   providers: [AppService],
 })
 export class AppModule {}

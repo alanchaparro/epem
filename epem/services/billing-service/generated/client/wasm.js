@@ -141,15 +141,56 @@ exports.Prisma.CoverageScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AuthorizationScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  patientId: 'patientId',
+  serviceItemId: 'serviceItemId',
+  insurerId: 'insurerId',
+  status: 'status',
+  authCode: 'authCode',
+  requestedAt: 'requestedAt',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvoiceScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  orderId: 'orderId',
+  total: 'total',
+  status: 'status',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.AuthorizationStatus = exports.$Enums.AuthorizationStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  DENIED: 'DENIED'
+};
+
+exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED'
+};
 
 exports.Prisma.ModelName = {
   Insurer: 'Insurer',
-  Coverage: 'Coverage'
+  Coverage: 'Coverage',
+  Authorization: 'Authorization',
+  Invoice: 'Invoice'
 };
 
 /**

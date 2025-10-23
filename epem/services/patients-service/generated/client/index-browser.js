@@ -138,6 +138,17 @@ exports.Prisma.PatientScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  serviceItemId: 'serviceItemId',
+  insurerId: 'insurerId',
+  requiresAuth: 'requiresAuth',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -147,10 +158,15 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+};
 
 exports.Prisma.ModelName = {
-  Patient: 'Patient'
+  Patient: 'Patient',
+  Order: 'Order'
 };
 
 /**

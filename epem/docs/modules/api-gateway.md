@@ -13,8 +13,10 @@ Orquesta las peticiones del frontend hacia los microservicios y centraliza auten
 - `POST /auth/logout` → borra cookie httpOnly
 - `GET /users/me` → proxy a users-service
 - `GET/POST/PATCH /patients/*` → proxy a patients-service
+- `GET/POST/PATCH /orders*` → proxy a patients-service
 - `GET/POST/PATCH /billing/insurers*` → proxy a billing-service
 - `GET/POST/PATCH /billing/coverage*` → proxy a billing-service
+- `GET/POST/PATCH /billing/authorizations*` → proxy a billing-service
 
 ## Ejemplos
 

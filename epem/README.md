@@ -28,46 +28,82 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
    └─ todo.md             # Hoja de ruta (opcional)
 ```
 
-## Primer uso
-1. Copiar variables de entorno:
+## Primer uso (desarrolladores)
+1. **Clonar y copiar variables:**
    ```bash
+   git clone https://github.com/alanchaparro/epem.git
+   cd epem
    cp .env.example .env
    ```
-2. Instalar dependencias y preparar Prisma (crea antes la base `epem_users` en MySQL):
+   - Ajusta en `.env` las credenciales de MySQL (`root`/contraseña) y las URLs si usás host distinto.
+
+2. **Instalar dependencias (monorepo completo):**
    ```bash
-   pnpm install
+   pnpm install --no-frozen-lockfile
+   ```
+
+3. **Preparar bases y Prisma (una sola vez):**
+   ```bash
+   # Usuarios (crea BD y migraciones)
    pnpm --filter @epem/users-service prisma:generate
    pnpm --filter @epem/users-service prisma:migrate:dev --name init
    pnpm --filter @epem/users-service seed:admin
+
+   # Pacientes (si aún no existe la BD)
+   pnpm --filter @epem/patients-service prisma:generate
+   pnpm --filter @epem/patients-service prisma:push
+   pnpm --filter @epem/patients-service seed:patients
+
+   # Catálogo (requiere MySQL y credenciales válidas)
+   pnpm --filter @epem/catalog-service prisma:generate
+   pnpm --filter @epem/catalog-service prisma:push
+   pnpm --filter @epem/catalog-service seed:items
    ```
-3. Levantar todo el entorno (gateway, microservicios y frontend):
+
+4. **Levantar servicios y frontend:**
    ```bash
-   pnpm dev
+   pnpm dev:reset   # cierra procesos en puertos 3000/3010/3020/3030/3040 y arranca todo
    ```
-   - Gateway: http://localhost:4000/health  
-   - Pacientes: http://localhost:3010/health  
-   - Usuarios: http://localhost:3020/api/health  
-   - Catálogo: http://localhost:3030/health  
-   - Facturación: http://localhost:3040/health  
+   Servicios disponibles:
+   - Gateway: http://localhost:4000/health
+   - Pacientes: http://localhost:3010/health
+   - Usuarios: http://localhost:3020/api/health
+   - Catálogo: http://localhost:3030/health
+   - Facturación: http://localhost:3040/health
    - Frontend: http://localhost:3000
 
-> Nota: Cada servicio usa `dotenv` y las variables definidas en `.env`. Ajusta puertos o credenciales MySQL según tu entorno local.
+> ¿Problemas? Verifica que MySQL esté corriendo y que cada BD exista. `scripts/qa/run-all.ps1` puede automatizar el bootstrap completo en Windows.
 
 ## Scripts útiles
 - `pnpm dev:backend` – Solo microservicios y gateway.
 - `pnpm dev:web` – Solo interfaz Next.js.
 - `pnpm build` – Compila todos los proyectos.
 - `pnpm --filter @epem/users-service prisma:migrate` – Aplica migraciones en entornos productivos.
-- `pnpm git:hooks` – Configura los hooks de git para bloquear pushes sin aprobación.
+- `pnpm git:hooks` – Configura hooks locales opcionales (desactivados por defecto).
 
-## Política de push (aprobación requerida)
-- Este repo bloquea `git push` por defecto mediante un hook (`.githooks/pre-push`).
-- Para permitir UN push:
-  - Opción rápida: `echo ok > .allow-push && git push`
-  - Windows: `powershell -File scripts/approve-push.ps1` y luego `git push`
-  - Unix: `bash scripts/approve-push.sh && git push`
-  - Temporal: `ALLOW_PUSH=1 git push`
-- Instalar hooks (una vez): `pnpm git:hooks`
+## QA & Diagnóstico
+- **Batería completa (Windows):**
+  ```powershell
+  powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/run-all.ps1
+  ```
+  - Genera reportes en `docs/qa/back-report.md`, `docs/qa/front-report.md`, `docs/qa/db-report.md`.
+  - Si algo falla, revisa cada archivo `.md` y el JSON correspondiente para detalles.
+- **Checks individuales (multiplataforma):**
+  ```bash
+  node scripts/qa/test-back.js    # backend
+  node scripts/qa/test-front.js   # frontend
+  powershell -File scripts/qa/check-db.ps1  # estructura de BD (en Windows)
+  ```
+- **Gate:** `powershell -File scripts/qa/require-pass.ps1` devuelve 0 cuando todos los reportes están en PASS.
+
+## Seeds disponibles
+- Usuarios (admin): `pnpm --filter @epem/users-service seed:admin`
+- Pacientes demo: `pnpm --filter @epem/patients-service seed:patients`
+- Catálogo demo: `pnpm --filter @epem/catalog-service seed:items`
+
+## Seguridad
+- Antes de desplegar, reemplaza los valores por defecto de `JWT_SECRET` y `JWT_REFRESH_SECRET` en `.env`.
+- No compartas `.env` ni los tokens generados en los reportes; los scripts QA ya redactan el accessToken, pero evita subir reportes con datos sensibles.
 
 ### Módulo de usuarios
 - Endpoint de login: `POST /api/auth/login` (body `{ "email": "admin@epem.local", "password": "admin123" }`).

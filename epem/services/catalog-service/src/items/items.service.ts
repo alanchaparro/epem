@@ -44,6 +44,7 @@ export class ItemsService {
         typeof active === 'boolean' ? { active } : {},
       ],
     };
+    // Ejecutamos findMany + count dentro de la misma transacción para mantener paginación consistente.
     const [items, total] = await this.prisma.$transaction([
       this.prisma.serviceItem.findMany({ where, skip, take, orderBy: { name: 'asc' } }),
       this.prisma.serviceItem.count({ where }),

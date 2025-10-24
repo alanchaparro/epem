@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-test('sin sesiÃ³n redirige /patients -> /login', async ({ page }) => {
+if (process.env.E2E !== 'true') {
+  test.skip(true, 'Requires E2E stack running');
+}
+
+test('sin sesión redirige /patients -> /login', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.removeItem('epem_token');
   });
-  const res = await page.goto('/patients');
-  // Next puede responder 200 con HTML de /login; comprobamos la URL y el heading
+  await page.goto('/patients');
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('heading', { name: 'Acceso administrativo' })).toBeVisible();
 });
-

@@ -3,12 +3,16 @@ import { test, expect } from '@playwright/test';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@epem.local';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
+if (process.env.E2E !== 'true') {
+  test.skip(true, 'Requires E2E stack running');
+}
+
 test('login, navegar a pacientes, crear y editar', async ({ page }) => {
   // Login
   await page.goto('/login');
-  await page.getByLabel('Correo electrÃ³nico').fill(ADMIN_EMAIL);
-  await page.getByLabel('ContraseÃ±a').fill(ADMIN_PASSWORD);
-  await page.getByRole('button', { name: 'Iniciar sesiÃ³n' }).click();
+  await page.getByLabel('Correo electrónico').fill(ADMIN_EMAIL);
+  await page.getByLabel('Contraseña').fill(ADMIN_PASSWORD);
+  await page.getByRole('button', { name: 'Iniciar sesión' }).click();
   await expect(page.getByRole('heading', { name: 'Perfil' })).toBeVisible();
 
   // Ir a pacientes
@@ -24,9 +28,9 @@ test('login, navegar a pacientes, crear y editar', async ({ page }) => {
   await page.locator('input[type="date"]').fill('1999-01-01');
   await page.getByRole('button', { name: 'Guardar' }).click();
 
-  // Redirige a detalle, editar telÃ©fono y guardar
+  // Redirige a detalle, editar teléfono y guardar
   await expect(page).toHaveURL(/\/patients\//);
-  await page.getByLabel('TelÃ©fono').fill('11-1234-5678');
+  await page.getByLabel('Teléfono').fill('11-1234-5678');
   await page.getByRole('button', { name: 'Guardar cambios' }).click();
   await expect(page.getByText('Cambios guardados')).toBeVisible();
 
@@ -37,4 +41,3 @@ test('login, navegar a pacientes, crear y editar', async ({ page }) => {
   await page.getByRole('button', { name: 'Buscar' }).click();
   await expect(page.getByText(dni)).toBeVisible();
 });
-

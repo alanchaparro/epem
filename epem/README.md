@@ -78,11 +78,14 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
 
 ## Scripts Ãºtiles
 - `pnpm dev:backend` â€“ Solo microservicios y gateway.
-- `pnpm dev:web` â€“ Solo interfaz Next.js.
-- `pnpm build` â€“ Compila todos los proyectos.
-- `pnpm --filter @epem/nest-common build` â€“ Recompila decoradores/guards compartidos (útil si tocaste `libs/nest-common`).
-- `pnpm --filter @epem/users-service prisma:migrate` â€“ Aplica migraciones en entornos productivos.
-- `pnpm git:hooks` â€“ Configura hooks locales opcionales (desactivados por defecto).
+  - `pnpm dev:web` â€“ Solo interfaz Next.js.
+  - `pnpm build` â€“ Compila todos los proyectos.
+  - `pnpm --filter @epem/nest-common build` â€“ Recompila decoradores/guards compartidos (útil si tocaste `libs/nest-common`).
+  - `pnpm lint` â€“ Chequeo de tipos en todos los paquetes.
+  - `pnpm test` â€“ Ejecuta Jest en los servicios y la suite smoke de Playwright (tests e2e se habilitan con `E2E=true`).
+  - `pnpm qa:backend` â€“ QA backend multiplataforma (wrapper Node de `scripts/qa/test-back.js`).
+  - `pnpm --filter @epem/users-service prisma:migrate` â€“ Aplica migraciones en entornos productivos.
+  - `pnpm git:hooks` â€“ Configura hooks locales opcionales (desactivados por defecto).
 
 ## QA & DiagnÃ³stico
 - **BaterÃ­a completa (Windows):**

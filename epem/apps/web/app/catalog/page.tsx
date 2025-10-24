@@ -2,27 +2,19 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { apiFetch } from '@/lib/api';
+import { useCatalogList } from '@/lib/hooks';
+import { ServiceItem } from '@/lib/types';
 
-type Item = { id: string; code: string; name: string; basePrice: string | number; active: boolean };
-type CatalogResponse = { items: Item[]; total: number };
 const PAGE = 20;
 
 export default function CatalogListPage() {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(0);
-  const { data, isFetching } = useQuery<CatalogResponse>({
-    queryKey: ['catalog', { q, page }],
-    queryFn: async () => {
-      const params = new URLSearchParams({ q, skip: String(page * PAGE), take: String(PAGE) });
-      try { return await apiFetch<CatalogResponse>(`/api/catalog/items?${params.toString()}`); }
-      catch (e: any) { toast.error(e?.message ?? 'Error al cargar catálogo'); throw e; }
-    }
-  });
+  const { data, isFetching, error } = useCatalogList({ q, page, take: PAGE });
+  if (error) toast.error((error as Error)?.message ?? 'Error al cargar catálogo');
 
-  const items: Item[] = data?.items ?? [];
+  const items: ServiceItem[] = data?.items ?? [];
   const total: number = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE));
 
@@ -70,3 +62,4 @@ export default function CatalogListPage() {
     </main>
   );
 }
+

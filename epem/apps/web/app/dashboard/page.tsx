@@ -1,36 +1,10 @@
 ﻿'use client';
 
 import { useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { apiFetch } from '@/lib/api';
+import { useDashboardMetrics } from '@/lib/hooks';
 
-interface PatientsMetrics {
-  patients?: { total?: number };
-  orders?: { total?: number; byStatus?: Record<string, number> };
-}
-
-interface CatalogMetrics {
-  serviceItems?: { total?: number; active?: number; inactive?: number };
-}
-
-interface BillingMetrics {
-  insurers?: { total?: number };
-  coverages?: { total?: number };
-  authorizations?: { total?: number; byStatus?: Record<string, number> };
-  invoices?: { total?: number; byStatus?: Record<string, number> };
-}
-
-interface UsersMetrics {
-  users?: { total?: number; byRole?: Record<string, number> };
-}
-
-interface DashboardMetrics {
-  patients: PatientsMetrics;
-  catalog: CatalogMetrics;
-  billing: BillingMetrics;
-  users: UsersMetrics;
-}
+// Tipado y validación se centralizan en apps/web/lib/types.ts
 
 const statusColors: Record<string, string> = {
   PENDING: 'text-amber-300',
@@ -53,10 +27,7 @@ function StatCard({ title, value, helper }: { title: string; value: number; help
 }
 
 export default function DashboardPage() {
-  const metricsQuery = useQuery<DashboardMetrics>({
-    queryKey: ['dashboard-metrics'],
-    queryFn: () => apiFetch<DashboardMetrics>('/api/analytics/metrics'),
-  });
+  const metricsQuery = useDashboardMetrics();
 
   useEffect(() => {
     if (metricsQuery.isError) {

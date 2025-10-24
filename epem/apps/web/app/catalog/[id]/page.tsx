@@ -1,12 +1,13 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiFetch } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { useServiceItem } from '@/lib/hooks';
 
 const schema = z.object({
   code: z.string().min(2).max(32),
@@ -20,7 +21,7 @@ type Item = FormValues & { id?: string };
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>() as any;
-  const { data, isFetching } = useQuery<Item>({ queryKey: ['item', id], queryFn: () => apiFetch<Item>(`/api/catalog/items/${id}`), enabled: !!id });
+  const { data, isFetching } = useServiceItem(id);
   const form = useForm<FormValues>({ resolver: zodResolver(schema), values: data ? {
     code: data.code ?? '', name: data.name ?? '', description: data.description ?? '', basePrice: Number(data.basePrice ?? 0), active: data.active ?? true
   } : undefined });

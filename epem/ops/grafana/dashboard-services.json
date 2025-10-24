@@ -1,0 +1,40 @@
+{
+  "title": "EPEM - Estado de Servicios",
+  "uid": "epem-services",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Healthchecks",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "PROME"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max_over_time((up{job=~\"api-gateway|patients-service|catalog-service|billing-service|users-service\"})[5m])",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"]}
+      }
+    },
+    {
+      "id": 2,
+      "title": "Consumo de memoria prom-client",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "PROME"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(process_resident_memory_bytes{service=~\"api-gateway|patients-service|catalog-service|billing-service|users-service\"}) by (service)",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    }
+  ]
+}
+

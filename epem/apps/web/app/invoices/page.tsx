@@ -2,22 +2,14 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
-
-type Invoice = {
-  id: string;
-  patientId: string;
-  orderId: string;
-  total: string | number;
-  status: 'DRAFT' | 'ISSUED';
-  issuedAt?: string | null;
-  createdAt: string;
-};
+import { useInvoices } from '@/lib/hooks';
+import { Invoice } from '@/lib/types';
 
 const statuses = ['ALL', 'DRAFT', 'ISSUED'];
 
@@ -33,13 +25,7 @@ export default function InvoicesPage() {
     defaultValues: { orderId: '' },
   });
 
-  const invoicesQuery = useQuery<Invoice[]>({
-    queryKey: ['invoices', filter],
-    queryFn: () => {
-      const query = filter !== 'ALL' ? `?status=${filter}` : '';
-      return apiFetch<Invoice[]>(`/api/billing/invoices${query}`);
-    },
-  });
+  const invoicesQuery = useInvoices(filter as any);
 
   const invoices = useMemo(() => invoicesQuery.data ?? [], [invoicesQuery.data]);
 

@@ -1,4 +1,4 @@
-﻿# Billing Service
+# Billing Service
 
 Microservicio NestJS responsable de aseguradoras, coberturas, autorizaciones y facturación preliminar.
 
@@ -8,8 +8,8 @@ Microservicio NestJS responsable de aseguradoras, coberturas, autorizaciones y f
 
 ## Endpoints
 - `GET /health`
-- `GET /metrics` → totales de aseguradoras/coberturas + breakdown de autorizaciones/invoices por estado
-- `GET /metrics/prometheus` → métricas Prometheus (público).
+- `GET /metrics` — totales de aseguradoras/coberturas + breakdown de autorizaciones/invoices por estado
+- `GET /metrics/prometheus` — métricas Prometheus (público)
 - `GET /insurers` / `POST /insurers` / `PATCH /insurers/:id`
 - `GET /coverage?insurerId=` / `POST /coverage` / `PATCH /coverage/:id`
 - `GET /authorizations?status=` / `POST /authorizations` / `PATCH /authorizations/:id`
@@ -17,7 +17,7 @@ Microservicio NestJS responsable de aseguradoras, coberturas, autorizaciones y f
 
 ## Ejemplos
 ```bash
-# Métricas (requiere rol billing)
+# Métricas (requiere rol BILLING)
 curl -H 'x-user-role: BILLING' http://localhost:3040/metrics
 
 # Alta de factura (orden debe estar COMPLETED)
@@ -29,3 +29,4 @@ curl -X POST http://localhost:3040/invoices \
 
 ## Seeds
 - `pnpm --filter @epem/billing-service seed:insurers`
+

@@ -30,7 +30,7 @@ async function waitHttpOk(url, timeoutSec = 15) {
 async function postJson(url, body, headers = {}) {
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
+    headers: { 'Content-Type': 'application/json', ...(globalThis.__qaAuthHeader || {}), ...headers },
     body: JSON.stringify(body),
   });
   const text = await res.text();
@@ -42,7 +42,7 @@ async function postJson(url, body, headers = {}) {
 async function patchJson(url, body, headers = {}) {
   const res = await fetch(url, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...headers },
+    headers: { 'Content-Type': 'application/json', ...(globalThis.__qaAuthHeader || {}), ...headers },
     body: JSON.stringify(body),
   });
   const text = await res.text();
@@ -52,7 +52,7 @@ async function patchJson(url, body, headers = {}) {
 }
 
 async function getJson(url, headers = {}) {
-  const res = await fetch(url, { headers });
+  const res = await fetch(url, { headers: { ...(globalThis.__qaAuthHeader || {}), ...headers } });
   const text = await res.text();
   let json;
   try { json = JSON.parse(text); } catch { json = null; }
@@ -88,6 +88,9 @@ async function main() {
   try {
     const { status, json, text } = await postJson(`${API_GATEWAY_URL}/auth/login`, { email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
     token = json && json.accessToken ? json.accessToken : null;
+    if (token) {
+      globalThis.__qaAuthHeader = { Authorization: `Bearer ${token}` };
+    }
     push('Login devuelve accessToken', !!token, true, token || `status=${status}`);
   } catch (e) {
     push('Login devuelve accessToken', false, true, e.message);
@@ -158,4 +161,3 @@ main().catch(err => {
   saveReport();
   process.exit(1);
 });
-

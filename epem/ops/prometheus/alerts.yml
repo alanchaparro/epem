@@ -1,0 +1,17 @@
+groups:
+  - name: epem-alerts
+    rules:
+      - alert: LatencyHigh
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service=~"api-gateway|patients-service|billing-service|catalog-service|users-service"}[5m])) by (le, service)) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'Latencia p95 > 1s en {{ $labels.service }}'
+      - alert: ErrorRateHigh
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (service) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: 'Más de 5 respuestas 5xx/min en {{ $labels.service }}'

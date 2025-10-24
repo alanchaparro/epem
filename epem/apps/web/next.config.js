@@ -6,6 +6,14 @@ const gatewayUrl = process.env.API_GATEWAY_URL ?? 'http://localhost:4000';
 
 const nextConfig = {
   reactStrictMode: true,
+  // Reduce noisy webpack persistent cache warnings on Windows/PNPM by using in-memory cache in dev
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = { type: 'memory' };
+      config.infrastructureLogging = { level: 'error' };
+    }
+    return config;
+  },
   async rewrites() {
     return [
       { source: '/auth/:path*', destination: `${gatewayUrl}/auth/:path*` },

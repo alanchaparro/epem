@@ -16,11 +16,31 @@ export class InvoicesService {
     return this.prisma.invoice.findMany({
       where: status ? { status } : undefined,
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        patientId: true,
+        orderId: true,
+        total: true,
+        status: true,
+        issuedAt: true,
+        createdAt: true,
+      },
     });
   }
 
   async findOne(id: string) {
-    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
+    const invoice = await this.prisma.invoice.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        patientId: true,
+        orderId: true,
+        total: true,
+        status: true,
+        issuedAt: true,
+        createdAt: true,
+      },
+    });
     if (!invoice) {
       throw new NotFoundException('Factura no encontrada');
     }
@@ -47,6 +67,15 @@ export class InvoicesService {
           total,
           status: InvoiceStatus.DRAFT,
         },
+        select: {
+          id: true,
+          patientId: true,
+          orderId: true,
+          total: true,
+          status: true,
+          issuedAt: true,
+          createdAt: true,
+        },
       });
       return invoice;
     } catch (error: any) {
@@ -58,19 +87,22 @@ export class InvoicesService {
   }
 
   async issue(id: string) {
-    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
-    if (!invoice) {
-      throw new NotFoundException('Factura no encontrada');
-    }
-    if (invoice.status === InvoiceStatus.ISSUED) {
-      return invoice;
-    }
-    return this.prisma.invoice.update({
-      where: { id },
-      data: {
-        status: InvoiceStatus.ISSUED,
-        issuedAt: new Date(),
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const invoice = await tx.invoice.findUnique({
+        where: { id },
+        select: { id: true, status: true, issuedAt: true, patientId: true, orderId: true, total: true, createdAt: true },
+      });
+      if (!invoice) {
+        throw new NotFoundException('Factura no encontrada');
+      }
+      if (invoice.status === InvoiceStatus.ISSUED) {
+        return invoice;
+      }
+      return tx.invoice.update({
+        where: { id },
+        data: { status: InvoiceStatus.ISSUED, issuedAt: new Date() },
+        select: { id: true, status: true, issuedAt: true, patientId: true, orderId: true, total: true, createdAt: true },
+      });
     });
   }
 
@@ -144,7 +176,10 @@ export class InvoicesService {
   private async calculateTotal(insurerId: string | undefined, serviceItemId: string, basePrice: Prisma.Decimal) {
     let total = basePrice;
     if (insurerId) {
-      const coverage = await this.prisma.coverage.findFirst({ where: { insurerId, serviceItemId } });
+      const coverage = await this.prisma.coverage.findFirst({
+        where: { insurerId, serviceItemId },
+        select: { copay: true },
+      });
       if (coverage) {
         total = total.minus(coverage.copay);
         if (total.lessThan(0)) {

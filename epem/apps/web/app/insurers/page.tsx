@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
+import { useInsurers } from '@/lib/hooks';
+import type { Insurer } from '@/lib/types';
 
 const schema = z.object({
   name: z.string().min(2, 'Nombre requerido').max(120),
@@ -15,14 +17,11 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-type Insurer = { id: string; name: string; planCode: string; active: boolean; createdAt: string };
+
 
 export default function InsurersPage() {
   const queryClient = useQueryClient();
-  const { data, isFetching } = useQuery<Insurer[]>({
-    queryKey: ['insurers'],
-    queryFn: () => apiFetch<Insurer[]>('/api/billing/insurers'),
-  });
+  const { data, isFetching } = useInsurers();
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { name: '', planCode: '', active: true } });
 

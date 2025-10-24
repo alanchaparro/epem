@@ -1,4 +1,4 @@
-﻿# Catalog Service
+# Catalog Service
 
 Microservicio NestJS con Prisma que gestiona las prestaciones clínicas (catálogo).
 
@@ -8,12 +8,12 @@ Microservicio NestJS con Prisma que gestiona las prestaciones clínicas (catálo
 
 ## Endpoints
 - `GET /health`
-- `GET /metrics` → totales/activos/inactivos de prestaciones
-- `GET /metrics/prometheus` → métricas Prometheus (público).
-- `POST /catalog/items` → crear prestación (code, name, basePrice, active?, description?)
-- `GET /catalog/items?q=&skip=&take=&active=` → listar/buscar con filtros
+- `GET /metrics` — totales/activos/inactivos de prestaciones
+- `GET /metrics/prometheus` — métricas Prometheus (público)
+- `POST /catalog/items` — crear prestación (code, name, basePrice, active?, description?)
+- `GET /catalog/items?q=&skip=&take=&active=` — listar/buscar con filtros
 - `GET /catalog/items/:id`
-- `PATCH /catalog/items/:id` → actualizar campos permitidos
+- `PATCH /catalog/items/:id` — actualizar campos permitidos
 
 ## Ejemplos
 ```bash
@@ -27,3 +27,4 @@ curl -X POST http://localhost:3030/catalog/items \
 
 ## Seeds
 - `pnpm --filter @epem/catalog-service seed:items` (idempotente; usa upsert)
+

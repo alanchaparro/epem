@@ -2,12 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { apiFetch } from '@/lib/api';
-
-type Patient = { id: string; dni: string; firstName: string; lastName: string; birthDate: string };
-type PatientsResponse = { items: Patient[]; total: number };
+import { usePatientsList } from '@/lib/hooks';
+import { PatientsResponse, Patient } from '@/lib/types';
 
 const PAGE_SIZE = 20;
 
@@ -15,21 +12,10 @@ export default function PatientsListPage() {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(0);
 
-  const { data, isFetching } = useQuery<PatientsResponse>({
-    queryKey: ['patients', { q, page }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (q) params.set('q', q);
-      params.set('skip', String(page * PAGE_SIZE));
-      params.set('take', String(PAGE_SIZE));
-      try {
-        return await apiFetch<PatientsResponse>(`/api/patients?${params.toString()}`);
-      } catch (e: any) {
-        toast.error(e?.message ?? 'Error al cargar pacientes');
-        throw e;
-      }
-    },
-  });
+  const { data, isFetching, error } = usePatientsList({ q, page, take: PAGE_SIZE });
+  if (error) {
+    toast.error((error as Error)?.message ?? 'Error al cargar pacientes');
+  }
 
   const items: Patient[] = data?.items ?? [];
   const total: number = data?.total ?? 0;
@@ -62,7 +48,7 @@ export default function PatientsListPage() {
             <tr key={p.id} className="border-t border-slate-800 hover:bg-slate-900/40">
               <td className="px-3 py-2 text-sm">{p.dni}</td>
               <td className="px-3 py-2 text-sm"><Link className="text-emerald-300 underline" href={`/patients/${p.id}`}>{p.lastName}, {p.firstName}</Link></td>
-              <td className="px-3 py-2 text-sm">{new Date(p.birthDate).toLocaleDateString()}</td>
+              <td className="px-3 py-2 text-sm">{new Date(p.birthDate || '').toLocaleDateString()}</td>
             </tr>
           ))}
           {items.length === 0 && !isFetching && (

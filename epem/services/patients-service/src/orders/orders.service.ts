@@ -13,7 +13,7 @@ export class OrdersService {
   constructor(private readonly prisma: PrismaService, private readonly http: HttpService) {}
 
   async create(dto: CreateOrderDto) {
-    const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId } });
+    const patient = await this.prisma.patient.findUnique({ where: { id: dto.patientId }, select: { id: true } });
     if (!patient) {
       throw new NotFoundException('Paciente no encontrado');
     }
@@ -28,6 +28,15 @@ export class OrdersService {
         insurerId: dto.insurerId,
         requiresAuth,
         status: initialStatus,
+      },
+      select: {
+        id: true,
+        patientId: true,
+        serviceItemId: true,
+        insurerId: true,
+        requiresAuth: true,
+        status: true,
+        createdAt: true,
       },
     });
 
@@ -60,14 +69,32 @@ export class OrdersService {
     return this.prisma.order.findMany({
       where: status ? { status } : undefined,
       orderBy: { createdAt: 'desc' },
-      include: { patient: { select: { id: true, firstName: true, lastName: true } } },
+      select: {
+        id: true,
+        patientId: true,
+        serviceItemId: true,
+        insurerId: true,
+        requiresAuth: true,
+        status: true,
+        createdAt: true,
+        patient: { select: { id: true, firstName: true, lastName: true } },
+      },
     });
   }
 
   async findOne(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
-      include: { patient: { select: { id: true, firstName: true, lastName: true } } },
+      select: {
+        id: true,
+        patientId: true,
+        serviceItemId: true,
+        insurerId: true,
+        requiresAuth: true,
+        status: true,
+        createdAt: true,
+        patient: { select: { id: true, firstName: true, lastName: true } },
+      },
     });
     if (!order) {
       throw new NotFoundException('Orden no encontrada');
@@ -76,22 +103,32 @@ export class OrdersService {
   }
 
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
-    const order = await this.prisma.order.findUnique({ where: { id } });
-    if (!order) {
-      throw new NotFoundException('Orden no encontrada');
-    }
+    const result = await this.prisma.$transaction(async (tx) => {
+      const current = await tx.order.findUnique({ where: { id }, select: { id: true, status: true } });
+      if (!current) {
+        throw new NotFoundException('Orden no encontrada');
+      }
 
-    const nextStatus = dto.status;
-    if (order.status === OrderStatus.COMPLETED && nextStatus !== OrderStatus.COMPLETED) {
-      throw new BadRequestException('No se puede modificar una orden completada');
-    }
+      const nextStatus = dto.status;
+      if (current.status === OrderStatus.COMPLETED && nextStatus !== OrderStatus.COMPLETED) {
+        throw new BadRequestException('No se puede modificar una orden completada');
+      }
 
-    return this.prisma.order.update({
-      where: { id },
-      data: {
-        status: nextStatus,
-      },
+      return tx.order.update({
+        where: { id },
+        data: { status: nextStatus },
+        select: {
+          id: true,
+          patientId: true,
+          serviceItemId: true,
+          insurerId: true,
+          requiresAuth: true,
+          status: true,
+          createdAt: true,
+        },
+      });
     });
+    return result;
   }
 }
 

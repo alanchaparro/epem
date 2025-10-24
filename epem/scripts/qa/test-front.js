@@ -5,6 +5,8 @@ const path = require('path');
 try { require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }); } catch {}
 
 const WEB_URL = process.env.WEB_URL || 'http://localhost:3000';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@epem.local';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const results = [];
 const push = (name, pass, expected, actual) => results.push({ name, pass: !!pass, expected, actual });
 
@@ -15,6 +17,18 @@ async function check200(url) {
   } catch (e) {
     return false;
   }
+}
+
+async function postJson(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch { json = null; }
+  return { status: res.status, json, text };
 }
 
 function saveReport() {
@@ -37,6 +51,13 @@ async function main() {
   push('Página /login responde 200', loginOk, 200, loginOk ? 200 : 'no-conecta');
   const patientsOk = await check200(`${WEB_URL}/patients`);
   push('Página /patients responde 200 (HTML)', patientsOk, 200, patientsOk ? 200 : 'no-conecta');
+  try {
+    const { status, json } = await postJson(`${WEB_URL}/auth/login`, { email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+    const ok = !!json?.accessToken && (status === 200 || status === 201);
+    push('Front login (rewrite /auth/login) devuelve accessToken', ok, true, ok ? 'token' : `status=${status}`);
+  } catch (e) {
+    push('Front login (rewrite /auth/login) devuelve accessToken', false, true, e?.message);
+  }
   saveReport();
 }
 
@@ -45,4 +66,3 @@ main().catch(err => {
   saveReport();
   process.exit(1);
 });
-

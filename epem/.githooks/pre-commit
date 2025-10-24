@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Simple secret/leak guard before committing
+set -euo pipefail
+
+RED='\033[0;31m'; NC='\033[0m'
+die(){ echo -e "${RED}[pre-commit] $*${NC}"; exit 1; }
+
+# Block obviously sensitive files from being committed
+forbidden_globs=(
+  '*.pem' '*.key' 'id_rsa*' 'id_dsa*' '*.p12' '*.pfx'
+  '.env' '.env.*' '!*.example' '*.keystore' '*service-account*.json' '*google-credentials*.json'
+)
+
+staged=$(git diff --cached --name-only)
+if [[ -z "$staged" ]]; then exit 0; fi
+
+# File-level checks
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  # allow examples
+  if [[ "$f" == *.example ]]; then continue; fi
+  case "$f" in
+    *.pem|*.key|id_rsa*|id_dsa*|*.p12|*.pfx|*.keystore|*.pfx|*.p12)
+      die "Archivo sensible detectado: $f";;
+    .env|.env.*)
+      die "No commitear archivos .env reales: $f (usa *.example)";;
+    *service-account*.json|*google-credentials*.json)
+      die "Credenciales cloud detectadas: $f";;
+  esac
+done < <(printf '%s\n' "$staged")
+
+# Content-level checks in staged diff
+patterns=(
+  'AWS_ACCESS_KEY_ID|AKIA[0-9A-Z]{16}'
+  '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+  'password\s*=' 'passwd\s*='
+  'JWT_SECRET\s*=' 'JWT_REFRESH_SECRET\s*='
+  'DATABASE_URL\s*=|SERVICE_DATABASE_URL\s*='
+  'GOOGLE_PRIVATE_KEY|client_secret'
+)
+
+diff=$(git diff --cached)
+for p in "${patterns[@]}"; do
+  if echo "$diff" | grep -E -i -q "$p"; then
+    die "Posible secreto en el diff que coincide con: $p"
+  fi
+done
+
+exit 0
+

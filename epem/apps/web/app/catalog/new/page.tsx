@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
+import type { ServiceItem } from '@/lib/types';
 
 const schema = z.object({
   code: z.string().min(2).max(32),
@@ -17,7 +18,7 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-type Item = FormValues & { id: string };
+type Item = ServiceItem;
 
 export default function NewItemPage() {
   const router = useRouter();

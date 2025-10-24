@@ -1,4 +1,4 @@
-# Despliegue en VPS (Linux)
+﻿# Despliegue en VPS (Linux)
 
 Objetivo: migrar desde XAMPP local a un VPS Linux (Ubuntu/Debian) con servicios estables, TLS y QA PASS.
 
@@ -96,7 +96,7 @@ WantedBy=multi-user.target
 ```
 
 `/etc/systemd/system/epem-patients.service`
-`/etc/systemd/system/epem-catalog.service` → copiar y cambiar WorkingDirectory/Descripción.
+`/etc/systemd/system/epem-catalog.service` â†’ copiar y cambiar WorkingDirectory/Descripción.
 
 `/etc/systemd/system/epem-web.service` (Next.js en modo start):
 ```
@@ -180,4 +180,5 @@ Criterio: reportes `docs/qa/*-report.md` en PASS y `docs/qa/sign-off.md` complet
 - JWT secretos fuertes en `.env` (no commitear)
 - UFW: permitir 22/80/443
 - Fail2ban recomendado
+
 

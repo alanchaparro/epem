@@ -1,4 +1,4 @@
-﻿# API Gateway
+# API Gateway
 
 Orquesta las peticiones del frontend hacia los microservicios y centraliza autenticación.
 
@@ -9,18 +9,18 @@ Orquesta las peticiones del frontend hacia los microservicios y centraliza auten
 
 ## Endpoints
 
-- `GET /health` → estado del gateway (público)
-- `POST /auth/login` → reenvía al users-service; setea cookie httpOnly `epem_rt`
-- `POST /auth/refresh` → renueva access token desde la cookie (rota refresh token)
-- `POST /auth/logout` → borra la cookie httpOnly conservando flags de dominio/origen
-- `GET /users/me` → proxy a users-service
-- `GET/POST/PATCH /patients/*` → proxy a patients-service (roles: ADMIN/SUPERVISOR/DOCTOR/NURSE/STAFF)
-- `GET/POST/PATCH /orders*` → proxy a patients-service (roles: ADMIN/SUPERVISOR/DOCTOR/NURSE/STAFF/BILLING)
-- `GET/POST/PATCH /billing/*` → proxy a billing-service (roles: ADMIN/BILLING)
-- `GET/POST/PATCH /catalog/items*` → proxy a catalog-service (roles: ADMIN/SUPERVISOR/DOCTOR/BILLING)
-- `GET /analytics/metrics` → agrega métricas de todos los servicios para el dashboard
-- `GET /analytics/prometheus` → exporta métricas agregadas en formato Prometheus (público, uso interno).
-- `GET /metrics/prometheus` → métricas Prometheus propias del gateway.
+- `GET /health` — estado del gateway (público)
+- `POST /auth/login` — reenvía al users-service; setea cookie httpOnly `epem_rt`
+- `POST /auth/refresh` — renueva access token desde la cookie (rota refresh token)
+- `POST /auth/logout` — borra la cookie httpOnly conservando flags de dominio/origen
+- `GET /users/me` — proxy a users-service
+- `GET/POST/PATCH /patients/*` — proxy a patients-service (roles: ADMIN/SUPERVISOR/DOCTOR/NURSE/STAFF)
+- `GET/POST/PATCH /orders*` — proxy a patients-service (roles: ADMIN/SUPERVISOR/DOCTOR/NURSE/STAFF/BILLING)
+- `GET/POST/PATCH /billing/*` — proxy a billing-service (roles: ADMIN/BILLING)
+- `GET/POST/PATCH /catalog/items*` — proxy a catalog-service (roles: ADMIN/SUPERVISOR/DOCTOR/BILLING)
+- `GET /analytics/metrics` — agrega métricas de todos los servicios para el dashboard
+- `GET /analytics/prometheus` — exporta métricas agregadas en formato Prometheus (público, uso interno)
+- `GET /metrics/prometheus` — métricas Prometheus propias del gateway
 
 ## Ejemplos
 
@@ -40,3 +40,4 @@ Dashboard metrics (requiere token Bearer):
 ```bash
 curl -H 'Authorization: Bearer <token>' http://localhost:4000/analytics/metrics
 ```
+

@@ -1,11 +1,13 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { apiFetch } from '@/lib/api';
+import { useOrders } from '@/lib/hooks';
+import { OrderStatus, Order } from '@/lib/types';
 
 const schema = z.object({
   patientId: z.string().min(1, 'Paciente requerido'),
@@ -16,23 +18,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-type Order = {
-  id: string;
-  patientId: string;
-  serviceItemId: string;
-  insurerId?: string | null;
-  requiresAuth: boolean;
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
-  createdAt: string;
-  patient?: { id: string; firstName: string; lastName: string };
-};
-
 export default function OrdersPage() {
   const queryClient = useQueryClient();
-  const { data, isFetching } = useQuery<Order[]>({
-    queryKey: ['orders'],
-    queryFn: () => apiFetch<Order[]>('/api/orders'),
-  });
+  const { data, isFetching } = useOrders();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -51,7 +39,7 @@ export default function OrdersPage() {
   });
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
       apiFetch(`/api/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
     onError: (error: any) => toast.error(error?.message ?? 'Error al actualizar estado'),

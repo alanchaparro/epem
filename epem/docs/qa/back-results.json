@@ -1,188 +1,56 @@
-﻿[
-    {
-        "name":  "Gateway /health responde",
-        "expected":  true,
-        "actual":  "http://localhost:4000/health",
-        "pass":  true
-    },
-    {
-        "name":  "Users-service /api/health responde",
-        "expected":  true,
-        "actual":  "http://localhost:3020/api/health",
-        "pass":  true
-    },
-    {
-        "name":  "Patients-service /health responde",
-        "expected":  true,
-        "actual":  "http://localhost:3010/health",
-        "pass":  true
-    },
-    {
-        "name":  "Login devuelve accessToken",
-        "expected":  true,
-        "actual":  "[REDACTED]",
-        "pass":  true
-    },
-    {
-        "name":  "Perfil /users/me email coincide",
-        "expected":  "admin@epem.local",
-        "actual":  "admin@epem.local",
-        "pass":  true
-    },
-    {
-        "name":  "Listado de pacientes devuelve items",
-        "expected":  true,
-        "actual":  5,
-        "pass":  true
-    },
-    {
-        "name":  "Crear paciente devuelve id",
-        "expected":  true,
-        "actual":  "012936d6-a9d3-48b1-9d72-9f4af7da8622",
-        "pass":  true
-    },
-    {
-        "name":  "Patch de paciente actualiza phone",
-        "expected":  "11-0000-0000",
-        "actual":  "11-0000-0000",
-        "pass":  true
-    },
-    {
-        "name":  "Crear paciente duplicado devuelve 409",
-        "expected":  409,
-        "actual":  409,
-        "pass":  true
-    },
-    {
-        "name":  "Catalog-service /health responde",
-        "expected":  true,
-        "actual":  true,
-        "pass":  true
-    },
-    {
-        "name":  "Crear prestacion devuelve id",
-        "expected":  true,
-        "actual":  "c4854da4-dbc6-4fb9-802c-4e2870e15505",
-        "pass":  true
-    },
-    {
-        "name":  "Editar prestacion actualiza nombre",
-        "expected":  "Prestacion QA Edit",
-        "actual":  "Prestacion QA Edit",
-        "pass":  true
-    },
-    {
-        "name":  "Crear prestacion duplicada devuelve 409",
-        "expected":  409,
-        "actual":  409,
-        "pass":  true
-    },
-    {
-        "name":  "Crear aseguradora devuelve id",
-        "expected":  true,
-        "actual":  "634b7b80-cc4d-4835-a237-f56d8c92327a",
-        "pass":  true
-    },
-    {
-        "name":  "Actualizar aseguradora cambia active",
-        "expected":  true,
-        "actual":  false,
-        "pass":  true
-    },
-    {
-        "name":  "Crear cobertura devuelve id",
-        "expected":  true,
-        "actual":  "d56c81e6-950e-4e12-ba2b-419af4164082",
-        "pass":  true
-    },
-    {
-        "name":  "Editar cobertura actualiza copago",
-        "expected":  500,
-        "actual":  500,
-        "pass":  true
-    },
-    {
-        "name":  "Editar cobertura actualiza requiresAuth",
-        "expected":  true,
-        "actual":  false,
-        "pass":  true
-    },
-    {
-        "name":  "Crear orden con requiereAuth deja status PENDING",
-        "expected":  "PENDING",
-        "actual":  "PENDING",
-        "pass":  true
-    },
-    {
-        "name":  "Listado de ordenes incluye orden pendiente",
-        "expected":  true,
-        "actual":  true,
-        "pass":  true
-    },
-    {
-        "name":  "Se creo autorizacion vinculada a la orden",
-        "expected":  true,
-        "actual":  "60e1ac9b-7512-430b-a2eb-33e5316b4088",
-        "pass":  true
-    },
-    {
-        "name":  "Aprobar autorizacion actualiza status",
-        "expected":  "APPROVED",
-        "actual":  "APPROVED",
-        "pass":  true
-    },
-    {
-        "name":  "Orden pasa a IN_PROGRESS tras aprobacion",
-        "expected":  true,
-        "actual":  true,
-        "pass":  true
-    },
-    {
-        "name":  "Completar orden actualiza status",
-        "expected":  "COMPLETED",
-        "actual":  "COMPLETED",
-        "pass":  true
-    },
-    {
-        "name":  "Crear factura deja status DRAFT",
-        "expected":  "DRAFT",
-        "actual":  "DRAFT",
-        "pass":  true
-    },
-    {
-        "name":  "Factura calcula total",
-        "expected":  true,
-        "actual":  "5000",
-        "pass":  true
-    },
-    {
-        "name":  "Listado de facturas incluye factura en DRAFT",
-        "expected":  true,
-        "actual":  true,
-        "pass":  true
-    },
-    {
-        "name":  "Emitir factura actualiza estado",
-        "expected":  "ISSUED",
-        "actual":  "ISSUED",
-        "pass":  true
-    },
-    {
-        "name":  "Emitir factura setea issuedAt",
-        "expected":  true,
-        "actual":  "2025-10-24T10:37:08.247Z",
-        "pass":  true
-    },
-    {
-        "name":  "Dashboard metricas disponibles",
-        "expected":  true,
-        "actual":  26,
-        "pass":  true
-    },
-    {
-        "name":  "Prometheus agregador expone metricas",
-        "expected":  true,
-        "actual":  200,
-        "pass":  true
-    }
+[
+  {
+    "name": "Gateway /health responde",
+    "pass": true,
+    "expected": true,
+    "actual": "http://localhost:4000/health"
+  },
+  {
+    "name": "Users-service /api/health responde",
+    "pass": true,
+    "expected": true,
+    "actual": "http://localhost:3020/api/health"
+  },
+  {
+    "name": "Patients-service /health responde",
+    "pass": false,
+    "expected": true,
+    "actual": "http://localhost:3010/health"
+  },
+  {
+    "name": "Login devuelve accessToken",
+    "pass": true,
+    "expected": true,
+    "actual": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NGVhYTU1Zi0xMjFjLTQ1MGUtYTdlMi1jNDE1NDA2N2NhMTgiLCJlbWFpbCI6ImFkbWluQGVwZW0ubG9jYWwiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjEzMzk4MTUsImV4cCI6MTc2MTM0MDcxNX0.pdoPRBuj2AjL_IZuggzgkg8dXrz4jzVUB4LCYwhSPQA"
+  },
+  {
+    "name": "Perfil /users/me email coincide",
+    "pass": true,
+    "expected": "admin@epem.local",
+    "actual": "admin@epem.local"
+  },
+  {
+    "name": "Listado de pacientes devuelve items",
+    "pass": false,
+    "expected": true,
+    "actual": "status=500"
+  },
+  {
+    "name": "Crear paciente devuelve id",
+    "pass": false,
+    "expected": true,
+    "actual": "status=500"
+  },
+  {
+    "name": "Crear paciente duplicado devuelve 409",
+    "pass": false,
+    "expected": 409,
+    "actual": 500
+  },
+  {
+    "name": "Catalog-service /health responde",
+    "pass": false,
+    "expected": true,
+    "actual": false
+  }
 ]

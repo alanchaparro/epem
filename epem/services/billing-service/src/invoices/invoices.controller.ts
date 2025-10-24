@@ -2,8 +2,10 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceStatus } from '../../generated/client';
+import { Roles } from '@epem/nest-common';
 
 @Controller('invoices')
+@Roles('ADMIN', 'BILLING')
 export class InvoicesController {
   constructor(private readonly invoices: InvoicesService) {}
 
@@ -29,3 +31,5 @@ export class InvoicesController {
     return this.invoices.issue(id);
   }
 }
+
+

@@ -1,4 +1,4 @@
-param()
+﻿param()
 . "$PSScriptRoot/utils.ps1"
 
 $results = @()
@@ -13,6 +13,7 @@ function Check-200($url, $name){
 }
 
 Check-200 'http://localhost:3000/login' 'Página /login responde 200'
+Check-200 'http://localhost:3000/dashboard' 'Página /dashboard responde 200 (HTML)'
 Check-200 'http://localhost:3000/patients' 'Página /patients responde 200 (HTML)'
 Check-200 'http://localhost:3000/insurers' 'Página /insurers responde 200 (HTML)'
 Check-200 'http://localhost:3000/orders' 'Página /orders responde 200 (HTML)'

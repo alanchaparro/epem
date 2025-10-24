@@ -1,3 +1,6 @@
+param(
+  [switch]$NoStart
+)
 $ErrorActionPreference = 'SilentlyContinue'
 
 function Kill-Port {
@@ -25,6 +28,11 @@ foreach ($p in $ports) { Kill-Port -Port $p }
 
 # Asegura que códigos de salida de findstr/netstat no corten el script
 $global:LASTEXITCODE = 0
+
+if ($NoStart) {
+  Write-Host "Puertos liberados. No se inicia pnpm dev porque se usó -NoStart." -ForegroundColor Yellow
+  return
+}
 
 Write-Host "Levantando servicios y frontend (pnpm dev)" -ForegroundColor Green
 pnpm -r --parallel --filter=./services/* --filter=@epem/web run dev

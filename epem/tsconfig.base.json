@@ -5,7 +5,10 @@
     "lib": ["es2021"],
     "moduleResolution": "node",
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@epem/nest-common": ["libs/nest-common/dist/index", "libs/nest-common/src/index"],
+      "@epem/nest-common/*": ["libs/nest-common/dist/*", "libs/nest-common/src/*"]
+    },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

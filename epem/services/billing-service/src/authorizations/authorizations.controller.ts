@@ -3,8 +3,10 @@ import { AuthorizationsService } from './authorizations.service';
 import { CreateAuthorizationDto } from './dto/create-authorization.dto';
 import { UpdateAuthorizationDto } from './dto/update-authorization.dto';
 import { AuthorizationStatus } from '../../generated/client';
+import { Roles } from '@epem/nest-common';
 
 @Controller('authorizations')
+@Roles('ADMIN', 'BILLING')
 export class AuthorizationsController {
   constructor(private readonly authorizations: AuthorizationsService) {}
 
@@ -25,3 +27,5 @@ export class AuthorizationsController {
     return this.authorizations.update(id, dto);
   }
 }
+
+

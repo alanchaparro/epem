@@ -1,12 +1,19 @@
-param([switch]$SkipFront, [switch]$NoBootstrap)
+param(
+  [switch]$SkipFront,
+  [switch]$NoBootstrap,
+  [switch]$RunSeeds
+)
 
 if (-not $NoBootstrap) {
   Write-Host 'QA: Preparando BDs/tablas (bootstrap)...' -ForegroundColor Cyan
   $fix = Join-Path $PSScriptRoot 'bootstrap-fix.ps1'
+  $bootstrapArgs = @()
+  if (-not $RunSeeds) { $bootstrapArgs += '-NoSeeds' }
+
   if (Test-Path $fix) {
-    powershell -NoProfile -ExecutionPolicy Bypass -File $fix -NoSeeds
+    powershell -NoProfile -ExecutionPolicy Bypass -File $fix @bootstrapArgs
   } else {
-    powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot/bootstrap.ps1" -NoSeeds
+    powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot/bootstrap.ps1" @bootstrapArgs
   }
 }
 

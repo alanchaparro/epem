@@ -3,8 +3,10 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrderStatus } from '../../generated/client';
+import { Roles } from '@epem/nest-common';
 
 @Controller('orders')
+@Roles('ADMIN', 'SUPERVISOR', 'DOCTOR', 'NURSE', 'STAFF', 'BILLING')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -30,3 +32,5 @@ export class OrdersController {
     return this.ordersService.updateStatus(id, dto);
   }
 }
+
+

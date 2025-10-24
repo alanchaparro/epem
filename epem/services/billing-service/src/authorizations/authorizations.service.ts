@@ -59,9 +59,16 @@ export class AuthorizationsService {
   private async notifyOrder(orderId: string, status: AuthorizationStatus) {
     const targetStatus = status === AuthorizationStatus.APPROVED ? 'IN_PROGRESS' : 'PENDING';
     await firstValueFrom(
-      this.http.patch(`${PATIENTS_BASE_URL}/orders/${orderId}/status`, {
-        status: targetStatus,
-      }),
+      this.http.patch(
+        `${PATIENTS_BASE_URL}/orders/${orderId}/status`,
+        {
+          status: targetStatus,
+        },
+        {
+          headers: { 'x-user-role': 'BILLING' },
+        },
+      ),
     );
   }
 }
+

@@ -1,5 +1,6 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Public } from '@epem/nest-common';
 import { catchError, firstValueFrom } from 'rxjs';
 import type { Request, Response } from 'express';
 
@@ -18,7 +19,28 @@ type LoginDto = {
 export class AuthController {
   constructor(private readonly http: HttpService) {}
 
+  private cookieOptions(ttlSeconds?: number) {
+    const secureFlag = process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production';
+    const sameSiteRaw = (process.env.COOKIE_SAMESITE ?? (secureFlag ? 'strict' : 'lax')).toLowerCase();
+    const sameSite = ['strict', 'none', 'lax'].includes(sameSiteRaw)
+      ? (sameSiteRaw as 'strict' | 'none' | 'lax')
+      : ('lax' as const);
+    const domain = process.env.COOKIE_DOMAIN || undefined;
+    const options: Record<string, unknown> = {
+      httpOnly: true,
+      secure: secureFlag,
+      sameSite,
+      domain,
+      path: '/',
+    };
+    if (typeof ttlSeconds === 'number') {
+      options.maxAge = ttlSeconds * 1000;
+    }
+    return options;
+  }
+
   /** Login con email/password. Devuelve accessToken y user. */
+  @Public()
   @Post('login')
   async login(@Body() payload: LoginDto, @Res({ passthrough: true }) res: Response) {
     const rawUrl = process.env.USERS_SERVICE_URL;
@@ -37,22 +59,14 @@ export class AuthController {
     );
     if (data?.refreshToken) {
       const ttl = parseInt(process.env.REFRESH_TOKEN_TTL ?? '604800', 10);
-      const secure = (process.env.NODE_ENV === 'production');
-      const domain = process.env.COOKIE_DOMAIN || undefined;
-      res.cookie('epem_rt', data.refreshToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure,
-        domain,
-        maxAge: ttl * 1000,
-        path: '/',
-      });
+      res.cookie('epem_rt', data.refreshToken, this.cookieOptions(ttl));
       delete data.refreshToken;
     }
     return data;
   }
 
   /** Renueva el access token a partir del refresh token en cookie httpOnly. */
+  @Public()
   @Post('refresh')
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const usersServiceUrl = process.env.USERS_SERVICE_URL ?? 'http://localhost:3020';
@@ -73,16 +87,7 @@ export class AuthController {
     );
     if (data?.refreshToken) {
       const ttl = parseInt(process.env.REFRESH_TOKEN_TTL ?? '604800', 10);
-      const secure = (process.env.NODE_ENV === 'production');
-      const domain = process.env.COOKIE_DOMAIN || undefined;
-      res.cookie('epem_rt', data.refreshToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure,
-        domain,
-        maxAge: ttl * 1000,
-        path: '/',
-      });
+      res.cookie('epem_rt', data.refreshToken, this.cookieOptions(ttl));
       delete data.refreshToken;
     }
     return data;
@@ -91,7 +96,11 @@ export class AuthController {
   /** Elimina la cookie httpOnly del refresh token. */
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.cookie('epem_rt', '', { httpOnly: true, expires: new Date(0), path: '/' });
+    res.cookie('epem_rt', '', {
+      ...this.cookieOptions(),
+      maxAge: 0,
+    });
     return { ok: true };
   }
 }
+

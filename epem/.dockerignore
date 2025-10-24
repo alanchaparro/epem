@@ -1,0 +1,15 @@
+node_modules
+dist
+.next
+pnpm-lock.yaml.prev
+tmp
+temp
+.git
+.vscode
+.idea
+coverage
+logs
+**/*.log
+scripts/qa/back-results.json
+scripts/qa/front-results.json
+docs/qa/*.json

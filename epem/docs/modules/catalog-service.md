@@ -1,32 +1,29 @@
-# Catalog Service
+﻿# Catalog Service
 
-Servicio de catálogo de prestaciones (NestJS + Prisma + MySQL).
+Microservicio NestJS con Prisma que gestiona las prestaciones clínicas (catálogo).
 
 - Puerto: `CATALOG_SERVICE_PORT` (3030 por defecto)
-- Base: `CATALOG_SERVICE_DATABASE_URL` (ej: mysql://root:@localhost:3306/epem)
+- Base: `CATALOG_SERVICE_DATABASE_URL`
+- RBAC: encabezado `x-user-role` con alguno de `[ADMIN, SUPERVISOR, DOCTOR, BILLING]`
 
 ## Endpoints
-- `GET /health` → estado
-- `POST /catalog/items` → crear prestación (code único)
-- `GET /catalog/items?q=&skip=&take=&active=` → listar/buscar con paginación y filtro de activos
-- `GET /catalog/items/:id` → detalle de prestación
-- `PATCH /catalog/items/:id` → editar (name/description/basePrice/active)
+- `GET /health`
+- `GET /metrics` → totales/activos/inactivos de prestaciones
+- `GET /metrics/prometheus` → métricas Prometheus (público).
+- `POST /catalog/items` → crear prestación (code, name, basePrice, active?, description?)
+- `GET /catalog/items?q=&skip=&take=&active=` → listar/buscar con filtros
+- `GET /catalog/items/:id`
+- `PATCH /catalog/items/:id` → actualizar campos permitidos
 
 ## Ejemplos
 ```bash
-# Listado con búsqueda por código/nombre
-curl "http://localhost:3030/catalog/items?q=LAB&skip=0&take=10"
+curl -H 'x-user-role: ADMIN' http://localhost:3030/metrics
 
-# Crear
 curl -X POST http://localhost:3030/catalog/items \
   -H 'Content-Type: application/json' \
-  -d '{"code":"LAB99","name":"Análisis QA","basePrice":1234.50}'
-
-# Editar
-curl -X PATCH http://localhost:3030/catalog/items/<id> \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Análisis QA (edit)","active":false}'
+  -H 'x-user-role: ADMIN' \
+  -d '{"code":"LAB99","name":"Panel especial","basePrice":12345,"active":true}'
 ```
 
 ## Seeds
-- `pnpm --filter @epem/catalog-service seed:items` — carga 15 prestaciones comunes.
+- `pnpm --filter @epem/catalog-service seed:items` (idempotente; usa upsert)

@@ -30,3 +30,4 @@ export class AdminSeederService {
     this.logger.log(`Usuario administrador asegurado (${email}).`);
   }
 }
+

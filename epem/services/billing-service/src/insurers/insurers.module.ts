@@ -4,3 +4,4 @@ import { InsurersService } from './insurers.service';
 
 @Module({ controllers: [InsurersController], providers: [InsurersService] })
 export class InsurersModule {}
+

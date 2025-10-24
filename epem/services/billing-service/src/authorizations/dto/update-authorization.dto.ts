@@ -10,3 +10,4 @@ export class UpdateAuthorizationDto {
   @IsString()
   authCode?: string;
 }
+

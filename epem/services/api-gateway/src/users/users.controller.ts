@@ -30,3 +30,4 @@ export class UsersProxyController {
     return data;
   }
 }
+

@@ -1,53 +1,31 @@
-# Billing Service
+﻿# Billing Service
 
-Servicio de facturación y visaciones (NestJS + Prisma + MySQL).
+Microservicio NestJS responsable de aseguradoras, coberturas, autorizaciones y facturación preliminar.
 
-- Puerto: `BILLING_SERVICE_PORT` (3040 por defecto)
-- Base: `BILLING_SERVICE_DATABASE_URL` (ej: mysql://root:@localhost:3306/epem)
+- Puerto: `BILLING_SERVICE_PORT` (3040)
+- Base: `BILLING_SERVICE_DATABASE_URL`
+- RBAC: requiere `x-user-role` con `[ADMIN, BILLING]`
 
 ## Endpoints
-- `GET /health` → estado del servicio
-- `GET /authorizations?status=` → listar autorizaciones por estado
-- `POST /authorizations` → crear autorización (desde pacientes cuando se crea una orden)
-- `PATCH /authorizations/:id` → aprobar/denegar autorización (actualiza orden en pacientes)
-- `GET /insurers` → lista aseguradoras
-- `GET /insurers/:id` → detalle
-- `POST /insurers` → alta (body: `{ name, planCode, active? }`)
-- `PATCH /insurers/:id` → edición parcial (activar/desactivar, actualizar nombre)
-- `GET /coverage?insurerId=` → coberturas por aseguradora
-- `POST /coverage` → alta (body: `{ insurerId, serviceItemId, copay, requiresAuth? }`)
-- `PATCH /coverage/:id` → edición (copay, requiresAuth, serviceItemId)
-
-Todos los endpoints responden 4xx con mensaje descriptivo cuando la aseguradora o cobertura no existen.
+- `GET /health`
+- `GET /metrics` → totales de aseguradoras/coberturas + breakdown de autorizaciones/invoices por estado
+- `GET /metrics/prometheus` → métricas Prometheus (público).
+- `GET /insurers` / `POST /insurers` / `PATCH /insurers/:id`
+- `GET /coverage?insurerId=` / `POST /coverage` / `PATCH /coverage/:id`
+- `GET /authorizations?status=` / `POST /authorizations` / `PATCH /authorizations/:id`
+- `GET /invoices?status=` / `GET /invoices/:id` / `POST /invoices` / `PATCH /invoices/:id/issue`
 
 ## Ejemplos
 ```bash
-# Listado de aseguradoras
-curl http://localhost:3040/insurers
+# Métricas (requiere rol billing)
+curl -H 'x-user-role: BILLING' http://localhost:3040/metrics
 
-# Crear aseguradora
-curl -X POST http://localhost:3040/insurers \
+# Alta de factura (orden debe estar COMPLETED)
+curl -X POST http://localhost:3040/invoices \
   -H 'Content-Type: application/json' \
-  -d '{"name":"Cobertura QA","planCode":"PLAN-QA","active":true}'
-
-# Crear cobertura
-curl -X POST http://localhost:3040/coverage \
-  -H 'Content-Type: application/json' \
-  -d '{"insurerId":"<uuid>","serviceItemId":"LAB01","copay":450,"requiresAuth":false}'
-
-# Aprobar autorización
-curl -X PATCH http://localhost:3040/authorizations/<id> \
-  -H 'Content-Type: application/json' \
-  -d '{"status":"APPROVED","authCode":"AUTH123"}'
+  -H 'x-user-role: BILLING' \
+  -d '{"orderId":"<uuid>"}'
 ```
 
 ## Seeds
-- `pnpm --filter @epem/billing-service seed:insurers` — crea 3 aseguradoras demo + coberturas básicas.
-
-## Roadmap funcional
-- Próximas fases agregarán órdenes, autorizaciones y facturas sobre esta base (ver fase 4+ de la hoja de ruta).
-
-## Desarrollo local
-- `pnpm --filter @epem/billing-service prisma:generate`
-- `pnpm --filter @epem/billing-service prisma:push`
-- `pnpm --filter @epem/billing-service run dev`
+- `pnpm --filter @epem/billing-service seed:insurers`

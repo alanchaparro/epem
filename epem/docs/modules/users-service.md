@@ -1,6 +1,6 @@
-# Users Service
+﻿# Users Service
 
-Servicio de usuarios y autenticación (NestJS + Prisma + MySQL).
+Servicio de usuarios y autenticaciÃ³n (NestJS + Prisma + MySQL).
 
 - Puerto: `USERS_SERVICE_PORT` (3020 por defecto)
 - Base: `USERS_SERVICE_DATABASE_URL` (ej: mysql://root:@localhost:3306/epem_users)
@@ -11,6 +11,8 @@ Servicio de usuarios y autenticación (NestJS + Prisma + MySQL).
 - `POST /api/auth/refresh` → renueva access token (gateway usa cookie httpOnly)
 - `GET /api/users/me` → perfil del usuario autenticado
 - `POST /api/users` → alta de usuario (requiere rol ADMIN)
+- `GET /api/metrics` → totales de usuarios agrupados por rol (ADMIN/SUPERVISOR)
+- `GET /api/metrics/prometheus` → métricas Prometheus (público).
 
 ## Ejemplos
 ```bash

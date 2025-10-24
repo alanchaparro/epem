@@ -75,7 +75,8 @@ if (-not $mysql) { Write-Error 'mysql.exe no encontrado. Instalar XAMPP o agrega
 $urls = @(
   $envs['USERS_SERVICE_DATABASE_URL'],
   $envs['PATIENTS_SERVICE_DATABASE_URL'],
-  $envs['CATALOG_SERVICE_DATABASE_URL']
+  $envs['CATALOG_SERVICE_DATABASE_URL'],
+  $envs['BILLING_SERVICE_DATABASE_URL']
 )
 
 foreach ($u in $urls) {
@@ -104,20 +105,25 @@ Write-Host 'Ejecutando Prisma db push (crear/actualizar tablas)' -ForegroundColo
 $env:USERS_SERVICE_DATABASE_URL   = $envs['USERS_SERVICE_DATABASE_URL']
 $env:PATIENTS_SERVICE_DATABASE_URL = $envs['PATIENTS_SERVICE_DATABASE_URL']
 $env:CATALOG_SERVICE_DATABASE_URL  = $envs['CATALOG_SERVICE_DATABASE_URL']
+$env:BILLING_SERVICE_DATABASE_URL  = $envs['BILLING_SERVICE_DATABASE_URL']
 
 pushd "$root/services/users-service";    npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
 pushd "$root/services/patients-service"; npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
 pushd "$root/services/catalog-service";  npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
+pushd "$root/services/billing-service";  npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
 
 # Generar clientes Prisma con retry (mitiga EPERM en Windows)
+Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/users-service')
 Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/patients-service')
 Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/catalog-service')
+Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/billing-service')
 
 if (-not $NoSeeds) {
-  Write-Host 'Seeds iniciales (admin, pacientes, catálogo)' -ForegroundColor Green
+  Write-Host 'Seeds iniciales (admin, pacientes, catalogo, aseguradoras)' -ForegroundColor Green
   pnpm --filter @epem/users-service seed:admin
   pnpm --filter @epem/patients-service seed:patients
   pnpm --filter @epem/catalog-service seed:items
+  pnpm --filter @epem/billing-service seed:insurers
 }
 
 Write-Host 'Bootstrap completado.' -ForegroundColor Green

@@ -2,8 +2,10 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { InsurersService } from './insurers.service';
 import { CreateInsurerDto } from './dto/create-insurer.dto';
 import { UpdateInsurerDto } from './dto/update-insurer.dto';
+import { Roles } from '@epem/nest-common';
 
 @Controller('insurers')
+@Roles('ADMIN', 'BILLING')
 export class InsurersController {
   constructor(private readonly insurers: InsurersService) {}
 
@@ -27,3 +29,5 @@ export class InsurersController {
     return this.insurers.update(id, dto);
   }
 }
+
+

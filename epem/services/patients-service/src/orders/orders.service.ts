@@ -39,8 +39,12 @@ export class OrdersService {
         insurerId: dto.insurerId,
       };
       try {
-        await firstValueFrom(this.http.post(`${BILLING_BASE_URL}/authorizations`, payload));
-      } catch (error) {
+        await firstValueFrom(
+          this.http.post(`${BILLING_BASE_URL}/authorizations`, payload, {
+            headers: { 'x-user-role': 'BILLING' },
+          }),
+        );
+      } catch (error: any) {
         // eslint-disable-next-line no-console
         console.error(
           'No fue posible crear autorizacion en billing-service',
@@ -90,3 +94,4 @@ export class OrdersService {
     });
   }
 }
+

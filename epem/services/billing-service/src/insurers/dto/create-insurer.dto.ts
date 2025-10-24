@@ -15,3 +15,4 @@ export class CreateInsurerDto {
   @IsBoolean()
   active?: boolean;
 }
+

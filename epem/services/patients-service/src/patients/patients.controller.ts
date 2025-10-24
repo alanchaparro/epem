@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PatientsService } from './patients.service';
+import { Roles } from '@epem/nest-common';
 
 /**
  * Controlador REST de pacientes.
@@ -12,6 +13,7 @@ import { PatientsService } from './patients.service';
  * - PATCH /patients/:id→ editar parcialmente
  */
 @Controller('patients')
+@Roles('ADMIN', 'SUPERVISOR', 'DOCTOR', 'NURSE', 'STAFF')
 export class PatientsController {
   constructor(private readonly patients: PatientsService) {}
 
@@ -35,3 +37,5 @@ export class PatientsController {
     return this.patients.update(id, dto);
   }
 }
+
+

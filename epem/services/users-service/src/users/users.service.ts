@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import type { Prisma } from '../../generated/client';
+import { Prisma } from '../../generated/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -84,3 +84,4 @@ export class UsersService {
     return toSafeUser(admin);
   }
 }
+

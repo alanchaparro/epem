@@ -18,3 +18,4 @@ export class CreateOrderDto {
   @IsBoolean()
   requiresAuth?: boolean;
 }
+

@@ -2,14 +2,19 @@
 // Rewrites:
 // - Todas las rutas `/api/*` se proxean al Gateway (4000) para evitar colisiones con páginas
 // - Rutas específicas para /auth, /users y /patients
+const gatewayUrl = process.env.API_GATEWAY_URL ?? 'http://localhost:4000';
+
 const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
     return [
-      { source: '/auth/:path*', destination: 'http://localhost:4000/auth/:path*' },
-      { source: '/users/:path*', destination: 'http://localhost:4000/users/:path*' },
-      { source: '/api/:path*', destination: 'http://localhost:4000/:path*' },
-      { source: '/patients/:path*', destination: 'http://localhost:4000/patients/:path*' },
+      { source: '/auth/:path*', destination: `${gatewayUrl}/auth/:path*` },
+      { source: '/users/:path*', destination: `${gatewayUrl}/users/:path*` },
+      { source: '/patients/:path*', destination: `${gatewayUrl}/patients/:path*` },
+      { source: '/orders/:path*', destination: `${gatewayUrl}/orders/:path*` },
+      { source: '/billing/:path*', destination: `${gatewayUrl}/billing/:path*` },
+      { source: '/catalog/:path*', destination: `${gatewayUrl}/catalog/:path*` },
+      { source: '/api/:path*', destination: `${gatewayUrl}/:path*` },
     ];
   },
 };

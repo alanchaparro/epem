@@ -151,7 +151,12 @@ export default function OrdersPage() {
             />
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-300">
-            <input type="checkbox" {...form.register('requiresAuth', { valueAsBoolean: true })} /> Requiere autorizacion
+            <input
+              type="checkbox"
+              checked={form.watch('requiresAuth') ?? false}
+              onChange={(event) => form.setValue('requiresAuth', event.target.checked)}
+            />{' '}
+            Requiere autorizacion
           </label>
           <div className="sm:col-span-2">
             <button

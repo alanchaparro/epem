@@ -49,7 +49,7 @@ export class InvoicesService {
         },
       });
       return invoice;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new BadRequestException('La orden ya tiene una factura generada');
       }
@@ -76,9 +76,13 @@ export class InvoicesService {
 
   private async fetchOrder(orderId: string) {
     try {
-      const { data } = await firstValueFrom(this.http.get(`${PATIENTS_BASE_URL}/orders/${orderId}`));
+      const { data } = await firstValueFrom(
+        this.http.get(`${PATIENTS_BASE_URL}/orders/${orderId}`, {
+          headers: { 'x-user-role': 'BILLING' },
+        }),
+      );
       return data;
-    } catch (error) {
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.error(
         'No se pudo obtener la orden desde patients-service',
@@ -97,15 +101,20 @@ export class InvoicesService {
     };
 
     try {
-      const { data } = await firstValueFrom(this.http.get(`${CATALOG_BASE_URL}/catalog/items/${serviceItemId}`));
+      const { data } = await firstValueFrom(
+        this.http.get(`${CATALOG_BASE_URL}/catalog/items/${serviceItemId}`, {
+          headers: { 'x-user-role': 'BILLING' },
+        }),
+      );
       return parseBasePrice(data);
-    } catch (error) {
+    } catch (error: any) {
       const status = error?.response?.status;
       try {
         if (status === 404) {
           const response = await firstValueFrom(
             this.http.get(`${CATALOG_BASE_URL}/catalog/items`, {
               params: { q: serviceItemId, take: 1 },
+              headers: { 'x-user-role': 'BILLING' },
             }),
           );
           const items = Array.isArray(response.data?.items) ? response.data.items : [];
@@ -115,7 +124,7 @@ export class InvoicesService {
             return parseBasePrice(match);
           }
         }
-      } catch (fallbackError) {
+      } catch (fallbackError: any) {
         // eslint-disable-next-line no-console
         console.error(
           'Fallback de busqueda de prestacion fallo',
@@ -146,3 +155,4 @@ export class InvoicesService {
     return total;
   }
 }
+

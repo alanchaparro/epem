@@ -2,9 +2,11 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemsService } from './items.service';
+import { Roles } from '@epem/nest-common';
 
 // Controlador REST del catálogo en /catalog/items
 @Controller('catalog/items')
+@Roles('ADMIN', 'SUPERVISOR', 'DOCTOR', 'BILLING')
 export class ItemsController {
   constructor(private readonly items: ItemsService) {}
 
@@ -28,4 +30,5 @@ export class ItemsController {
     return this.items.update(id, dto);
   }
 }
+
 

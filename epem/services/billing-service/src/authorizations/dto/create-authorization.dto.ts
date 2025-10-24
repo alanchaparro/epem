@@ -14,3 +14,4 @@ export class CreateAuthorizationDto {
   @IsString()
   insurerId?: string;
 }
+

@@ -11,3 +11,4 @@ import { AuthorizationsService } from './authorizations.service';
   exports: [AuthorizationsService],
 })
 export class AuthorizationsModule {}
+

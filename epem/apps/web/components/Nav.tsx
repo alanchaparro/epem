@@ -39,26 +39,31 @@ export default function Nav() {
           <Link href="/" className="text-lg font-semibold text-slate-100">
             EPEM
           </Link>
-          <div className="ml-4 hidden gap-1 sm:flex">
-            <Link href="/patients" className={linkCls("/patients")}>
-              Pacientes
-            </Link>
-            <Link href="/catalog" className={linkCls("/catalog")}>
-              Catalogo
-            </Link>
-            <Link href="/insurers" className={linkCls("/insurers")}>
-              Aseguradoras
-            </Link>
-            <Link href="/orders" className={linkCls("/orders")}>
-              Ordenes
-            </Link>
-            <Link href="/authorizations" className={linkCls("/authorizations")}>
-              Autorizaciones
-            </Link>
-            <Link href="/invoices" className={linkCls("/invoices")}>
-              Facturas
-            </Link>
-          </div>
+          {authed ? (
+            <div className="ml-4 hidden gap-1 sm:flex">
+              <Link href="/dashboard" className={linkCls("/dashboard")}>
+                Dashboard
+              </Link>
+              <Link href="/patients" className={linkCls("/patients")}>
+                Pacientes
+              </Link>
+              <Link href="/catalog" className={linkCls("/catalog")}>
+                Catalogo
+              </Link>
+              <Link href="/insurers" className={linkCls("/insurers")}>
+                Aseguradoras
+              </Link>
+              <Link href="/orders" className={linkCls("/orders")}>
+                Ordenes
+              </Link>
+              <Link href="/authorizations" className={linkCls("/authorizations")}>
+                Autorizaciones
+              </Link>
+              <Link href="/invoices" className={linkCls("/invoices")}>
+                Facturas
+              </Link>
+            </div>
+          ) : null}
         </div>
         <div className="flex items-center gap-2">
           {!authed ? (

@@ -38,7 +38,7 @@
     {
         "name":  "Crear paciente devuelve id",
         "expected":  true,
-        "actual":  "a07825fc-fc11-4d01-af5c-88541e0e0e9b",
+        "actual":  "012936d6-a9d3-48b1-9d72-9f4af7da8622",
         "pass":  true
     },
     {
@@ -62,7 +62,7 @@
     {
         "name":  "Crear prestacion devuelve id",
         "expected":  true,
-        "actual":  "b5c30cae-2898-4304-b96d-49f069f2c573",
+        "actual":  "c4854da4-dbc6-4fb9-802c-4e2870e15505",
         "pass":  true
     },
     {
@@ -80,7 +80,7 @@
     {
         "name":  "Crear aseguradora devuelve id",
         "expected":  true,
-        "actual":  "c113b4f1-7fcd-4bd5-b373-886622b7a8e6",
+        "actual":  "634b7b80-cc4d-4835-a237-f56d8c92327a",
         "pass":  true
     },
     {
@@ -92,7 +92,7 @@
     {
         "name":  "Crear cobertura devuelve id",
         "expected":  true,
-        "actual":  "e5f1b93f-8f82-46d9-a521-b02bb4aa9135",
+        "actual":  "d56c81e6-950e-4e12-ba2b-419af4164082",
         "pass":  true
     },
     {
@@ -122,7 +122,7 @@
     {
         "name":  "Se creo autorizacion vinculada a la orden",
         "expected":  true,
-        "actual":  "b1851ed8-afcf-42ea-870d-210a55d48566",
+        "actual":  "60e1ac9b-7512-430b-a2eb-33e5316b4088",
         "pass":  true
     },
     {
@@ -170,13 +170,13 @@
     {
         "name":  "Emitir factura setea issuedAt",
         "expected":  true,
-        "actual":  "2025-10-24T04:08:16.849Z",
+        "actual":  "2025-10-24T10:37:08.247Z",
         "pass":  true
     },
     {
         "name":  "Dashboard metricas disponibles",
         "expected":  true,
-        "actual":  25,
+        "actual":  26,
         "pass":  true
     },
     {

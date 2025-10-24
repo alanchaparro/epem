@@ -2,6 +2,7 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AdminSeederService } from './bootstrap/admin-seeder.service';
 import { PrismaService } from './prisma/prisma.service';
@@ -9,7 +10,7 @@ import { PrismaService } from './prisma/prisma.service';
 /**
  * Bootstrap del Users Service.
  * - Global prefix: /api
- * - Pipes de validaciÃ³n para DTOs
+ * - Pipes de validación para DTOs
  * - Ejecuta un seeder para garantizar el usuario ADMIN inicial
  */
 async function bootstrap() {
@@ -17,6 +18,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: origins && origins.length > 0 ? { origin: origins, credentials: true } : { origin: true, credentials: true },
   });
+  app.use(helmet());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

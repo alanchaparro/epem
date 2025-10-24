@@ -83,9 +83,30 @@ foreach ($u in $urls) {
   if ($u) { $cfg = Parse-MySqlUrl -Url $u; if ($cfg) { Ensure-Database -MysqlExe $mysql -Cfg $cfg } }
 }
 
+function Should-GeneratePrismaClient {
+  param([string]$ServicePath)
+  $schemaPath = Join-Path $ServicePath 'prisma/schema.prisma'
+  $generatedSchema = Join-Path $ServicePath 'generated/client/schema.prisma'
+  if (-not (Test-Path $schemaPath)) { return $false }
+  if (-not (Test-Path $generatedSchema)) { return $true }
+  try {
+    $srcTime = (Get-Item $schemaPath).LastWriteTimeUtc
+    $genTime = (Get-Item $generatedSchema).LastWriteTimeUtc
+    return $srcTime -gt $genTime
+  } catch {
+    return $true
+  }
+}
+
 function Invoke-PrismaGenerateWithRetry {
   param([string]$ServicePath, [int]$Max = 3)
   pushd $ServicePath
+  $shouldGenerate = Should-GeneratePrismaClient -ServicePath $ServicePath
+  if (-not $shouldGenerate) {
+    Write-Host "Prisma client en $ServicePath actualizado (sin cambios)." -ForegroundColor DarkGreen
+    popd
+    return
+  }
   for ($i = 1; $i -le $Max; $i++) {
     try {
       $engine = Join-Path $ServicePath 'generated/client/query_engine-windows.dll.node'

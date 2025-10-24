@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Public } from '@epem/nest-common';
 import { catchError, firstValueFrom } from 'rxjs';
 import type { Request, Response } from 'express';
@@ -41,6 +42,7 @@ export class AuthController {
 
   /** Login con email/password. Devuelve accessToken y user. */
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('login')
   async login(@Body() payload: LoginDto, @Res({ passthrough: true }) res: Response) {
     const rawUrl = process.env.USERS_SERVICE_URL;
@@ -67,6 +69,7 @@ export class AuthController {
 
   /** Renueva el access token a partir del refresh token en cookie httpOnly. */
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 300 } })
   @Post('refresh')
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const usersServiceUrl = process.env.USERS_SERVICE_URL ?? 'http://localhost:3020';
@@ -74,6 +77,9 @@ export class AuthController {
     const token = cookies.split(';').map((c) => c.trim()).find((c) => c.startsWith('epem_rt='))?.split('=')[1];
     if (!token) {
       throw new HttpException('No refresh token', HttpStatus.UNAUTHORIZED);
+    }
+    if (typeof token !== 'string' || token.length < 20 || !/^[A-Za-z0-9_\-\.]+$/.test(token)) {
+      throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
     }
 
     const { data } = await firstValueFrom(
@@ -94,6 +100,7 @@ export class AuthController {
   }
 
   /** Elimina la cookie httpOnly del refresh token. */
+  @Throttle({ default: { limit: 10, ttl: 300 } })
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     res.cookie('epem_rt', '', {
@@ -103,4 +110,6 @@ export class AuthController {
     return { ok: true };
   }
 }
+
+
 

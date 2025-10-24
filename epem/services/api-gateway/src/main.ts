@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 /**
@@ -20,6 +21,7 @@ async function bootstrap() {
   const allowedOrigins = configuredOrigins.length > 0 ? configuredOrigins : [fallbackOrigin];
 
   const app = await NestFactory.create(AppModule);
+  app.use(helmet({ crossOriginResourcePolicy: false }));
   app.enableCors({
     origin: (requestOrigin, callback) => {
       if (!requestOrigin) {

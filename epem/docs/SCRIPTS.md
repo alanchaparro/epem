@@ -1,4 +1,4 @@
-# Scripts de desarrollo y QA
+﻿# Scripts de desarrollo y QA
 
 Esta guía documenta los scripts agregados para facilitar tareas comunes en desarrollo, limpieza y análisis.
 
@@ -54,3 +54,21 @@ Esta guía documenta los scripts agregados para facilitar tareas comunes en desa
 
 - `.gitignore` ignora `.next/`, `dist/`, `coverage/`, `test-results/`, `.tmp/`, `node_modules/`, etc.
 - Los endpoints de observabilidad de los servicios exponen `GET /metrics/prometheus`.
+
+
+## Comando único (desarrolladores)```powershell
+# Levanta BD + servicios + frontend, corre QA y valida PASS
+pnpm dev:one
+```
+
+
+## Comando Docker (desarrollo)
+`
+# Arranca MySQL (Docker) + servicios locales + QA
+pnpm dev:docker
+
+# Variantes
+pnpm dev:docker -- -WithObs     # incluye Prometheus/Grafana
+pnpm dev:docker -- -NoSeeds     # no ejecuta seeds iniciales
+pnpm stop:docker                # baja los contenedores Docker (no detiene servicios locales)
+`

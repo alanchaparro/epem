@@ -13,6 +13,19 @@ $root = Resolve-Path "$PSScriptRoot/../.." | ForEach-Object { $_.Path }
 Info 'Stopping dev processes by PIDs and freeing ports...'
 powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'scripts/qa/stop-dev.ps1') -AlsoPorts
 
+# Deep kill for stubborn ports (Next.js 3000, Gateway 4000, services 3010-3040)
+try {
+  Info 'Force-killing port owners (deep)...'
+  $ports = @(3000,4000,3010,3020,3030,3040)
+  powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'scripts/tools/kill-ports-deep.ps1') -Ports $ports
+  $left = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -in $ports } | Select-Object -ExpandProperty LocalPort -Unique
+  if($left){
+    Warn ("ports still busy: {0}. Killing common dev processes (node, pnpm)..." -f ($left -join ', '))
+    try { & taskkill /IM node.exe /F /T | Out-Null } catch {}
+    try { & taskkill /IM pnpm.exe /F /T | Out-Null } catch {}
+  }
+} catch { Warn "deep kill failed: $($_.Exception.Message)" }
+
 if (-not $NoDocker) {
   try {
     Info 'Bringing docker compose down (if running)...'
@@ -29,4 +42,3 @@ try {
 } catch {}
 
 Ok 'Stop all done.'
-

@@ -1,0 +1,181 @@
+services:
+  pnpm-install:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --version && pnpm install --frozen-lockfile || pnpm install"
+    volumes:
+      - .:/workspace
+      - root_nm:/workspace/node_modules
+      - web_nm:/workspace/apps/web/node_modules
+      - users_nm:/workspace/services/users-service/node_modules
+      - patients_nm:/workspace/services/patients-service/node_modules
+      - catalog_nm:/workspace/services/catalog-service/node_modules
+      - billing_nm:/workspace/services/billing-service/node_modules
+      - gateway_nm:/workspace/services/api-gateway/node_modules
+    environment:
+      - CI=1
+    networks:
+      - epem
+
+  users-service:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/users-service run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3020:3020"
+    environment:
+      - NODE_ENV=development
+      - USERS_SERVICE_PORT=3020
+      - USERS_SERVICE_DATABASE_URL=${USERS_SERVICE_DATABASE_URL:-mysql://root:${DATABASE_PASSWORD:-root}@mysql:3306/epem_users}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    volumes:
+      - .:/workspace
+      - users_nm:/workspace/services/users-service/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+  patients-service:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/patients-service run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3010:3010"
+    environment:
+      - NODE_ENV=development
+      - PATIENTS_SERVICE_PORT=3010
+      - PATIENTS_SERVICE_DATABASE_URL=${PATIENTS_SERVICE_DATABASE_URL:-mysql://root:${DATABASE_PASSWORD:-root}@mysql:3306/epem}
+      - BILLING_SERVICE_URL=http://billing-service:3040
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    volumes:
+      - .:/workspace
+      - patients_nm:/workspace/services/patients-service/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+  catalog-service:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/catalog-service run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3030:3030"
+    environment:
+      - NODE_ENV=development
+      - CATALOG_SERVICE_PORT=3030
+      - CATALOG_SERVICE_DATABASE_URL=${CATALOG_SERVICE_DATABASE_URL:-mysql://root:${DATABASE_PASSWORD:-root}@mysql:3306/epem_catalog}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    volumes:
+      - .:/workspace
+      - catalog_nm:/workspace/services/catalog-service/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+  billing-service:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/billing-service run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3040:3040"
+    environment:
+      - NODE_ENV=development
+      - BILLING_SERVICE_PORT=3040
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    volumes:
+      - .:/workspace
+      - billing_nm:/workspace/services/billing-service/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+  api-gateway:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/api-gateway run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      users-service:
+        condition: service_started
+      patients-service:
+        condition: service_started
+      catalog-service:
+        condition: service_started
+      billing-service:
+        condition: service_started
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - API_GATEWAY_PORT=4000
+      - USERS_SERVICE_URL=http://users-service:3020/api
+      - PATIENTS_SERVICE_URL=http://patients-service:3010
+      - CATALOG_SERVICE_URL=http://catalog-service:3030
+      - BILLING_SERVICE_URL=http://billing-service:3040
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+      - DEFAULT_ORIGIN=${DEFAULT_ORIGIN:-http://localhost:3000}
+    volumes:
+      - .:/workspace
+      - gateway_nm:/workspace/services/api-gateway/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+  web:
+    image: node:20-bullseye
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm --filter @epem/web run dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      api-gateway:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - API_GATEWAY_URL=http://api-gateway:4000
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - CHOKIDAR_USEPOLLING=1
+      - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+    volumes:
+      - .:/workspace
+      - web_nm:/workspace/apps/web/node_modules
+      - root_nm:/workspace/node_modules
+    networks:
+      - epem
+
+volumes:
+  root_nm:
+  web_nm:
+  users_nm:
+  patients_nm:
+  catalog_nm:
+  billing_nm:
+  gateway_nm:
+
+networks:
+  epem:
+    name: epem

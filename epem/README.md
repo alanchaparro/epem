@@ -168,3 +168,17 @@ Opcional (flags):
 - Deploy central: docs/DEPLOY.md
 - Changelog: CHANGELOG.md
 - Scripts de desarrollo y QA: docs/SCRIPTS.md
+
+
+### Comando único de desarrollo
+Para levantar todo y ejecutar QA en tu máquina local:
+
+- \\pnpm dev:one\\`n
+Genera reportes en docs/qa/ y valida el gate.
+
+
+### Comando Docker (desarrollo)
+Si prefieres MySQL en contenedor y servicios locales:
+
+- \\pnpm dev:docker\\`n
+Variantes: pnpm dev:docker -- -WithObs para Prometheus/Grafana. Para bajar contenedores: pnpm stop:docker.

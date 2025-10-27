@@ -46,7 +46,12 @@
                     "clean":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cleanup.ps1",
                     "clean:deep":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cleanup.ps1 -Deep",
                     "analyze:orphans":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/analyze/orphans.ps1",
-                    "stop:all":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/stop-all.ps1"
+                    "stop:all":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/stop-all.ps1",
+                    "dev:one":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/quickstart-dev.ps1",
+                    "dev:docker":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/quickstart-docker.ps1",
+                    "stop:docker":  "powershell -NoProfile -ExecutionPolicy Bypass -File ops/docker/down.ps1",
+                    "dev:compose":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/quickstart-compose-dev.ps1",
+                    "stop:compose":  "docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.prod down"
                 },
     "engines":  {
                     "node":  "\u003e=18.18.0",

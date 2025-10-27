@@ -13,3 +13,12 @@ package-lock.json
 yarn.lock
 *.log
 services/*/generated/client/*.tmp*
+/.eslintcache
+.parcel-cache/
+.vite/
+out/
+.nuxt/
+playwright-report/
+.playwright/
+libs/nest-common/src/**/*.js
+libs/nest-common/src/**/*.d.ts

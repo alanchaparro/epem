@@ -1,12 +1,34 @@
-# QA Report
-Resultado: "FAIL"
+﻿# QA Report
+Resultado: "PASS"
 
-- [PASS] Gateway /health responde - expected: true actual: http://localhost:4000/health
-- [PASS] Users-service /api/health responde - expected: true actual: http://localhost:3020/api/health
-- [FAIL] Patients-service /health responde - expected: true actual: http://localhost:3010/health
-- [PASS] Login devuelve accessToken - expected: true actual: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NGVhYTU1Zi0xMjFjLTQ1MGUtYTdlMi1jNDE1NDA2N2NhMTgiLCJlbWFpbCI6ImFkbWluQGVwZW0ubG9jYWwiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjEzMzk4MTUsImV4cCI6MTc2MTM0MDcxNX0.pdoPRBuj2AjL_IZuggzgkg8dXrz4jzVUB4LCYwhSPQA
+- [PASS] Gateway /health responde - expected: True actual: http://localhost:4000/health
+- [PASS] Users-service /api/health responde - expected: True actual: http://localhost:3020/api/health
+- [PASS] Patients-service /health responde - expected: True actual: http://localhost:3010/health
+- [PASS] Login devuelve accessToken - expected: True actual: [REDACTED]
 - [PASS] Perfil /users/me email coincide - expected: admin@epem.local actual: admin@epem.local
-- [FAIL] Listado de pacientes devuelve items - expected: true actual: status=500
-- [FAIL] Crear paciente devuelve id - expected: true actual: status=500
-- [FAIL] Crear paciente duplicado devuelve 409 - expected: 409 actual: 500
-- [FAIL] Catalog-service /health responde - expected: true actual: false
+- [PASS] Listado de pacientes devuelve items - expected: True actual: 5
+- [PASS] Crear paciente devuelve id - expected: True actual: 8b4370d0-527a-43f9-adcc-2e1e53daa4aa
+- [PASS] Patch de paciente actualiza phone - expected: 11-0000-0000 actual: 11-0000-0000
+- [PASS] Crear paciente duplicado devuelve 409 - expected: 409 actual: 409
+- [PASS] Catalog-service /health responde - expected: True actual: True
+- [PASS] Crear prestacion devuelve id - expected: True actual: 2fc08b1c-cf8a-445c-ad5d-fa00326b2cfb
+- [PASS] Editar prestacion actualiza nombre - expected: Prestacion QA Edit actual: Prestacion QA Edit
+- [PASS] Crear prestacion duplicada devuelve 409 - expected: 409 actual: 409
+- [PASS] Crear aseguradora devuelve id - expected: True actual: baaa28ce-ea69-41e7-b668-ef2ea2e7f2d2
+- [PASS] Actualizar aseguradora cambia active - expected: True actual: False
+- [PASS] Crear cobertura devuelve id - expected: True actual: 9a7d7099-0522-47f6-b365-91a1af92d855
+- [PASS] Editar cobertura actualiza copago - expected: 500 actual: 500
+- [PASS] Editar cobertura actualiza requiresAuth - expected: True actual: False
+- [PASS] Crear orden con requiereAuth deja status PENDING - expected: PENDING actual: PENDING
+- [PASS] Listado de ordenes incluye orden pendiente - expected: True actual: True
+- [PASS] Se creo autorizacion vinculada a la orden - expected: True actual: c97a1886-7009-4c1f-b1c1-6498cac22a4d
+- [PASS] Aprobar autorizacion actualiza status - expected: APPROVED actual: APPROVED
+- [PASS] Orden pasa a IN_PROGRESS tras aprobacion - expected: True actual: True
+- [PASS] Completar orden actualiza status - expected: COMPLETED actual: COMPLETED
+- [PASS] Crear factura deja status DRAFT - expected: DRAFT actual: DRAFT
+- [PASS] Factura calcula total - expected: True actual: 5000
+- [PASS] Listado de facturas incluye factura en DRAFT - expected: True actual: True
+- [PASS] Emitir factura actualiza estado - expected: ISSUED actual: ISSUED
+- [PASS] Emitir factura setea issuedAt - expected: True actual: 2025-10-27T16:47:28.256Z
+- [PASS] Dashboard metricas disponibles - expected: True actual: 33
+- [PASS] Prometheus agregador expone metricas - expected: True actual: 200

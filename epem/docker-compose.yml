@@ -21,11 +21,11 @@ services:
       retries: 5
 
   users-service:
-    image: ${REGISTRY_PREFIX:-epem}/users-service:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/users-service:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/users-service
+        PACKAGE: "@epem/users-service"
     command: pnpm --filter @epem/users-service start:prod
     logging:
       driver: json-file
@@ -33,7 +33,10 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3020/api/health"]
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "require('http').get('http://localhost:3020/api/health',r=>process.exit(r.statusCode>=200&&r.statusCode<300?0:1)).on('error',()=>process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,11 +57,11 @@ services:
       - epem
 
   patients-service:
-    image: ${REGISTRY_PREFIX:-epem}/patients-service:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/patients-service:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/patients-service
+        PACKAGE: "@epem/patients-service"
     command: pnpm --filter @epem/patients-service start:prod
     logging:
       driver: json-file
@@ -66,7 +69,10 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3010/health"]
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "require('http').get('http://localhost:3010/health',r=>process.exit(r.statusCode>=200&&r.statusCode<300?0:1)).on('error',()=>process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,11 +90,11 @@ services:
       - epem
 
   catalog-service:
-    image: ${REGISTRY_PREFIX:-epem}/catalog-service:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/catalog-service:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/catalog-service
+        PACKAGE: "@epem/catalog-service"
     command: pnpm --filter @epem/catalog-service start:prod
     logging:
       driver: json-file
@@ -96,7 +102,10 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3030/health"]
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "require('http').get('http://localhost:3030/health',r=>process.exit(r.statusCode>=200&&r.statusCode<300?0:1)).on('error',()=>process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -113,11 +122,11 @@ services:
       - epem
 
   billing-service:
-    image: ${REGISTRY_PREFIX:-epem}/billing-service:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/billing-service:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/billing-service
+        PACKAGE: "@epem/billing-service"
     command: pnpm --filter @epem/billing-service start:prod
     logging:
       driver: json-file
@@ -125,7 +134,10 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3040/health"]
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "require('http').get('http://localhost:3040/health',r=>process.exit(r.statusCode>=200&&r.statusCode<300?0:1)).on('error',()=>process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -148,11 +160,11 @@ services:
       - epem
 
   api-gateway:
-    image: ${REGISTRY_PREFIX:-epem}/api-gateway:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/api-gateway:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/api-gateway
+        PACKAGE: "@epem/api-gateway"
     command: pnpm --filter @epem/api-gateway start:prod
     logging:
       driver: json-file
@@ -160,7 +172,10 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "require('http').get('http://localhost:4000/health',r=>process.exit(r.statusCode>=200&&r.statusCode<300?0:1)).on('error',()=>process.exit(1))"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -193,11 +208,11 @@ services:
       - epem
 
   web:
-    image: ${REGISTRY_PREFIX:-epem}/web:${IMAGE_TAG:-latest}
+    image: "${REGISTRY_PREFIX:-epem}/web:${IMAGE_TAG:-latest}"
     build:
       context: .
       args:
-        PACKAGE: @epem/web
+        PACKAGE: "@epem/web"
     command: pnpm --filter @epem/web start
     environment:
       NODE_ENV: production
@@ -245,23 +260,24 @@ services:
       - epem
 
   grafana:
-    image: grafana/grafana:10.4.0
+    image: grafana/grafana-oss:10.4.2
     depends_on:
       prometheus:
         condition: service_started
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:-admin}
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
     ports:
       - "3001:3000"
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/grafana:/var/lib/grafana/dashboards:ro
     networks:
       - epem
 
 volumes:
   mysql_data:
-  grafana_data:
 
 networks:
   epem:

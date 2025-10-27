@@ -1,0 +1,14 @@
+{
+  "ignorePatterns": [
+    "apps/web/.next/**",
+    "apps/web/tests/**",
+    "apps/web/test-results/**",
+    "apps/web/app/**/(page|layout|loading|error).tsx",
+    "apps/web/middleware.ts",
+    "services/**/src/main.ts",
+    "services/**/src/**/*.spec.ts",
+    "libs/**/dist/**",
+    "libs/**/src/**/*.d.ts",
+    "libs/**/src/**/*.js"
+  ]
+}

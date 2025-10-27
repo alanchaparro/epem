@@ -167,3 +167,4 @@ Opcional (flags):
 - Observabilidad: docs/observability.md y docs/deploy/grafana.md
 - Deploy central: docs/DEPLOY.md
 - Changelog: CHANGELOG.md
+- Scripts de desarrollo y QA: docs/SCRIPTS.md

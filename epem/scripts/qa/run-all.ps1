@@ -28,5 +28,8 @@ if (-not $SkipFront) {
 Write-Host 'QA: Verificando base de datos...' -ForegroundColor Cyan
 powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot/check-db.ps1"
 
+Write-Host 'QA: Observabilidad...' -ForegroundColor Cyan
+node "$PSScriptRoot/../qa/test-observability.js"
+
 Write-Host 'QA: Validando gate...' -ForegroundColor Cyan
 powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot/require-pass.ps1" @(@{SkipFront=$SkipFront}['SkipFront'])

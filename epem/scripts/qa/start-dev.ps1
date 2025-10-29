@@ -54,14 +54,20 @@ function Wait-HttpOk([string]$url, [int]$timeoutSec=60){
   return $false
 }
 
-function Start-ServiceDev([string]$filter, [string]$healthUrl, [string]$name, [int]$waitSec=60, [string]$logFile=$null){
+function Start-ServiceDev([string]$filter, [string]$healthUrl, [string]$name, [int]$waitSec=60, [string]$logFile=$null, [bool]$useStartScript=$false){
   Write-Info "Starting $name..."
   if (-not $logFile) {
     $safe = ($name -replace '[^a-zA-Z0-9-]', '-').ToLower()
     $logFile = Join-Path $PSScriptRoot "../../.tmp/${safe}.log"
   }
   New-Item -Force -ItemType Directory -Path (Split-Path $logFile -Parent) | Out-Null
-  $cmd = "pnpm --filter $filter run dev *>> `"$logFile`""
+  # Permite forzar modo estable (node dist) para servicios sensibles o todos
+  $scriptToRun = if ($useStartScript) { 'start' } else { 'dev' }
+  # Si vamos a usar start, hacemos build primero
+  if ($useStartScript) {
+    try { powershell -NoProfile -ExecutionPolicy Bypass -Command ("pnpm --filter {0} run build" -f $filter) | Out-Null } catch {}
+  }
+  $cmd = "pnpm --filter $filter run $scriptToRun *>> `"$logFile`""
   if ($filter -eq '@epem/web') {
     # endurecer Next en Windows: polling + sin telemetría y log a archivo
     $envAssign = "$env:CHOKIDAR_USEPOLLING=1; $env:WATCHPACK_POLLING=true; $env:NEXT_TELEMETRY_DISABLED=1;"
@@ -102,13 +108,17 @@ if (-not $NoBootstrap) {
 $procs = @{}
 $pids = @{}
 
-$procs.users    = Start-ServiceDev '@epem/users-service'    'http://localhost:3020/api/health' 'users-service'
-$procs.patients = Start-ServiceDev '@epem/patients-service' 'http://localhost:3010/health'     'patients-service'
-$procs.catalog  = Start-ServiceDev '@epem/catalog-service'  'http://localhost:3030/health'     'catalog-service'
-$procs.billing  = Start-ServiceDev '@epem/billing-service'  'http://localhost:3040/health'     'billing-service'
-$procs.gateway  = Start-ServiceDev '@epem/api-gateway'      'http://localhost:4000/health'     'api-gateway' 120
+$stableAll = ($env:QA_STABLE_ALL -eq 'true')
+$stable    = ($env:QA_STABLE -eq 'true') -or ($env:QA_STABLE_GATEWAY_BILLING -eq 'true') -or $stableAll
+
+$procs.users    = Start-ServiceDev '@epem/users-service'    'http://localhost:3020/api/health' 'users-service'     60 $null $stableAll
+$procs.patients = Start-ServiceDev '@epem/patients-service' 'http://localhost:3010/health'     'patients-service'  60 $null $stableAll
+$procs.catalog  = Start-ServiceDev '@epem/catalog-service'  'http://localhost:3030/health'     'catalog-service'   60 $null $stableAll
+# En QA estable, gateway y billing se levantan con "start" (dist) para evitar reinicios de ts-node-dev
+$procs.billing  = Start-ServiceDev '@epem/billing-service'  'http://localhost:3040/health'     'billing-service'   60 $null $stable
+$procs.gateway  = Start-ServiceDev '@epem/api-gateway'      'http://localhost:4000/health'     'api-gateway'      120 $null $stable
 $webLog = Join-Path $PSScriptRoot '../../.tmp/web-dev.log'
-$procs.web      = Start-ServiceDev '@epem/web'              'http://localhost:3000/login'      'web (Next.js)' 240 $webLog
+$procs.web      = Start-ServiceDev '@epem/web'              'http://localhost:3000/login'      'web (Next.js)' 240 $webLog $stable
 
 foreach($k in $procs.Keys){ if($procs[$k]){ $pids[$k] = $procs[$k].Id } }
 

@@ -65,9 +65,10 @@
                     "dev:gateway":  "pnpm --filter @epem/api-gateway run dev",
                     "deploy:check":  "node scripts/qa/test-back.js \u0026\u0026 node scripts/qa/test-front.js",
                     "dev:start:all":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/start-dev.ps1",
-                    "qa:backend":  "node scripts/qa/test-back.js",
-                    "qa:assure":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/assure.ps1",
-                    "lint:eslint": "eslint . --ext .ts,.tsx -c .eslintrc.cjs",
+    "qa:backend":  "node scripts/qa/test-back.js",
+    "qa:assure":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/assure.ps1",
+    "assure:devone": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/dev-one-assurance.ps1",
+    "lint:eslint": "eslint . --ext .ts,.tsx -c .eslintrc.cjs",
                     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml,yaml}\""
                 },
     "engines":  {

@@ -34,6 +34,7 @@ export default function LoginPage() {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -42,9 +43,17 @@ export default function LoginPage() {
         let message = 'Credenciales inválidas.';
         if (raw) {
           try {
-            const parsed = JSON.parse(raw);
-            const candidate = (parsed as any)?.message ?? (parsed as any)?.error ?? parsed;
-            message = Array.isArray(candidate) ? candidate.join(' ') : String(candidate);
+            const parsed: any = JSON.parse(raw);
+            const msgFrom = (obj: any): string | undefined => {
+              if (!obj) return undefined;
+              if (typeof obj === 'string') return obj;
+              if (Array.isArray(obj)) return obj.join(' ');
+              return obj.detail || obj.title || obj.error || obj.message || undefined;
+            };
+            const candidate =
+              msgFrom(parsed?.message && typeof parsed.message !== 'string' ? parsed.message : parsed?.message) ||
+              msgFrom(parsed);
+            if (candidate) message = candidate; else message = raw;
           } catch { message = raw; }
         }
         throw new Error(message);

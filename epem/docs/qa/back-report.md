@@ -7,26 +7,26 @@ Resultado: "PASS"
 - [PASS] Login devuelve accessToken - expected: True actual: [REDACTED]
 - [PASS] Perfil /users/me email coincide - expected: admin@epem.local actual: admin@epem.local
 - [PASS] Listado de pacientes devuelve items - expected: True actual: 5
-- [PASS] Crear paciente devuelve id - expected: True actual: 296ed683-6e3c-43a4-94b3-874c688b451f
+- [PASS] Crear paciente devuelve id - expected: True actual: 3fa0825c-dfd3-4dc1-9c28-0c62f06dbec8
 - [PASS] Patch de paciente actualiza phone - expected: 11-0000-0000 actual: 11-0000-0000
 - [PASS] Crear paciente duplicado devuelve 409 - expected: 409 actual: 409
 - [PASS] Catalog-service /health responde - expected: True actual: True
-- [PASS] Crear prestacion devuelve id - expected: True actual: d66d2589-70d5-48a9-a5bf-e91d2fef6a49
+- [PASS] Crear prestacion devuelve id - expected: True actual: 852470fc-ae1f-42b0-accd-040118365171
 - [PASS] Editar prestacion actualiza nombre - expected: Prestacion QA Edit actual: Prestacion QA Edit
 - [PASS] Crear prestacion duplicada devuelve 409 - expected: 409 actual: 409
-- [PASS] Crear aseguradora devuelve id - expected: True actual: 97397056-6498-4131-9b5e-4863fd2403bc
+- [PASS] Crear aseguradora devuelve id - expected: True actual: 595f8117-5fe0-46f4-b709-444cd82a11aa
 - [PASS] Actualizar aseguradora cambia active - expected: True actual: False
-- [PASS] Crear cobertura devuelve id - expected: True actual: 3afab964-c081-4fca-b814-5b117173ceac
+- [PASS] Crear cobertura devuelve id - expected: True actual: 7a40185f-5d0a-466f-9128-42c3fd3cd3f1
 - [PASS] Editar cobertura actualiza copago - expected: 500 actual: 500
 - [PASS] Editar cobertura actualiza requiresAuth - expected: True actual: False
 - [PASS] Crear orden con requiereAuth deja status PENDING - expected: PENDING actual: PENDING
 - [PASS] Listado de ordenes incluye orden pendiente - expected: True actual: True
-- [PASS] Se creo autorizacion vinculada a la orden - expected: True actual: 78a743ad-40ce-4cdc-b723-322e1e661aea
+- [PASS] Se creo autorizacion vinculada a la orden - expected: True actual: 2561cd9d-b623-4c87-a952-80c72503ba41
 - [PASS] Aprobacion de autorizacion (fallback manual) - expected: True actual: fallback-gateway
 - [PASS] Orden en IN_PROGRESS (gateway) - expected: IN_PROGRESS actual: IN_PROGRESS
 - [PASS] Completar orden actualiza status - expected: COMPLETED actual: COMPLETED
 - [PASS] Crear factura omite (fallback manual) - expected: True actual: skip
 - [PASS] Listado de facturas omitido (sin factura) - expected: True actual: skip
 - [PASS] Emitir factura omitido (sin factura) - expected: True actual: skip
-- [PASS] Dashboard metricas disponibles - expected: True actual: 62
+- [PASS] Dashboard metricas disponibles - expected: True actual: 77
 - [PASS] Prometheus agregador expone metricas - expected: True actual: 200

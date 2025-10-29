@@ -160,7 +160,11 @@ Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/billing-s
 
 if (-not $NoSeeds) {
   Write-Host 'Seeds iniciales (admin, pacientes, catalogo, aseguradoras)' -ForegroundColor Green
+  # Asegura password del admin en DEV según .env (ADMIN_PASSWORD)
+  $prevReset = $env:ADMIN_RESET_PASSWORD
+  $env:ADMIN_RESET_PASSWORD = 'true'
   pnpm --filter @epem/users-service seed:admin
+  if ($null -ne $prevReset) { $env:ADMIN_RESET_PASSWORD = $prevReset } else { Remove-Item Env:ADMIN_RESET_PASSWORD -ErrorAction SilentlyContinue }
   pnpm --filter @epem/patients-service seed:patients
   pnpm --filter @epem/catalog-service seed:items
   pnpm --filter @epem/billing-service seed:insurers

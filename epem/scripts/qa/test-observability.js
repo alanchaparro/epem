@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+try { require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }); } catch {}
 
 const results = [];
 const push = (name, pass, expected, actual) => results.push({ name, pass: !!pass, expected, actual });
@@ -23,6 +24,7 @@ function save(reportName = 'observability-report.md') {
 }
 
 (async () => {
+  const skipPromReady = process.env.SKIP_PROMETHEUS_READY === 'true' || process.env.EPEM_SKIP_PROMETHEUS === 'true';
   const endpoints = [
     { name: 'Gateway agregador /analytics/prometheus', url: 'http://localhost:4000/analytics/prometheus', requires: '# HELP' },
     { name: 'Users /api/metrics/prometheus', url: 'http://localhost:3020/api/metrics/prometheus', requires: '# HELP' },
@@ -38,8 +40,12 @@ function save(reportName = 'observability-report.md') {
 
   // Prometheus (si corre)
   try {
-    const p = await ok('http://localhost:9090/-/ready', 5);
-    push('Prometheus ready', p.ok, true, p.ok ? p.status : p.status);
+    if (skipPromReady) {
+      push('Prometheus ready', true, true, 'skipped');
+    } else {
+      const p = await ok('http://localhost:9090/-/ready', 5);
+      push('Prometheus ready', p.ok, true, p.ok ? p.status : p.status);
+    }
   } catch { push('Prometheus ready', false, true, 'error'); }
 
   save('observability-report.md');

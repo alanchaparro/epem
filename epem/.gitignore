@@ -22,3 +22,4 @@ playwright-report/
 .playwright/
 libs/nest-common/src/**/*.js
 libs/nest-common/src/**/*.d.ts
+/.tools/

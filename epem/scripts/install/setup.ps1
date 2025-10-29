@@ -217,6 +217,17 @@ $envMap = @{
   TRUSTED_PROXY_IPS = (Coalesce $existing['TRUSTED_PROXY_IPS'] '127.0.0.1,::1,::ffff:127.0.0.1')
 }
 
+# Preguntar por Prometheus local e instalación
+$promChoice = 'n'
+try {
+  $promChoice = Read-Host '¿Deseas instalar y arrancar Prometheus local (9090) ahora? (s/n)'
+  if ($promChoice -match '^[sS]'){
+    $envMap['SKIP_PROMETHEUS_READY'] = 'false'
+  } else {
+    $envMap['SKIP_PROMETHEUS_READY'] = 'true'
+  }
+} catch {}
+
 Write-Env $envMap
 
 # 4) Install dependencias
@@ -224,6 +235,76 @@ if (-not $NoInstall){ Run-Install }
 
 # 5) Bootstrap
 if (-not $NoBootstrap){ Bootstrap }
+
+# Promp opcional: compilar servicios ahora para garantizar dist correctos
+try {
+  $buildNow = Read-Host '¿Compilar servicios ahora (recomendado)? (s/n)'
+  if ($buildNow -match '^[sS]'){
+    Info 'Compilando monorepo (pnpm -r run build)'
+    pnpm -r run build | Out-Null
+    Ok 'Compilación completada'
+  }
+} catch {}
+
+# Instalación/arranque de Prometheus si fue solicitado
+function Wait-HttpOk([string]$url,[int]$timeoutSec=15){ $deadline=(Get-Date).AddSeconds($timeoutSec); while((Get-Date) -lt $deadline){ try { $r=Invoke-WebRequest -UseBasicParsing -Uri $url -TimeoutSec 3; if ($r.StatusCode -ge 200 -and $r.StatusCode -lt 300){ return $true } } catch {}; Start-Sleep -Milliseconds 500 }; return $false }
+
+function Install-PrometheusWindows([string]$dest){
+  New-Item -Force -ItemType Directory -Path $dest | Out-Null
+  $versions = @('2.55.0','2.54.1','2.53.1','2.52.0')
+  $zipPath = Join-Path $env:TEMP ('prometheus-' + [Guid]::NewGuid().ToString() + '.zip')
+  $ok = $false
+  foreach($v in $versions){
+    try {
+      $url = "https://github.com/prometheus/prometheus/releases/download/v$($v)/prometheus-$($v).windows-amd64.zip"
+      Info "Descargando Prometheus $v..."
+      Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing -TimeoutSec 60
+      Expand-Archive -Path $zipPath -DestinationPath $dest -Force
+      Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
+      $ok = $true; break
+    } catch { try { Remove-Item $zipPath -Force -ErrorAction SilentlyContinue } catch {} }
+  }
+  if (-not $ok){ Warn 'No se pudo descargar Prometheus automáticamente.'; return $false }
+  $folder = Get-ChildItem $dest -Directory | Where-Object { $_.Name -like 'prometheus-*windows-amd64' } | Select-Object -First 1
+  if (-not $folder){ Warn 'No se encontró carpeta descomprimida de Prometheus'; return $false }
+  $bin = $folder.FullName
+  $yml = @"
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'users-service'
+    metrics_path: /api/metrics/prometheus
+    static_configs: [{ targets: ['127.0.0.1:3020'] }]
+  - job_name: 'patients-service'
+    metrics_path: /metrics/prometheus
+    static_configs: [{ targets: ['127.0.0.1:3010'] }]
+  - job_name: 'catalog-service'
+    metrics_path: /metrics/prometheus
+    static_configs: [{ targets: ['127.0.0.1:3030'] }]
+  - job_name: 'billing-service'
+    metrics_path: /metrics/prometheus
+    static_configs: [{ targets: ['127.0.0.1:3040'] }]
+  - job_name: 'gateway-aggregated'
+    metrics_path: /analytics/prometheus
+    static_configs: [{ targets: ['127.0.0.1:4000'] }]
+"@
+  Set-Content -Encoding UTF8 -Path (Join-Path $bin 'prometheus.yml') -Value $yml
+  Info 'Iniciando Prometheus en 127.0.0.1:9090'
+  Start-Process -FilePath (Join-Path $bin 'prometheus.exe') -ArgumentList @('--config.file=prometheus.yml','--web.listen-address=127.0.0.1:9090') -WorkingDirectory $bin -WindowStyle Hidden | Out-Null
+  if (Wait-HttpOk -url 'http://localhost:9090/-/ready' -timeoutSec 20){ Ok 'Prometheus ready en :9090' } else { Warn 'Prometheus no respondió a tiempo'; return $false }
+  return $true
+}
+
+if ($promChoice -match '^[sS]'){
+  $dest = Join-Path $Root '.tools\prometheus'
+  $instOk = $false
+  try { $instOk = Install-PrometheusWindows -dest $dest } catch { $instOk = $false }
+  if (-not $instOk){
+    Warn 'Marcando SKIP_PROMETHEUS_READY=true por falta de Prometheus.'
+    $envMap['SKIP_PROMETHEUS_READY'] = 'true'
+    Write-Env $envMap
+  }
+}
 
 Ok 'Instalación interactiva completada.'
 Write-Host "Siguiente paso: ejecuta 'pnpm dev' para levantar la plataforma con QA." -ForegroundColor Yellow

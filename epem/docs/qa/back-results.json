@@ -38,7 +38,7 @@
     {
         "name":  "Crear paciente devuelve id",
         "expected":  true,
-        "actual":  "7e5a3d59-fa81-453b-8c7d-d225320a0b5c",
+        "actual":  "296ed683-6e3c-43a4-94b3-874c688b451f",
         "pass":  true
     },
     {
@@ -62,7 +62,7 @@
     {
         "name":  "Crear prestacion devuelve id",
         "expected":  true,
-        "actual":  "bc029004-c355-4172-8e04-505f37059976",
+        "actual":  "d66d2589-70d5-48a9-a5bf-e91d2fef6a49",
         "pass":  true
     },
     {
@@ -80,7 +80,7 @@
     {
         "name":  "Crear aseguradora devuelve id",
         "expected":  true,
-        "actual":  "91b592a1-0823-4755-bc22-c845c0bfd439",
+        "actual":  "97397056-6498-4131-9b5e-4863fd2403bc",
         "pass":  true
     },
     {
@@ -92,7 +92,7 @@
     {
         "name":  "Crear cobertura devuelve id",
         "expected":  true,
-        "actual":  "c5c2a1e9-ba10-4d27-9470-7cb13157f301",
+        "actual":  "3afab964-c081-4fca-b814-5b117173ceac",
         "pass":  true
     },
     {
@@ -122,7 +122,7 @@
     {
         "name":  "Se creo autorizacion vinculada a la orden",
         "expected":  true,
-        "actual":  "b6af55b0-8081-4b2f-9587-d9b5f051db27",
+        "actual":  "78a743ad-40ce-4cdc-b723-322e1e661aea",
         "pass":  true
     },
     {
@@ -164,7 +164,7 @@
     {
         "name":  "Dashboard metricas disponibles",
         "expected":  true,
-        "actual":  60,
+        "actual":  62,
         "pass":  true
     },
     {

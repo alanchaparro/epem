@@ -1,15 +1,15 @@
-ï»¿# EPEM â€” Plataforma de Emergencias MÃ©dicas
+# EPEM — Plataforma de Emergencias Médicas
 
 Quickstart
 - Desarrollo: `pnpm dev:one` (Windows) | `bash scripts/quickstart-dev-linux.sh` (Linux)
-- ProducciÃ³n-like (VPS Linux): `bash scripts/quickstart-prod-linux.sh --with-obs`
+- Producción-like (VPS Linux): `bash scripts/quickstart-prod-linux.sh --with-obs`
 
  Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar localmente y migrar a un VPS. El dominio funcional se organiza en cuatro pilares:
 
 1. Pacientes
 2. Usuarios y roles
-3. Servicios clÃ­nicos
-4. FacturaciÃ³n y visaciones
+3. Servicios clínicos
+4. Facturación y visaciones
 
 ## Requisitos
 - Node.js >= 18.18 (recomendado 20.x LTS en VPS)
@@ -20,21 +20,21 @@ Quickstart
 ## Estructura del monorepo
 `
 .
-â””â”€ apps/
-   â””â”€ web/                # Next.js + Tailwind + React Query
-â””â”€ libs/
-   â””â”€ nest-common/        # Decoradores, guards e interceptores compartidos (Nest)
-â””â”€ services/
-   â”œâ”€ api-gateway/        # Router principal para coordinar microservicios
-   â”œâ”€ patients-service/   # GestiÃ³n de pacientes
-   â”œâ”€ users-service/      # AutenticaciÃ³n, roles y permisos (Prisma + MySQL)
-   â”œâ”€ catalog-service/    # CatÃ¡logo de prestaciones clÃ­nicas
-   â””â”€ billing-service/    # FacturaciÃ³n y visaciones
-â””â”€ docs/
-   â””â”€ todo.md             # Hoja de ruta (opcional)
++- apps/
+   +- web/                # Next.js + Tailwind + React Query
++- libs/
+   +- nest-common/        # Decoradores, guards e interceptores compartidos (Nest)
++- services/
+   +- api-gateway/        # Router principal para coordinar microservicios
+   +- patients-service/   # Gestión de pacientes
+   +- users-service/      # Autenticación, roles y permisos (Prisma + MySQL)
+   +- catalog-service/    # Catálogo de prestaciones clínicas
+   +- billing-service/    # Facturación y visaciones
++- docs/
+   +- todo.md             # Hoja de ruta (opcional)
 `
 
-## Deploy rÃ¡pido (Compose) â€” recomendado
+## Deploy rápido (Compose) — recomendado
 Atajo (Linux/VPS en un paso):
 `
 bash scripts/quickstart-prod-linux.sh --with-obs   # opcional Prometheus/Grafana
@@ -59,14 +59,14 @@ pnpm deploy:check
 `
 Servicios: Web http://localhost:8080, API Gateway http://localhost:4000, Grafana http://localhost:3001, Prometheus http://localhost:9090.
 
-Crossâ€‘platform en un paso (no interactivo): `pnpm deploy -y`.
+Cross-platform en un paso (no interactivo): `pnpm deploy -y`.
 Windows en un paso: `pnpm deploy:quick` (copia .env.prod si falta, bootstrap, levanta Compose y corre QA).
 Linux/macOS en un paso: `pnpm deploy:quick:sh`.
 
 Detener (Linux/VPS):
 `
 pnpm deploy:prod:down:linux            # docker compose --env-file .env.prod down
-pnpm deploy:prod:down:linux:volumes    # incluye -v (borra volÃºmenes)
+pnpm deploy:prod:down:linux:volumes    # incluye -v (borra volúmenes)
 `
 
 Opcional (flags):
@@ -85,7 +85,8 @@ Opcional (flags):
    # Windows PowerShell
    Copy-Item .env.example .env
    `
-   - Ajusta en .env las credenciales de MySQL (oot/contraseÃ±a) y las URLs si usÃ¡s host distinto.
+   - Ajusta en .env las credenciales de MySQL (
+oot/contraseña) y las URLs si usás host distinto.
 
 2. Instalar dependencias (monorepo completo):
    `ash
@@ -99,12 +100,12 @@ Opcional (flags):
    pnpm --filter @epem/users-service prisma:migrate:dev --name init
    pnpm --filter @epem/users-service seed:admin
 
-   # Pacientes (si aÃºn no existe la BD)
+   # Pacientes (si aún no existe la BD)
    pnpm --filter @epem/patients-service prisma:generate
    pnpm --filter @epem/patients-service prisma:push
    pnpm --filter @epem/patients-service seed:patients
 
-   # CatÃ¡logo (requiere MySQL y credenciales vÃ¡lidas)
+   # Catálogo (requiere MySQL y credenciales válidas)
    pnpm --filter @epem/catalog-service prisma:generate
    pnpm --filter @epem/catalog-service prisma:push
    pnpm --filter @epem/catalog-service seed:items
@@ -118,28 +119,28 @@ Opcional (flags):
    - Gateway: http://localhost:4000/health
    - Pacientes: http://localhost:3010/health
    - Usuarios: http://localhost:3020/api/health
-   - CatÃ¡logo: http://localhost:3030/health
-   - FacturaciÃ³n: http://localhost:3040/health
+   - Catálogo: http://localhost:3030/health
+   - Facturación: http://localhost:3040/health
    - Frontend: http://localhost:3000
 
-## Scripts Ãºtiles
-- pnpm dev:backend â€” Solo microservicios y gateway.
-  - pnpm dev:web â€” Solo interfaz Next.js.
-  - pnpm build â€” Compila todos los proyectos.
-  - pnpm --filter @epem/nest-common build â€” Recompila decoradores/guards compartidos.
-  - docker compose --env-file .env.prod up -d â€” Levanta el stack productivo con healthchecks y logging bÃ¡sico.
-  - pnpm lint â€” Chequeo de tipos en todos los paquetes.
-  - pnpm test â€” Ejecuta Jest en los servicios y la suite smoke de Playwright (tests e2e con E2E=true).
-  - pnpm qa:backend â€” QA backend multiplataforma (Node wrapper).
-  - pnpm --filter @epem/users-service prisma:migrate â€” Aplica migraciones en entornos productivos.
-  - pnpm git:hooks â€” Configura hooks locales opcionales (desactivados por defecto).
-  - pnpm deploy:check â€” Ejecuta QA backend+frontend tras un deploy.
-  - pnpm deploy:prod:linux â€” Quickstart producciÃ³n-like en Linux (nginx 8080, genera secretos si faltan).
-  - pnpm deploy:prod:down:linux â€” Down de compose de prod (con .env.prod).
-  - pnpm deploy:prod:down:linux:volumes â€” Down con -v.
+## Scripts útiles
+- pnpm dev:backend — Solo microservicios y gateway.
+  - pnpm dev:web — Solo interfaz Next.js.
+  - pnpm build — Compila todos los proyectos.
+  - pnpm --filter @epem/nest-common build — Recompila decoradores/guards compartidos.
+  - docker compose --env-file .env.prod up -d — Levanta el stack productivo con healthchecks y logging básico.
+  - pnpm lint — Chequeo de tipos en todos los paquetes.
+  - pnpm test — Ejecuta Jest en los servicios y la suite smoke de Playwright (tests e2e con E2E=true).
+  - pnpm qa:backend — QA backend multiplataforma (Node wrapper).
+  - pnpm --filter @epem/users-service prisma:migrate — Aplica migraciones en entornos productivos.
+  - pnpm git:hooks — Configura hooks locales opcionales (desactivados por defecto).
+  - pnpm deploy:check — Ejecuta QA backend+frontend tras un deploy.
+  - pnpm deploy:prod:linux — Quickstart producción-like en Linux (nginx 8080, genera secretos si faltan).
+  - pnpm deploy:prod:down:linux — Down de compose de prod (con .env.prod).
+  - pnpm deploy:prod:down:linux:volumes — Down con -v.
 
-## QA & DiagnÃ³stico
-- BaterÃ­a completa (Windows):
+## QA & Diagnóstico
+- Batería completa (Windows):
   `powershell
   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/qa/run-all.ps1
   `
@@ -152,37 +153,37 @@ Opcional (flags):
   powershell -File scripts/qa/check-db.ps1  # estructura de BD (Windows)
   `
 - DB helper (Windows): powershell -File scripts/db/ensure-tables.ps1 verifica que existan todas las bases/tablas y ejecuta prisma:push si hace falta.
-- Gate: powershell -File scripts/qa/require-pass.ps1 devuelve 0 cuando todos los reportes estÃ¡n en PASS.
+- Gate: powershell -File scripts/qa/require-pass.ps1 devuelve 0 cuando todos los reportes están en PASS.
 
 ## Seguridad
 - Antes de desplegar, reemplaza JWT_SECRET y JWT_REFRESH_SECRET en .env.
 - No compartas .env ni tokens generados; los scripts QA ya redactan el accessToken, pero evita subir reportes con datos sensibles.
 
-### MÃ³dulo de usuarios
+### Módulo de usuarios
 - Endpoint de login: POST /api/auth/login (body { "email": "admin@epem.local", "password": "admin123" }).
 - Refresh: POST /api/auth/refresh (con cookie httpOnly epem_rt).
-- CreaciÃ³n de usuarios: POST /api/users (requiere token Bearer de un administrador).
+- Creación de usuarios: POST /api/users (requiere token Bearer de un administrador).
 - Perfil actual: GET /api/users/me (token Bearer).
 
-### Frontend â€” vistas
-- /login consume http://localhost:4000/auth/login vÃ­a rewrite.
-- /profile estÃ¡ protegido por middleware.ts (requiere cookie epem_rt).
+### Frontend — vistas
+- /login consume http://localhost:4000/auth/login vía rewrite.
+- /profile está protegido por middleware.ts (requiere cookie epem_rt).
 - /patients, /patients/new, /patients/:id
 - /catalog, /catalog/new, /catalog/:id
 - /insurers, /insurers/:id/coverage
 - /admin/users (solo ADMIN): listado, alta, cambio de rol y activacin
 - /admin/roles (solo ADMIN): edicin de permisos por m3dulo (read/write)
 
-## MigraciÃ³n a VPS (resumen)
+## Migración a VPS (resumen)
 1. Contenerizar con Docker Compose (MySQL + microservicios + frontend).
 2. Configurar reverse proxy (Nginx/Traefik) con TLS.
 3. Automatizar despliegue con GitHub Actions + registros de contenedores.
-4. Supervisar procesos con PM2 u orquestador (Docker/K8s) segÃºn escala.
-5. Implementar respaldos automÃ¡ticos de MySQL y logs centralizados.
+4. Supervisar procesos con PM2 u orquestador (Docker/K8s) según escala.
+5. Implementar respaldos automáticos de MySQL y logs centralizados.
 
 
-## DocumentaciÃ³n
-- GuÃ­a Compose: docs/deploy/docker.md
+## Documentación
+- Guía Compose: docs/deploy/docker.md
 - Bare metal: docs/deploy/vps.md
 - Observabilidad: docs/observability.md y docs/deploy/grafana.md
 - Deploy central: docs/DEPLOY.md
@@ -190,16 +191,22 @@ Opcional (flags):
 - Scripts de desarrollo y QA: docs/SCRIPTS.md
 
 
-### Comando Ãºnico de desarrollo
+### Comando único de desarrollo
 Windows (local):
-`
+```
 pnpm dev:one
-`
+```
 Linux/VPS (100% contenedores):
-`
+```
 bash scripts/quickstart-dev-linux.sh
 # o con pnpm: pnpm dev:one:linux
-`
+```
+
+`pnpm dev:one` guía todo el arranque end-to-end:
+- Verifica que `pnpm` esté instalado (si falta, muestra cómo configurarlo).
+- Genera `.env` automáticamente (usa `.env.example`) y corre `pnpm install` si detecta que faltan dependencias.
+- Arranca MySQL + servicios (o usa Compose Dev si no hay MySQL local), ejecuta QA completo, reintenta ante fallos y te indica qué reportes revisar.
+
 Detener (dev overlay): `pnpm stop:compose`.
 
 ### Comando Docker (desarrollo)
@@ -208,3 +215,4 @@ Si prefieres MySQL en contenedor y servicios locales:
 pnpm dev:docker
 `
 Variantes: pnpm dev:docker -- -WithObs para Prometheus/Grafana. Para bajar contenedores: pnpm stop:docker.
+

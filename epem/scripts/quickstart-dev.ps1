@@ -5,6 +5,42 @@ param(
 
 $ErrorActionPreference = 'Continue'
 
+$RootDir = Split-Path -Parent $PSScriptRoot
+
+function Ensure-Command([string]$cmd, [string]$installHint){
+  if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)){
+    Write-Error "No se encontró el comando '$cmd'. $installHint"; throw "Falta '$cmd'"
+  }
+}
+
+function Run-Command([string]$label, [scriptblock]$action){
+  Info $label
+  & $action
+  if ($LASTEXITCODE -ne 0){ throw "${label} falló (exit=$LASTEXITCODE)" }
+  Ok "$label completado"
+}
+
+function Ensure-Pnpm{
+  Ensure-Command 'pnpm' "Instala PNPM (https://pnpm.io/installation) y vuelve a ejecutar 'pnpm dev:one'."
+}
+
+function Ensure-EnvFile{
+  $envFile = Join-Path $RootDir '.env'
+  if (Test-Path $envFile){ return }
+  Run-Command 'Inicializando .env (copiando desde .env.example)' { pnpm env:init }
+  if (-not (Test-Path $envFile)){ throw 'No se pudo crear .env. Revisa permisos o ejecuta pnpm env:init manualmente.' }
+}
+
+function Ensure-Dependencies{
+  $nm = Join-Path $RootDir 'node_modules'
+  if (Test-Path $nm){ return }
+  Run-Command 'Instalando dependencias (pnpm install)' { pnpm install --frozen-lockfile }
+}
+
+Ensure-Pnpm
+Ensure-EnvFile
+Ensure-Dependencies
+
 function Info($m){ Write-Host "[quickstart] $m" -ForegroundColor Cyan }
 function Ok($m){ Write-Host "[quickstart] $m" -ForegroundColor Green }
 function Warn($m){ Write-Warning "[quickstart] $m" }

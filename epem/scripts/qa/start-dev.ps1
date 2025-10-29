@@ -38,6 +38,36 @@ function Kill-Port {
   }
 }
 
+function Ensure-Port-Free {
+  param(
+    [int]$Port,
+    [int]$Retries = 6,
+    [int]$DelayMs = 500
+  )
+  for ($i = 0; $i -lt $Retries; $i++) {
+    try {
+      $busy = $false
+      try { $busy = (Get-NetTCPConnection -LocalPort $Port -ErrorAction Stop).Count -gt 0 } catch { $busy = $false }
+      if (-not $busy) { return $true }
+      Kill-Port -Port $Port
+    } catch {}
+    Start-Sleep -Milliseconds $DelayMs
+  }
+  try { $busy = (Get-NetTCPConnection -LocalPort $Port -ErrorAction Stop).Count -gt 0 } catch { $busy = $false }
+  return (-not $busy)
+}
+
+function Kill-ServiceProcesses {
+  param([string]$Filter, [int]$Port)
+  try {
+    $procs = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
+      ($_.Name -match 'node|powershell|pwsh|cmd') -and ($_.CommandLine -match [regex]::Escape($Filter))
+    }
+    foreach ($p in $procs) { try { Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue } catch {} }
+  } catch {}
+  if ($Port -gt 0) { Kill-Port -Port $Port | Out-Null; Ensure-Port-Free -Port $Port | Out-Null }
+}
+
 function Ensure-MySql {
   if (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 800) { Write-Ok 'MySQL already listening on 127.0.0.1:3306'; return }
   $mysqlAdmin = $null
@@ -79,7 +109,14 @@ function Start-ServiceDev([string]$filter, [string]$healthUrl, [string]$name, [i
   }
   New-Item -Force -ItemType Directory -Path (Split-Path $logFile -Parent) | Out-Null
   # Garantiza puerto libre antes de iniciar
-  try { $uri=[uri]$healthUrl; if ($uri.Port -gt 0) { Kill-Port -Port $uri.Port } } catch {}
+  try {
+    $uri = [uri]$healthUrl
+    if ($uri.Port -gt 0) {
+      # matar por filtro y puerto (defensivo por EADDRINUSE en Windows)
+      Kill-ServiceProcesses -Filter $filter -Port $uri.Port
+      Ensure-Port-Free -Port $uri.Port | Out-Null
+    }
+  } catch {}
   # Permite forzar modo estable (node dist) para servicios sensibles o todos
   $scriptToRun = if ($useStartScript) { 'start' } else { 'dev' }
   # Si vamos a usar start, hacemos build primero

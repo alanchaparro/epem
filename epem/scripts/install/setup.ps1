@@ -97,6 +97,118 @@ function Find-MySqlExe(){
   return $null
 }
 
+# --- Utilidades para entrevista interactiva de motor MySQL ---
+function Test-TcpPortOpen([string]$addr, [int]$port, [int]$timeoutMs=800){
+  try {
+    $client = New-Object System.Net.Sockets.TcpClient
+    $iar = $client.BeginConnect($addr, $port, $null, $null)
+    if($iar.AsyncWaitHandle.WaitOne($timeoutMs, $false)){
+      $client.EndConnect($iar); $client.Close(); return $true
+    }
+    $client.Close(); return $false
+  } catch { return $false }
+}
+
+function Detect-XamppMysqld(){
+  $p = 'C:\\xampp\\mysql\\bin\\mysqld.exe'
+  if (Test-Path $p) { return $p } else { return $null }
+}
+
+function Detect-MySqlService(){
+  try {
+    $svc = Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^(MySQL|mysql|MariaDB).+' -or $_.DisplayName -match 'MySQL|MariaDB' }
+    if ($svc) { return ($svc | Select-Object -First 1) }
+  } catch {}
+  return $null
+}
+
+function Detect-Docker(){
+  try { docker version 1>$null 2>$null; return ($LASTEXITCODE -eq 0) } catch { return $false }
+}
+
+function Ensure-XamppMySql(){
+  $mysqld = Detect-XamppMysqld
+  if (-not $mysqld) { return $false }
+  if (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 600) { return $true }
+  Info 'Iniciando MySQL de XAMPP en background...'
+  try {
+    Start-Process -FilePath $mysqld -ArgumentList '--standalone' -WindowStyle Hidden | Out-Null
+    $deadline=(Get-Date).AddSeconds(20)
+    while((Get-Date) -lt $deadline){ if (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 500) { return $true } Start-Sleep -Milliseconds 500 }
+  } catch {}
+  return $false
+}
+
+function Ensure-MySqlService(){
+  $svc = Detect-MySqlService
+  if (-not $svc) { return $false }
+  try {
+    if ($svc.Status -ne 'Running') { Start-Service -Name $svc.Name -ErrorAction SilentlyContinue }
+  } catch {}
+  $deadline=(Get-Date).AddSeconds(20)
+  while((Get-Date) -lt $deadline){ if (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 500) { return $true } Start-Sleep -Milliseconds 500 }
+  return (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 500)
+}
+
+function Ensure-DockerMySql([int]$HostPort=3306, [string]$RootPassword='root'){
+  if (-not (Detect-Docker)) { return $false }
+  try {
+    $existing = (docker ps -a --filter "name=^/epem-mysql$" --format '{{.Names}}')
+    if ($existing -eq 'epem-mysql') {
+      docker start epem-mysql | Out-Null
+    } else {
+      Info "Levantando contenedor MySQL (mysql:8.0) en puerto $HostPort..."
+      docker run -d --name epem-mysql -p "$HostPort:3306" -e "MYSQL_ROOT_PASSWORD=$RootPassword" mysql:8.0 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci | Out-Null
+    }
+    $deadline=(Get-Date).AddSeconds(30)
+    while((Get-Date) -lt $deadline){ if (Test-TcpPortOpen -addr '127.0.0.1' -port $HostPort -timeoutMs 700) { return $true } Start-Sleep -Milliseconds 700 }
+  } catch {}
+  return $false
+}
+
+function Interview-EnsureMySqlEngine([ref]$defaults){
+  $hasXampp = [bool](Detect-XamppMysqld)
+  $svc = Detect-MySqlService
+  $hasService = [bool]$svc
+  $hasDocker = Detect-Docker
+
+  Write-Host 'Detecté lo siguiente en tu equipo:' -ForegroundColor Cyan
+  Write-Host (" - XAMPP MySQL:      {0}" -f ($(if($hasXampp){'sí'}else{'no'})))
+  Write-Host (" - Servicio MySQL:   {0}{1}" -f ($(if($hasService){'sí'}else{'no'})), $(if($hasService){" (" + $svc.Name + ")"}else{''}))
+  Write-Host (" - Docker disponible: {0}" -f ($(if($hasDocker){'sí'}else{'no'})))
+
+  $defaultChoice = if ($hasXampp) { '1' } elseif ($hasService) { '2' } elseif ($hasDocker) { '3' } else { '4' }
+  $choice = Read-Host ("Selecciona motor para MySQL: [1] XAMPP, [2] Servicio, [3] Docker, [4] Ninguno (manual) [$defaultChoice]")
+  if ([string]::IsNullOrWhiteSpace($choice)) { $choice = $defaultChoice }
+
+  switch ($choice) {
+    '1' {
+      if (-not $hasXampp) { Warn 'No se detectó XAMPP. Continuando sin iniciar MySQL.'; break }
+      if (Ensure-XamppMySql) { Ok 'MySQL (XAMPP) arriba en 127.0.0.1:3306' } else { Warn 'No fue posible iniciar MySQL de XAMPP.' }
+    }
+    '2' {
+      if (-not $hasService) { Warn 'No se detectó servicio MySQL/MariaDB.'; break }
+      if (Ensure-MySqlService) { Ok ("Servicio {0} arriba en 127.0.0.1:3306" -f $svc.Name) } else { Warn 'No fue posible iniciar el servicio MySQL.' }
+    }
+    '3' {
+      if (-not $hasDocker) { Warn 'Docker no está disponible.'; break }
+      # Ajustar defaults para Docker
+      $defaults.Value['DATABASE_HOST'] = '127.0.0.1'
+      $defaults.Value['DATABASE_PORT'] = '3306'
+      $defaults.Value['DATABASE_USER'] = 'root'
+      $defaults.Value['DATABASE_PASSWORD'] = 'root'
+      if (Ensure-DockerMySql -HostPort 3306 -RootPassword 'root') { Ok 'MySQL (Docker) arriba en 127.0.0.1:3306 (root/root)' } else { Warn 'No fue posible levantar MySQL en Docker.' }
+    }
+    Default {
+      Warn 'Seleccionado: Ninguno. El instalador no iniciará MySQL; deberás tenerlo disponible.'
+      Write-Host 'Opciones rápidas:' -ForegroundColor DarkYellow
+      Write-Host ' - Instalar XAMPP:   winget install -e --id ApacheFriends.XAMPP' -ForegroundColor DarkYellow
+      Write-Host ' - Instalar MySQL:   winget install -e --id Oracle.MySQL' -ForegroundColor DarkYellow
+      Write-Host ' - Instalar Docker:  winget install -e --id Docker.DockerDesktop' -ForegroundColor DarkYellow
+    }
+  }
+}
+
 function Test-MySqlConnection([string]$DbHost,[int]$DbPort,[string]$DbUser,[string]$DbPass){
   $mysql = Find-MySqlExe
   if (-not $mysql){
@@ -148,6 +260,9 @@ try {
     }
   }
 } catch {}
+
+# Paso previo: intentar ayudar a provisionar o arrancar MySQL
+try { Interview-EnsureMySqlEngine ([ref]$defaults) } catch { Warn ("Entrevista de MySQL falló: " + $_.Exception.Message) }
 
 $dbHost = Prompt-Value 'DB host' $defaults.DATABASE_HOST
 $dbPort = Prompt-Value 'DB port' $defaults.DATABASE_PORT
@@ -214,6 +329,8 @@ $envMap = @{
   BILLING_SERVICE_URL = (Coalesce $existing['BILLING_SERVICE_URL'] 'http://localhost:3040')
 
   NEXT_PUBLIC_API_URL = (Coalesce $existing['NEXT_PUBLIC_API_URL'] 'http://localhost:4000')
+  CORS_ORIGIN        = (Coalesce $existing['CORS_ORIGIN'] 'http://localhost:3000')
+  DEFAULT_ORIGIN     = (Coalesce $existing['DEFAULT_ORIGIN'] 'http://localhost:3000')
   TRUSTED_PROXY_IPS = (Coalesce $existing['TRUSTED_PROXY_IPS'] '127.0.0.1,::1,::ffff:127.0.0.1')
 }
 

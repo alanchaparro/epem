@@ -83,6 +83,9 @@ Ensure-Pnpm
 Ensure-EnvFile
 Ensure-Dependencies
 
+# Permite deshabilitar fallback a Docker Compose
+$DisableComposeFallback = ($env:QA_DISABLE_COMPOSE_FALLBACK -eq 'true')
+
 Info 'Limpiando servicios previos (stop-dev)...'
 try {
   powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts | Out-Null
@@ -143,17 +146,20 @@ if ($qaExit -ne 0) {
 
 if ($qaExit -ne 0) {
   Warn 'QA no pasó el gate tras reintento automático.'
-  # Fallback automático: si Docker está disponible, intentamos stack Compose Dev completo
-  try {
-    docker version | Out-Null
-    Warn 'Activando fallback Compose Dev (contenedores) para garantizar PASS...'
-    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts
-    $composeArgs = @()
-    if ($NoSeeds) { $composeArgs += '-NoSeeds' }
-    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'quickstart-compose-dev.ps1') @composeArgs
-    return
-  } catch {
-    throw 'QA no pasó y Docker no está disponible para fallback. Revisa docs/qa/*-report.md'
+  if (-not $DisableComposeFallback) {
+    try {
+      docker version | Out-Null
+      Warn 'Activando fallback Compose Dev (contenedores) para garantizar PASS...'
+      powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts
+      $composeArgs = @()
+      if ($NoSeeds) { $composeArgs += '-NoSeeds' }
+      powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'quickstart-compose-dev.ps1') @composeArgs
+      return
+    } catch {
+      throw 'QA no pasó y Docker no está disponible para fallback. Revisa docs/qa/*-report.md'
+    }
+  } else {
+    Warn 'Fallback Compose desactivado por QA_DISABLE_COMPOSE_FALLBACK=true'
   }
 }
 
@@ -169,14 +175,19 @@ try {
 } catch { $gateExit = 1 }
 
 if ($gateExit -ne 0) {
-  Warn 'QA Gate en FAIL. Intentando fallback Compose Dev para garantizar PASS...'
-  try {
-    docker version | Out-Null
-    # detener cualquier resto y levantar compose-dev que ya ejecuta QA + gate
-    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts | Out-Null
-    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'quickstart-compose-dev.ps1') @()
-    return
-  } catch {
-    throw 'QA Gate en FAIL y Docker Compose no disponible para fallback. Revisa docs/qa/*-report.md'
+  if (-not $DisableComposeFallback) {
+    Warn 'QA Gate en FAIL. Intentando fallback Compose Dev para garantizar PASS...'
+    try {
+      docker version | Out-Null
+      # detener cualquier resto y levantar compose-dev que ya ejecuta QA + gate
+      powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts | Out-Null
+      powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'quickstart-compose-dev.ps1') @()
+      return
+    } catch {
+      throw 'QA Gate en FAIL y Docker Compose no disponible para fallback. Revisa docs/qa/*-report.md'
+    }
+  } else {
+    Warn 'QA Gate FAIL. Fallback Compose desactivado por QA_DISABLE_COMPOSE_FALLBACK=true'
   }
 }
+

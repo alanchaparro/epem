@@ -2,19 +2,19 @@
     {
         "name":  "Gateway /health responde",
         "expected":  true,
-        "actual":  "http://localhost:4000/health",
+        "actual":  "http://127.0.0.1:4000/health",
         "pass":  true
     },
     {
         "name":  "Users-service /api/health responde",
         "expected":  true,
-        "actual":  "http://localhost:3020/api/health",
+        "actual":  "http://127.0.0.1:3020/api/health",
         "pass":  true
     },
     {
         "name":  "Patients-service /health responde",
         "expected":  true,
-        "actual":  "http://localhost:3010/health",
+        "actual":  "http://127.0.0.1:3010/health",
         "pass":  true
     },
     {
@@ -38,7 +38,7 @@
     {
         "name":  "Crear paciente devuelve id",
         "expected":  true,
-        "actual":  "be11836f-08d2-49d4-965e-37b3f3d2f85b",
+        "actual":  "7d4b3ae5-f2b0-434c-a557-36b38c9e90cc",
         "pass":  true
     },
     {
@@ -62,7 +62,7 @@
     {
         "name":  "Crear prestacion devuelve id",
         "expected":  true,
-        "actual":  "5e1afab6-f213-47ba-9f34-405567d1fab4",
+        "actual":  "02633400-ee97-4c29-91fe-9c34bdeadc4d",
         "pass":  true
     },
     {
@@ -80,7 +80,7 @@
     {
         "name":  "Crear aseguradora devuelve id",
         "expected":  true,
-        "actual":  "18cc6642-907d-4bf6-b219-5b75c83955a4",
+        "actual":  "ddac3736-fca8-45a1-8e52-aef1b57b2056",
         "pass":  true
     },
     {
@@ -92,7 +92,7 @@
     {
         "name":  "Crear cobertura devuelve id",
         "expected":  true,
-        "actual":  "bfd03340-c5ab-44fd-a6dc-e938632f1a3c",
+        "actual":  "287a6983-bdc0-4b3a-8d7a-0bb47435e431",
         "pass":  true
     },
     {
@@ -122,7 +122,7 @@
     {
         "name":  "Se creo autorizacion vinculada a la orden",
         "expected":  true,
-        "actual":  "a6fa1010-ea08-4494-8fe9-80347086a861",
+        "actual":  "baf152e9-1ea5-4ef8-9239-e884ec5f2691",
         "pass":  true
     },
     {
@@ -164,7 +164,7 @@
     {
         "name":  "Dashboard metricas disponibles",
         "expected":  true,
-        "actual":  82,
+        "actual":  85,
         "pass":  true
     },
     {

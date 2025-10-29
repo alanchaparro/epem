@@ -57,6 +57,20 @@ function Ensure-Database {
   if ($Cfg.Port) { $args += @('-P', $Cfg.Port) }
   if ($Cfg.User) { $args += @('-u', $Cfg.User) }
   if ($null -ne $Cfg.Password -and $Cfg.Password -ne '') { $args += @("-p$($Cfg.Password)") }
+  if ($script:UseDockerMySql) {
+    $host = if ($Cfg.Host -eq 'localhost') { '127.0.0.1' } else { $Cfg.Host }
+    $dockArgs = @('exec','-i','epem-mysql','mysql','-N','-s','-h', $host, '-P', $Cfg.Port, '-u', $Cfg.User)
+    if ($null -ne $Cfg.Password -and $Cfg.Password -ne '') { $dockArgs += @("-p$($Cfg.Password)") }
+    $exists = docker @($dockArgs + @('-e',"SHOW DATABASES LIKE '$($Cfg.Database)';")) 2>$null
+    if (-not ($exists -match "^$([regex]::Escape($Cfg.Database))$")) {
+      Write-Host "Creando base de datos $($Cfg.Database)" -ForegroundColor Cyan
+      $create = "CREATE DATABASE IF NOT EXISTS $($Cfg.Database) CHARACTER SET utf8mb4;"
+      docker @($dockArgs + @('-e',$create)) | Out-Null
+    } else {
+      Write-Host "BD $($Cfg.Database) OK" -ForegroundColor DarkGreen
+    }
+    return
+  }
   $exists = & $MysqlExe @($args + @("SHOW DATABASES LIKE '$($Cfg.Database)';")) 2>$null
   if (-not ($exists -match "^$([regex]::Escape($Cfg.Database))$")) {
     Write-Host "Creando base de datos $($Cfg.Database)" -ForegroundColor Cyan
@@ -70,7 +84,23 @@ function Ensure-Database {
 $root = Resolve-Path "$PSScriptRoot/../.." | ForEach-Object { $_.Path }
 $envs = Load-DotEnv -Path (Join-Path $root '.env')
 $mysql = Find-MySqlExe
-if (-not $mysql) { Write-Error 'mysql.exe no encontrado. Instalar XAMPP o agregar a PATH.'; exit 1 }
+$script:UseDockerMySql = $false
+if (-not $mysql) {
+  # Fallback: usar MySQL en contenedor si existe epem-mysql y Docker disponible
+  try {
+    docker version 1>$null 2>$null
+    if ($LASTEXITCODE -eq 0) {
+      $exists = (docker ps -a --filter "name=^/epem-mysql$" --format '{{.Names}}')
+      if (-not $exists) {
+        Write-Warning 'mysql.exe no encontrado. Intentando fallback con Docker (contenedor epem-mysql)...'
+        docker run -d --name epem-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci | Out-Null
+        Start-Sleep -Seconds 5
+      }
+      $running = (docker ps --filter "name=^/epem-mysql$" --format '{{.Names}}')
+      if ($running -eq 'epem-mysql') { $script:UseDockerMySql = $true } else { Write-Error 'No hay MySQL y Docker fallback no disponible.'; exit 1 }
+    } else { Write-Error 'mysql.exe no encontrado y Docker no disponible.'; exit 1 }
+  } catch { Write-Error 'mysql.exe no encontrado y Docker no disponible.'; exit 1 }
+}
 
 $urls = @(
   $envs['USERS_SERVICE_DATABASE_URL'],

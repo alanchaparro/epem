@@ -13,6 +13,26 @@ $pidsFile = Join-Path $root '.tmp/dev-pids.json'
 
 if (-not (Test-Path $pidsFile)) {
   Write-Warn "No pids file found at $pidsFile (nothing to kill)."
+  # Fallback: matar procesos por puertos conocidos
+  try {
+    Write-Info 'Killing known service ports (fallback)'
+    $ports = @(3000,3001,4000,3010,3020,3030,3040)
+    foreach($p in $ports){
+      try {
+        $conns = Get-NetTCPConnection -LocalPort $p -ErrorAction Stop
+        if ($conns) {
+          $pids = $conns.OwningProcess | Sort-Object -Unique
+          foreach ($pid in $pids) { try { Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue } catch {} }
+        }
+      } catch {
+        $lines = netstat -ano | Select-String ":$p"
+        foreach ($line in $lines) {
+          $pid = ($line.ToString() -split '\s+')[-1]
+          if ($pid -match '^[0-9]+$') { try { taskkill /PID $pid /F | Out-Null } catch {} }
+        }
+      }
+    }
+  } catch {}
 } else {
   try {
     $json = Get-Content -Raw -Encoding UTF8 $pidsFile | ConvertFrom-Json

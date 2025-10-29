@@ -1,39 +1,41 @@
 {
-    "name": "@epem/web",
-    "version": "0.1.0",
-    "private": true,
-    "description": "Frontend Next.js para la plataforma EPEM.",
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "tsc --project tsconfig.json --noEmit",
-        "test": "playwright test --reporter=list",
-        "test:e2e": "playwright test",
-        "test:e2e:ui": "playwright test --ui",
-        "pw:install": "playwright install --with-deps"
-    },
-    "dependencies": {
-        "@hookform/resolvers": "^3.3.4",
-        "@tanstack/react-query": "^5.0.0",
-        "axios": "^1.6.0",
-        "next": "14.2.32",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "react-hook-form": "^7.52.1",
-        "react-hot-toast": "^2.4.1",
-        "zod": "^3.23.8"
-    },
-    "devDependencies": {
-        "@playwright/test": "^1.47.0",
-        "@types/node": "^20.14.12",
-        "@types/react": "^18.2.0",
-        "@types/react-dom": "^18.2.0",
-        "autoprefixer": "^10.4.0",
-        "eslint": "^8.57.1",
-        "eslint-config-next": "14.2.32",
-        "postcss": "^8.4.0",
-        "tailwindcss": "^3.3.0",
-        "typescript": "^5.3.3"
-    }
+  "name": "@epem/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend Next.js para la plataforma EPEM.",
+  "scripts": {
+    "dev": "next dev -p 3000 -H 127.0.0.1",
+    "build": "next build",
+    "start": "next start -p 3000 -H 127.0.0.1",
+    "lint": "tsc --project tsconfig.json --noEmit",
+    "test": "playwright test --reporter=list",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "pw:install": "playwright install --with-deps",
+    "api:gen": "openapi-typescript http://localhost:4000/docs-json -o lib/openapi.d.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.6.0",
+    "next": "14.2.32",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.52.1",
+    "react-hot-toast": "^2.4.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^20.14.12",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.32",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.3.3",
+    "openapi-typescript": "^7.4.3"
+  }
 }

@@ -12,23 +12,32 @@ datasource db {
   url      = env("USERS_SERVICE_DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  SUPERVISOR
-  DOCTOR
-  NURSE
-  STAFF
-  BILLING
-}
-
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
   passwordHash String
   firstName    String
   lastName     String
-  role         UserRole @default(STAFF)
+  role         String   @db.VarChar(32)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([role])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model RolePolicy {
+  id          String   @id @default(uuid())
+  role        String   @unique @db.VarChar(32)
+  permissions Json
+  updatedAt   DateTime @updatedAt
+}
+
+model RoleMeta {
+  id          String   @id @default(uuid())
+  role        String   @unique @db.VarChar(32)
+  displayName String
+  updatedAt   DateTime @updatedAt
 }

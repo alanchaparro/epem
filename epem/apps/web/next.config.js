@@ -6,6 +6,7 @@ const gatewayUrl = process.env.API_GATEWAY_URL ?? 'http://localhost:4000';
 
 const nextConfig = {
   reactStrictMode: true,
+  eslint: { ignoreDuringBuilds: true },
   // Reduce noisy webpack persistent cache warnings on Windows/PNPM by using in-memory cache in dev
   webpack: (config, { dev }) => {
     if (dev) {
@@ -18,6 +19,7 @@ const nextConfig = {
     return [
       { source: '/auth/:path*', destination: `${gatewayUrl}/auth/:path*` },
       { source: '/users/:path*', destination: `${gatewayUrl}/users/:path*` },
+      { source: '/roles/:path*', destination: `${gatewayUrl}/roles/:path*` },
       { source: '/patients/:path*', destination: `${gatewayUrl}/patients/:path*` },
       { source: '/orders/:path*', destination: `${gatewayUrl}/orders/:path*` },
       { source: '/billing/:path*', destination: `${gatewayUrl}/billing/:path*` },

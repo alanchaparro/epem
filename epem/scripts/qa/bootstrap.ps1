@@ -98,8 +98,24 @@ function Should-GeneratePrismaClient {
   }
 }
 
+function Clear-PrismaTempLocks {
+  param([string]$ServicePath)
+  $clientDir = Join-Path $ServicePath 'generated/client'
+  if (-not (Test-Path $clientDir)) { return }
+  try {
+    & cmd /c "attrib -R `"$clientDir\*.*`" /S /D" | Out-Null
+  } catch {}
+  try {
+    Get-ChildItem -LiteralPath $clientDir -Filter '*.tmp*' -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+  } catch {}
+  $engine = Join-Path $clientDir 'query_engine-windows.dll.node'
+  if (Test-Path $engine) {
+    try { Remove-Item -Force $engine -ErrorAction SilentlyContinue } catch {}
+  }
+}
+
 function Invoke-PrismaGenerateWithRetry {
-  param([string]$ServicePath, [int]$Max = 3)
+  param([string]$ServicePath, [int]$Max = 6)
   pushd $ServicePath
   $shouldGenerate = Should-GeneratePrismaClient -ServicePath $ServicePath
   if (-not $shouldGenerate) {
@@ -109,14 +125,17 @@ function Invoke-PrismaGenerateWithRetry {
   }
   for ($i = 1; $i -le $Max; $i++) {
     try {
-      $engine = Join-Path $ServicePath 'generated/client/query_engine-windows.dll.node'
-      if (Test-Path $engine) { Remove-Item -Force $engine -ErrorAction SilentlyContinue }
+      Clear-PrismaTempLocks -ServicePath $ServicePath
+      $env:PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = '1'
       npx prisma generate --schema prisma/schema.prisma
+      Write-Host "Prisma client generado OK en $ServicePath" -ForegroundColor DarkGreen
       popd
       return
     } catch {
       if ($i -eq $Max) { popd; throw }
-      Start-Sleep -Milliseconds 700
+      $delay = [int](700 * [math]::Pow(1.6, ($i-1)))
+      Write-Warning "Retry prisma generate ($i/$Max) en $ServicePath tras error: $($_.Exception.Message)"
+      Start-Sleep -Milliseconds $delay
     }
   }
 }

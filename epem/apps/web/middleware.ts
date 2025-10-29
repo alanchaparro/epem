@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const isProtected = url.pathname.startsWith('/profile') || url.pathname.startsWith('/dashboard');
+  const protectedPrefixes = ['/profile', '/dashboard', '/patients', '/catalog', '/insurers', '/orders', '/authorizations', '/invoices', '/admin'];
+  const isProtected = protectedPrefixes.some((p) => url.pathname.startsWith(p));
 
   if (isProtected) {
     const hasRefresh = req.cookies.get('epem_rt');
@@ -16,6 +17,15 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile/:path*', '/dashboard/:path*'],
+  matcher: [
+    '/profile/:path*',
+    '/dashboard/:path*',
+    '/patients/:path*',
+    '/catalog/:path*',
+    '/insurers/:path*',
+    '/orders/:path*',
+    '/authorizations/:path*',
+    '/invoices/:path*',
+    '/admin/:path*',
+  ],
 };
-

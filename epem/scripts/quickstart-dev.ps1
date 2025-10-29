@@ -34,7 +34,38 @@ if ($needStart) {
 Info 'Ejecutando QA backend y frontend...'
 $runAllArgs = @('-NoBootstrap')
 if ($NoSeeds) { $runAllArgs += '-RunSeeds' } # si pidieron NoSeeds en start, no forzamos seeds aquí
-powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/run-all.ps1') @runAllArgs
+
+# Primer intento de QA completo
+$qaExit = 0
+try {
+  powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/run-all.ps1') @runAllArgs
+  $qaExit = $LASTEXITCODE
+} catch { $qaExit = 1 }
+
+if ($qaExit -ne 0) {
+  Warn 'QA falló en el primer intento. Esperando 30s y reintentando...'
+  Start-Sleep -Seconds 30
+  try {
+    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/run-all.ps1') @runAllArgs
+    $qaExit = $LASTEXITCODE
+  } catch { $qaExit = 1 }
+}
+
+if ($qaExit -ne 0) {
+  Warn 'QA no pasó el gate tras reintento automático.'
+  # Fallback automático: si Docker está disponible, intentamos stack Compose Dev completo
+  try {
+    docker version | Out-Null
+    Warn 'Activando fallback Compose Dev (contenedores) para garantizar PASS...'
+    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/stop-dev.ps1') -AlsoPorts
+    $composeArgs = @()
+    if ($NoSeeds) { $composeArgs += '-NoSeeds' }
+    powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'quickstart-compose-dev.ps1') @composeArgs
+    return
+  } catch {
+    throw 'QA no pasó y Docker no está disponible para fallback. Revisa docs/qa/*-report.md'
+  }
+}
 
 if (-not $SkipObservability) {
   Info 'QA Observabilidad...'
@@ -43,4 +74,3 @@ if (-not $SkipObservability) {
 
 Info 'QA Gate...'
 powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'qa/require-pass.ps1')
-

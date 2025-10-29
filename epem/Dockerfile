@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache libc6-compat && npm install -g pnpm@8
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
@@ -11,7 +11,7 @@ FROM base AS build
 ARG PACKAGE
 RUN pnpm --filter ${PACKAGE} build
 
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache libc6-compat && npm install -g pnpm@8
 ENV NODE_ENV=production
@@ -24,5 +24,7 @@ COPY --from=base /app/services ./services
 COPY --from=base /app/scripts ./scripts
 COPY --from=build /app/apps ./apps
 COPY --from=build /app/services ./services
+RUN pnpm prune --prod || true
+USER node
 ARG PACKAGE
 CMD ["pnpm", "--filter", "${PACKAGE}", "start:prod"]

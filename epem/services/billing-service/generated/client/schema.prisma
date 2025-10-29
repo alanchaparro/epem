@@ -17,6 +17,8 @@ model Insurer {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   coverages Coverage[]
+
+  @@index([name])
 }
 
 model Coverage {

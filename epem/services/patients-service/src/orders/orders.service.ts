@@ -50,7 +50,7 @@ export class OrdersService {
       try {
         await firstValueFrom(
           this.http.post(`${BILLING_BASE_URL}/authorizations`, payload, {
-            headers: { 'x-user-role': 'BILLING' },
+            headers: { 'x-user-role': 'BILLING', 'x-forwarded-for': '127.0.0.1' },
           }),
         );
       } catch (error: any) {

@@ -29,7 +29,7 @@ export class AuthController {
     const domain = process.env.COOKIE_DOMAIN || undefined;
     const options: Record<string, unknown> = {
       httpOnly: true,
-      secure: secureFlag,
+      secure: sameSite === 'none' ? true : secureFlag,
       sameSite,
       domain,
       path: '/',
@@ -64,6 +64,10 @@ export class AuthController {
       res.cookie('epem_rt', data.refreshToken, this.cookieOptions(ttl));
       delete data.refreshToken;
     }
+    if (data?.accessToken && (process.env.ACCESS_TOKEN_COOKIE_ENABLED === 'true')) {
+      const ttl = parseInt(process.env.ACCESS_TOKEN_TTL ?? process.env.ACCESS_TOKEN_TTL ?? '900', 10);
+      res.cookie('epem_at', data.accessToken, this.cookieOptions(ttl));
+    }
     return data;
   }
 
@@ -96,6 +100,10 @@ export class AuthController {
       res.cookie('epem_rt', data.refreshToken, this.cookieOptions(ttl));
       delete data.refreshToken;
     }
+    if (data?.accessToken && (process.env.ACCESS_TOKEN_COOKIE_ENABLED === 'true')) {
+      const ttl = parseInt(process.env.ACCESS_TOKEN_TTL ?? '900', 10);
+      res.cookie('epem_at', data.accessToken, this.cookieOptions(ttl));
+    }
     return data;
   }
 
@@ -104,6 +112,10 @@ export class AuthController {
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     res.cookie('epem_rt', '', {
+      ...this.cookieOptions(),
+      maxAge: 0,
+    });
+    res.cookie('epem_at', '', {
       ...this.cookieOptions(),
       maxAge: 0,
     });

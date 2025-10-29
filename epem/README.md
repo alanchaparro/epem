@@ -1,6 +1,10 @@
 ﻿# EPEM — Plataforma de Emergencias Médicas
 
-Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar localmente y migrar a un VPS. El dominio funcional se organiza en cuatro pilares:
+Quickstart
+- Desarrollo: `pnpm dev:one` (Windows) | `bash scripts/quickstart-dev-linux.sh` (Linux)
+- Producción-like (VPS Linux): `bash scripts/quickstart-prod-linux.sh --with-obs`
+
+ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar localmente y migrar a un VPS. El dominio funcional se organiza en cuatro pilares:
 
 1. Pacientes
 2. Usuarios y roles
@@ -31,6 +35,11 @@ Microservicios en Node.js/NestJS y frontend en Next.js 14 pensados para operar l
 `
 
 ## Deploy rápido (Compose) — recomendado
+Atajo (Linux/VPS en un paso):
+`
+bash scripts/quickstart-prod-linux.sh --with-obs   # opcional Prometheus/Grafana
+# o si tienes pnpm: pnpm deploy:prod:linux -- --with-obs
+`
 1) Copia y completa variables:
 `
 cp .env.prod.example .env.prod   # o Copy-Item .env.prod.example .env.prod en PowerShell
@@ -53,6 +62,12 @@ Servicios: Web http://localhost:8080, API Gateway http://localhost:4000, Grafana
 Cross‑platform en un paso (no interactivo): `pnpm deploy -y`.
 Windows en un paso: `pnpm deploy:quick` (copia .env.prod si falta, bootstrap, levanta Compose y corre QA).
 Linux/macOS en un paso: `pnpm deploy:quick:sh`.
+
+Detener (Linux/VPS):
+`
+pnpm deploy:prod:down:linux            # docker compose --env-file .env.prod down
+pnpm deploy:prod:down:linux:volumes    # incluye -v (borra volúmenes)
+`
 
 Opcional (flags):
 - Windows PowerShell: `pnpm deploy:quick -- -NoBootstrap -EnvFile .env.staging -TimeoutSec 240`
@@ -119,6 +134,9 @@ Opcional (flags):
   - pnpm --filter @epem/users-service prisma:migrate — Aplica migraciones en entornos productivos.
   - pnpm git:hooks — Configura hooks locales opcionales (desactivados por defecto).
   - pnpm deploy:check — Ejecuta QA backend+frontend tras un deploy.
+  - pnpm deploy:prod:linux — Quickstart producción-like en Linux (nginx 8080, genera secretos si faltan).
+  - pnpm deploy:prod:down:linux — Down de compose de prod (con .env.prod).
+  - pnpm deploy:prod:down:linux:volumes — Down con -v.
 
 ## QA & Diagnóstico
 - Batería completa (Windows):
@@ -152,6 +170,8 @@ Opcional (flags):
 - /patients, /patients/new, /patients/:id
 - /catalog, /catalog/new, /catalog/:id
 - /insurers, /insurers/:id/coverage
+- /admin/users (solo ADMIN): listado, alta, cambio de rol y activacin
+- /admin/roles (solo ADMIN): edicin de permisos por m3dulo (read/write)
 
 ## Migración a VPS (resumen)
 1. Contenerizar con Docker Compose (MySQL + microservicios + frontend).
@@ -171,14 +191,20 @@ Opcional (flags):
 
 
 ### Comando único de desarrollo
-Para levantar todo y ejecutar QA en tu máquina local:
-
-- \\pnpm dev:one\\`n
-Genera reportes en docs/qa/ y valida el gate.
-
+Windows (local):
+`
+pnpm dev:one
+`
+Linux/VPS (100% contenedores):
+`
+bash scripts/quickstart-dev-linux.sh
+# o con pnpm: pnpm dev:one:linux
+`
+Detener (dev overlay): `pnpm stop:compose`.
 
 ### Comando Docker (desarrollo)
 Si prefieres MySQL en contenedor y servicios locales:
-
-- \\pnpm dev:docker\\`n
+`
+pnpm dev:docker
+`
 Variantes: pnpm dev:docker -- -WithObs para Prometheus/Grafana. Para bajar contenedores: pnpm stop:docker.

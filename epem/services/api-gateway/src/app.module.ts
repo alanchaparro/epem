@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { PrometheusInterceptor, PrometheusService, PROMETHEUS_OPTIONS, RolesGuard } from '@epem/nest-common';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { PrometheusInterceptor, PrometheusService, PROMETHEUS_OPTIONS, RolesGuard, ProblemDetailsFilter } from '@epem/nest-common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
@@ -16,18 +16,16 @@ import { OrdersProxyController } from './orders/orders.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AnalyticsController } from './analytics/analytics.controller';
 import { MetricsController } from './metrics/metrics.controller';
+import { RolesProxyController } from './roles/roles.controller';
+import { validateEnv } from './config/env.validation';
+import { HttpConfigurer } from './common/http-configurer';
 
-/**
- * Modulo raiz del API Gateway.
- * - Carga variables de entorno (.env) a nivel global.
- * - Registra HttpModule para comunicarse con los microservicios.
- * - Declara controladores de salud, auth, users-proxy y patients-proxy.
- */
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['../../.env', '.env'],
+      validate: validateEnv,
     }),
     HttpModule,
     JwtModule.register({
@@ -51,9 +49,11 @@ import { MetricsController } from './metrics/metrics.controller';
     OrdersProxyController,
     AnalyticsController,
     MetricsController,
+    RolesProxyController,
   ],
   providers: [
     AppService,
+    HttpConfigurer,
     {
       provide: PROMETHEUS_OPTIONS,
       useValue: { defaultServiceName: 'api-gateway' },
@@ -75,7 +75,10 @@ import { MetricsController } from './metrics/metrics.controller';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    {
+      provide: APP_FILTER,
+      useClass: ProblemDetailsFilter,
+    },
   ],
 })
 export class AppModule {}
-

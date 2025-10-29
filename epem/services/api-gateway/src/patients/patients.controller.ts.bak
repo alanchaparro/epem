@@ -1,0 +1,60 @@
+import { mapAxiosError } from '../common/http-error.util';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { catchError, firstValueFrom } from 'rxjs';
+import type { Request } from 'express';
+import { Roles } from '@epem/nest-common';
+import { signGatewayHeaders } from '../common/signing.util';
+
+type AuthenticatedRequest = Request & { user?: { sub?: string; id?: string; role?: string } };
+
+@Controller('patients')
+@Roles('ADMIN', 'SUPERVISOR', 'DOCTOR', 'NURSE', 'STAFF')
+export class PatientsProxyController {
+  constructor(private readonly http: HttpService) {}
+
+  private baseUrl() {
+    return process.env.PATIENTS_SERVICE_URL ?? 'http://localhost:3010';
+  }
+
+  private buildHeaders(
+    authorization?: string,
+    user?: { sub?: string; id?: string; role?: string },
+    requestId?: string,
+    method?: string,
+    urlPath?: string,
+  ) {
+    const headers: Record<string, string> = {};
+    if (authorization) {
+      headers.authorization = authorization;
+    }
+    const userId = user?.sub ?? user?.id;
+    if (userId) {
+      headers['x-user-id'] = userId.toString();
+    }
+    if (user?.role) {
+      headers['x-user-role'] = user.role.toString();
+    }
+    if (requestId) headers['x-request-id'] = requestId;
+    // Firmar encabezados si hay secreto compartido
+    if (method && urlPath) {
+      const signed = signGatewayHeaders({ method, urlPath, userId, role: user?.role });
+      Object.assign(headers, signed);
+    }
+    return headers;
+  }
+
+  @Post()
+  async create(

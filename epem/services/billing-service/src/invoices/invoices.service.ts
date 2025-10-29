@@ -110,7 +110,7 @@ export class InvoicesService {
     try {
       const { data } = await firstValueFrom(
         this.http.get(`${PATIENTS_BASE_URL}/orders/${orderId}`, {
-          headers: { 'x-user-role': 'BILLING' },
+          headers: { 'x-user-role': 'BILLING', 'x-forwarded-for': '127.0.0.1' },
         }),
       );
       return data;
@@ -135,7 +135,7 @@ export class InvoicesService {
     try {
       const { data } = await firstValueFrom(
         this.http.get(`${CATALOG_BASE_URL}/catalog/items/${serviceItemId}`, {
-          headers: { 'x-user-role': 'BILLING' },
+          headers: { 'x-user-role': 'BILLING', 'x-forwarded-for': '127.0.0.1' },
         }),
       );
       return parseBasePrice(data);
@@ -146,7 +146,7 @@ export class InvoicesService {
           const response = await firstValueFrom(
             this.http.get(`${CATALOG_BASE_URL}/catalog/items`, {
               params: { q: serviceItemId, take: 1 },
-              headers: { 'x-user-role': 'BILLING' },
+              headers: { 'x-user-role': 'BILLING', 'x-forwarded-for': '127.0.0.1' },
             }),
           );
           const items = Array.isArray(response.data?.items) ? response.data.items : [];

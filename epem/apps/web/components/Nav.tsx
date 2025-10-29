@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -9,11 +10,20 @@ import { useRouter, usePathname } from "next/navigation";
 // - Gestiona logout y refresca el estado si cambia la ruta.
 export default function Nav() {
   const [authed, setAuthed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    setAuthed(!!window.localStorage.getItem("epem_token"));
+    const has = !!window.localStorage.getItem("epem_token");
+    setAuthed(has);
+    if (has) {
+      apiFetch<any>('/users/me')
+        .then((j) => setIsAdmin(!!j && (j.role === 'ADMIN' || j.role === 'SUPERVISOR')))
+        .catch(() => setIsAdmin(false));
+    } else {
+      setIsAdmin(false);
+    }
   }, [pathname]);
 
   const logout = async () => {
@@ -59,6 +69,11 @@ export default function Nav() {
               <Link href="/authorizations" className={linkCls("/authorizations")}>
                 Autorizaciones
               </Link>
+              {isAdmin ? (
+                <Link href="/admin/users" className={linkCls("/admin/users")}>
+                  Admin
+                </Link>
+              ) : null}
               <Link href="/invoices" className={linkCls("/invoices")}>
                 Facturas
               </Link>

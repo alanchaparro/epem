@@ -19,6 +19,15 @@ async function check200(url) {
   }
 }
 
+async function wait200(url, timeoutSec = 180) {
+  const deadline = Date.now() + timeoutSec * 1000;
+  while (Date.now() < deadline) {
+    if (await check200(url)) return true;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return false;
+}
+
 async function postJson(url, body) {
   const res = await fetch(url, {
     method: 'POST',
@@ -47,7 +56,12 @@ function saveReport() {
 }
 
 async function main() {
-  const loginOk = await check200(`${WEB_URL}/login`);
+  // Espera que / (home) y /login respondan 200 (Next puede tardar en compilar en Windows)
+  const homeOk = await wait200(`${WEB_URL}/`, 240);
+  push('Página / responde 200', homeOk, 200, homeOk ? 200 : 'no-conecta');
+  
+  // Luego /login
+  const loginOk = await wait200(`${WEB_URL}/login`, 240);
   push('Página /login responde 200', loginOk, 200, loginOk ? 200 : 'no-conecta');
   const patientsOk = await check200(`${WEB_URL}/patients`);
   push('Página /patients responde 200 (HTML)', patientsOk, 200, patientsOk ? 200 : 'no-conecta');

@@ -1,3 +1,4 @@
+﻿import { mapAxiosError } from '../common/http-error.util';
 import {
   Body,
   Controller,
@@ -12,7 +13,9 @@ import {
   Req,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { Roles } from '@epem/nest-common';
+import { signGatewayHeaders } from '../common/signing.util';
 import { catchError, firstValueFrom } from 'rxjs';
 import type { Request } from 'express';
 
@@ -21,13 +24,19 @@ type AuthenticatedRequest = Request & { user?: { sub?: string; id?: string; role
 @Controller('billing')
 @Roles('ADMIN', 'BILLING')
 export class BillingProxyController {
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly http: HttpService, private readonly config: ConfigService) {}
 
   private baseUrl() {
-    return process.env.BILLING_SERVICE_URL ?? 'http://localhost:3040';
+    return this.config.get<string>('BILLING_SERVICE_URL') ?? 'http://localhost:3040';
   }
 
-  private buildHeaders(authorization?: string, user?: { sub?: string; id?: string; role?: string }) {
+  private buildHeaders(
+    authorization?: string,
+    user?: { sub?: string; id?: string; role?: string },
+    method?: 'get' | 'post' | 'patch',
+    urlPath?: string,
+    requestId?: string,
+  ) {
     const headers: Record<string, string> = {};
     if (authorization) {
       headers.authorization = authorization;
@@ -39,6 +48,10 @@ export class BillingProxyController {
     if (user?.role) {
       headers['x-user-role'] = user.role.toString();
     }
+    if (requestId) headers['x-request-id'] = requestId;
+    if (method && urlPath) {
+      Object.assign(headers, signGatewayHeaders({ method: method.toUpperCase(), urlPath, userId, role: user?.role } as any));
+    }
     return headers;
   }
 
@@ -48,27 +61,24 @@ export class BillingProxyController {
     payload: any,
     authorization: string | undefined,
     user?: { sub?: string; id?: string; role?: string },
+    requestId?: string,
   ) {
     const request$ = this.http
       .request({
         method,
         url: `${this.baseUrl()}${path}`,
         data: payload,
-        headers: this.buildHeaders(authorization, user),
+        headers: this.buildHeaders(authorization, user, method, path, requestId),
       })
       .pipe(
-      catchError((error) => {
-        const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-        const message = error.response?.data ?? 'Error al comunicarse con billing-service';
-        throw new HttpException(message, status);
-      }),
+      mapAxiosError("gateway-proxy"),
     );
     return firstValueFrom(request$).then((res) => res.data as T);
   }
 
   @Get('insurers')
   listInsurers(@Headers('authorization') authorization: string | undefined, @Req() req: AuthenticatedRequest) {
-    return this.forward('get', '/insurers', undefined, authorization, req.user);
+    return this.forward('get', '/insurers', undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Get('insurers/:id')
@@ -77,7 +87,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('get', `/insurers/${id}`, undefined, authorization, req.user);
+    return this.forward('get', `/insurers/${id}`, undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Post('insurers')
@@ -86,7 +96,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('post', '/insurers', payload, authorization, req.user);
+    return this.forward('post', '/insurers', payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Patch('insurers/:id')
@@ -96,7 +106,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('patch', `/insurers/${id}`, payload, authorization, req.user);
+    return this.forward('patch', `/insurers/${id}`, payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Get('coverage')
@@ -109,7 +119,7 @@ export class BillingProxyController {
       throw new HttpException('insurerId es requerido', HttpStatus.BAD_REQUEST);
     }
     const path = `/coverage?insurerId=${encodeURIComponent(insurerId)}`;
-    return this.forward('get', path, undefined, authorization, req.user);
+    return this.forward('get', path, undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Post('coverage')
@@ -118,7 +128,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('post', '/coverage', payload, authorization, req.user);
+    return this.forward('post', '/coverage', payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Patch('coverage/:id')
@@ -128,7 +138,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('patch', `/coverage/${id}`, payload, authorization, req.user);
+    return this.forward('patch', `/coverage/${id}`, payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Get('authorizations')
@@ -138,7 +148,7 @@ export class BillingProxyController {
     @Req() req: AuthenticatedRequest,
   ) {
     const path = status ? `/authorizations?status=${encodeURIComponent(status)}` : '/authorizations';
-    return this.forward('get', path, undefined, authorization, req.user);
+    return this.forward('get', path, undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Post('authorizations')
@@ -147,7 +157,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('post', '/authorizations', payload, authorization, req.user);
+    return this.forward('post', '/authorizations', payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Patch('authorizations/:id')
@@ -157,7 +167,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('patch', `/authorizations/${id}`, payload, authorization, req.user);
+    return this.forward('patch', `/authorizations/${id}`, payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Get('invoices')
@@ -167,7 +177,7 @@ export class BillingProxyController {
     @Req() req: AuthenticatedRequest,
   ) {
     const path = status ? `/invoices?status=${encodeURIComponent(status)}` : '/invoices';
-    return this.forward('get', path, undefined, authorization, req.user);
+    return this.forward('get', path, undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Get('invoices/:id')
@@ -176,7 +186,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('get', `/invoices/${id}`, undefined, authorization, req.user);
+    return this.forward('get', `/invoices/${id}`, undefined, authorization, req.user, (req as any)?.requestId);
   }
 
   @Post('invoices')
@@ -185,7 +195,7 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('post', '/invoices', payload, authorization, req.user);
+    return this.forward('post', '/invoices', payload, authorization, req.user, (req as any)?.requestId);
   }
 
   @Patch('invoices/:id/issue')
@@ -194,7 +204,9 @@ export class BillingProxyController {
     @Headers('authorization') authorization: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.forward('patch', `/invoices/${id}/issue`, {}, authorization, req.user);
+    return this.forward('patch', `/invoices/${id}/issue`, {}, authorization, req.user, (req as any)?.requestId);
   }
 }
+
+
 

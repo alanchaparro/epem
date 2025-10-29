@@ -1,4 +1,5 @@
 import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 // Valores de rol permitidos. Usamos una unión de strings en vez del enum
 // de Prisma en runtime para evitar problemas de importación.
@@ -11,6 +12,7 @@ const ROLE_VALUES = ['ADMIN', 'SUPERVISOR', 'DOCTOR', 'NURSE', 'STAFF', 'BILLING
 export class CreateUserDto {
   // Email corporativo del usuario.
   @IsEmail()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   email!: string;
 
   // Contraseña mínima de 8 caracteres (se almacena en hash server-side).
@@ -20,9 +22,11 @@ export class CreateUserDto {
 
   // Nombre y apellido para vistas de perfil.
   @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   firstName!: string;
 
   @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   lastName!: string;
 
   // Rol del sistema (RBAC básico).

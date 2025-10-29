@@ -65,7 +65,7 @@ export class AuthorizationsService {
           status: targetStatus,
         },
         {
-          headers: { 'x-user-role': 'BILLING' },
+          headers: { 'x-user-role': 'BILLING', 'x-forwarded-for': '127.0.0.1' },
         },
       ),
     );

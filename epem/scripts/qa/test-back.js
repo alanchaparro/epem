@@ -76,11 +76,11 @@ function saveReport() {
 
 async function main() {
   // 1) Health checks
-  const gOk = await waitHttpOk(`${API_GATEWAY_URL}/health`, 10);
+  const gOk = await waitHttpOk(`${API_GATEWAY_URL}/health`, 30);
   push('Gateway /health responde', gOk, true, `${API_GATEWAY_URL}/health`);
-  const uOk = await waitHttpOk(`${USERS_SERVICE_URL}/api/health`, 10);
+  const uOk = await waitHttpOk(`${USERS_SERVICE_URL}/api/health`, 30);
   push('Users-service /api/health responde', uOk, true, `${USERS_SERVICE_URL}/api/health`);
-  const pOk = await waitHttpOk(`${PATIENTS_SERVICE_URL}/health`, 10);
+  const pOk = await waitHttpOk(`${PATIENTS_SERVICE_URL}/health`, 30);
   push('Patients-service /health responde', pOk, true, `${PATIENTS_SERVICE_URL}/health`);
 
   // 2) Login

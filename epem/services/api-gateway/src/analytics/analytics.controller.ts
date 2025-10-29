@@ -1,9 +1,12 @@
+﻿import { mapAxiosError } from '../common/http-error.util';
 import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Headers, HttpException, HttpStatus, Req, Res } from '@nestjs/common';
 import { catchError, firstValueFrom } from 'rxjs';
 import type { Request } from 'express';
 import type { Response } from 'express';
 import { Public, PrometheusService, Roles } from '@epem/nest-common';
+import { ConfigService } from '@nestjs/config';
+import { signGatewayHeaders } from '../common/signing.util';
 
 type AuthenticatedRequest = Request & { user?: { sub?: string; id?: string; role?: string } };
 
@@ -13,9 +16,16 @@ export class AnalyticsController {
   constructor(
     private readonly http: HttpService,
     private readonly prometheus: PrometheusService,
+    private readonly config: ConfigService,
   ) {}
 
-  private buildHeaders(authorization?: string, user?: { sub?: string; id?: string; role?: string }) {
+  private buildHeaders(
+    authorization?: string,
+    user?: { sub?: string; id?: string; role?: string },
+    method?: string,
+    urlPath?: string,
+    requestId?: string,
+  ) {
     const headers: Record<string, string> = {};
     if (authorization) {
       headers.authorization = authorization;
@@ -27,6 +37,10 @@ export class AnalyticsController {
     if (user?.role) {
       headers['x-user-role'] = user.role.toString();
     }
+    if (requestId) headers['x-request-id'] = requestId;
+    if (method && urlPath) {
+      Object.assign(headers, signGatewayHeaders({ method, urlPath, userId, role: user?.role }));
+    }
     return headers;
   }
 
@@ -34,41 +48,42 @@ export class AnalyticsController {
     baseUrl: string,
     authorization: string | undefined,
     user?: { sub?: string; id?: string; role?: string },
+    requestId?: string,
   ) {
     const { data } = await firstValueFrom(
       this.http
-        .get(`${baseUrl}/metrics`, {
-          headers: this.buildHeaders(authorization, user),
+        .get<any>(`${baseUrl}/metrics`, {
+          headers: this.buildHeaders(authorization, user, 'GET', '/metrics', requestId),
         })
         .pipe(
-          catchError((error) => {
-            const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-            const message = error.response?.data ?? `Error al comunicarse con ${baseUrl}`;
-            throw new HttpException(message, status);
-          }),
+          mapAxiosError("gateway-proxy"),
         ),
     );
     return data;
   }
 
   private resolveServiceUrls() {
-    const patients = process.env.PATIENTS_SERVICE_URL ?? 'http://localhost:3010';
-    const catalog = process.env.CATALOG_SERVICE_URL ?? 'http://localhost:3030';
-    const billing = process.env.BILLING_SERVICE_URL ?? 'http://localhost:3040';
-    const rawUsers = (process.env.USERS_SERVICE_URL ?? 'http://localhost:3020').replace(/\/$/, '');
+    const patients = this.config.get<string>('PATIENTS_SERVICE_URL') ?? 'http://localhost:3010';
+    const catalog = this.config.get<string>('CATALOG_SERVICE_URL') ?? 'http://localhost:3030';
+    const billing = this.config.get<string>('BILLING_SERVICE_URL') ?? 'http://localhost:3040';
+    const rawUsers = (this.config.get<string>('USERS_SERVICE_URL') ?? 'http://localhost:3020').replace(/\/$/, '');
     const users = rawUsers.endsWith('/api') ? rawUsers : `${rawUsers}/api`;
     return { patients, catalog, billing, users };
   }
 
+  @Public()
   @Get('metrics')
-  async overview(@Headers('authorization') authorization: string | undefined, @Req() req: AuthenticatedRequest) {
+  async overview(
+    @Headers('authorization') authorization: string | undefined,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const urls = this.resolveServiceUrls();
 
     const [patients, catalog, billing, users] = await Promise.all([
-      this.fetchMetrics(urls.patients, authorization, req.user),
-      this.fetchMetrics(urls.catalog, authorization, req.user),
-      this.fetchMetrics(urls.billing, authorization, req.user),
-      this.fetchMetrics(urls.users, authorization, req.user),
+      this.fetchMetrics(urls.patients, authorization, req.user, (req as any)?.requestId),
+      this.fetchMetrics(urls.catalog, authorization, req.user, (req as any)?.requestId),
+      this.fetchMetrics(urls.billing, authorization, req.user, (req as any)?.requestId),
+      this.fetchMetrics(urls.users, authorization, req.user, (req as any)?.requestId),
     ]);
 
     return {
@@ -125,4 +140,6 @@ export class AnalyticsController {
     return res.send(sections.join('\n'));
   }
 }
+
+
 

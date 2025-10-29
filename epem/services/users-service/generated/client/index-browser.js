@@ -134,21 +134,40 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.RolePolicyScalarFieldEnum = {
+  id: 'id',
+  role: 'role',
+  permissions: 'permissions',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RoleMetaScalarFieldEnum = {
+  id: 'id',
+  role: 'role',
+  displayName: 'displayName',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  ADMIN: 'ADMIN',
-  SUPERVISOR: 'SUPERVISOR',
-  DOCTOR: 'DOCTOR',
-  NURSE: 'NURSE',
-  STAFF: 'STAFF',
-  BILLING: 'BILLING'
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  RolePolicy: 'RolePolicy',
+  RoleMeta: 'RoleMeta'
 };
 
 /**

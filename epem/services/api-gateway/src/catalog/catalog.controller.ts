@@ -1,3 +1,4 @@
+﻿import { mapAxiosError } from '../common/http-error.util';
 import {
   Body,
   Controller,
@@ -12,22 +13,35 @@ import {
   Req,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import type { Request } from 'express';
 import { Roles } from '@epem/nest-common';
+import { signGatewayHeaders } from '../common/signing.util';
+import { TTLCache } from '../common/cache';
 
 type AuthenticatedRequest = Request & { user?: { sub?: string; id?: string; role?: string } };
 
 @Controller('catalog')
 @Roles('ADMIN', 'SUPERVISOR', 'DOCTOR', 'BILLING')
 export class CatalogProxyController {
-  constructor(private readonly http: HttpService) {}
-
-  private baseUrl() {
-    return process.env.CATALOG_SERVICE_URL ?? 'http://localhost:3030';
+  private cache: TTLCache<any>;
+  constructor(private readonly http: HttpService, private readonly config: ConfigService) {
+    const ttl = parseInt(this.config.get<string>('CATALOG_CACHE_TTL_MS') ?? '5000', 10);
+    this.cache = new TTLCache<any>(isFinite(ttl) ? ttl : 5000);
   }
 
-  private buildHeaders(authorization?: string, user?: { sub?: string; id?: string; role?: string }) {
+  private baseUrl() {
+    return this.config.get<string>('CATALOG_SERVICE_URL') ?? 'http://localhost:3030';
+  }
+
+  private buildHeaders(
+    authorization?: string,
+    user?: { sub?: string; id?: string; role?: string },
+    method?: string,
+    urlPath?: string,
+    requestId?: string,
+  ) {
     const headers: Record<string, string> = {};
     if (authorization) {
       headers.authorization = authorization;
@@ -39,6 +53,10 @@ export class CatalogProxyController {
     if (user?.role) {
       headers['x-user-role'] = user.role.toString();
     }
+    if (requestId) headers['x-request-id'] = requestId;
+    if (method && urlPath) {
+      Object.assign(headers, signGatewayHeaders({ method, urlPath, userId, role: user?.role }));
+    }
     return headers;
   }
 
@@ -48,20 +66,16 @@ export class CatalogProxyController {
     @Headers('authorization') authorization?: string,
     @Req() req?: AuthenticatedRequest,
   ) {
-    const { data } = await firstValueFrom(
+    const res = await firstValueFrom(
       this.http
-        .post(`${this.baseUrl()}/catalog/items`, payload, {
-          headers: this.buildHeaders(authorization, req?.user),
+        .post<any>(`${this.baseUrl()}/catalog/items`, payload, {
+          headers: this.buildHeaders(authorization, req?.user, 'POST', '/catalog/items', (req as any)?.requestId),
         })
-        .pipe(
-          catchError((error) => {
-            const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-            const message = error.response?.data ?? 'Error al comunicarse con catalog-service';
-            throw new HttpException(message, status);
-          }),
-        ),
+        .pipe(mapAxiosError("gateway-proxy")),
     );
-    return data;
+    // invalidar cache de listas
+    this.cache.del('list:');
+    return (res as any).data;
   }
 
   @Get('items')
@@ -71,21 +85,21 @@ export class CatalogProxyController {
     @Req() req?: AuthenticatedRequest,
   ) {
     const params = new URLSearchParams(query);
-    const url = `${this.baseUrl()}/catalog/items${params.toString() ? `?${params}` : ''}`;
-    const { data } = await firstValueFrom(
+    const urlPath = `/catalog/items${params.toString() ? `?${params}` : ''}`;
+    const url = `${this.baseUrl()}${urlPath}`;
+    const cacheKey = `list:${params.toString()}`;
+    const cached = this.cache.get(cacheKey);
+    if (cached) return cached;
+    const res = await firstValueFrom(
       this.http
-        .get(url, {
-          headers: this.buildHeaders(authorization, req?.user),
+        .get<any>(url, {
+          headers: this.buildHeaders(authorization, req?.user, 'GET', '/catalog/items', (req as any)?.requestId),
         })
-        .pipe(
-          catchError((error) => {
-            const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-            const message = error.response?.data ?? 'Error al comunicarse con catalog-service';
-            throw new HttpException(message, status);
-          }),
-        ),
+        .pipe(mapAxiosError("gateway-proxy")),
     );
-    return data;
+    const out = (res as any).data;
+    this.cache.set(cacheKey, out);
+    return out;
   }
 
   @Get('items/:id')
@@ -94,20 +108,19 @@ export class CatalogProxyController {
     @Headers('authorization') authorization?: string,
     @Req() req?: AuthenticatedRequest,
   ) {
-    const { data } = await firstValueFrom(
+    const cacheKey = `item:${id}`;
+    const cached = this.cache.get(cacheKey);
+    if (cached) return cached;
+    const res = await firstValueFrom(
       this.http
-        .get(`${this.baseUrl()}/catalog/items/${id}`, {
-          headers: this.buildHeaders(authorization, req?.user),
+        .get<any>(`${this.baseUrl()}/catalog/items/${id}`, {
+          headers: this.buildHeaders(authorization, req?.user, 'GET', `/catalog/items/${id}`, (req as any)?.requestId),
         })
-        .pipe(
-          catchError((error) => {
-            const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-            const message = error.response?.data ?? 'Error al comunicarse con catalog-service';
-            throw new HttpException(message, status);
-          }),
-        ),
+        .pipe(mapAxiosError("gateway-proxy")),
     );
-    return data;
+    const out = (res as any).data;
+    this.cache.set(cacheKey, out);
+    return out;
   }
 
   @Patch('items/:id')
@@ -117,21 +130,20 @@ export class CatalogProxyController {
     @Headers('authorization') authorization?: string,
     @Req() req?: AuthenticatedRequest,
   ) {
-    const { data } = await firstValueFrom(
+    const res = await firstValueFrom(
       this.http
-        .patch(`${this.baseUrl()}/catalog/items/${id}`, payload, {
-          headers: this.buildHeaders(authorization, req?.user),
+        .patch<any>(`${this.baseUrl()}/catalog/items/${id}`, payload, {
+          headers: this.buildHeaders(authorization, req?.user, 'PATCH', `/catalog/items/${id}`, (req as any)?.requestId),
         })
-        .pipe(
-          catchError((error) => {
-            const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-            const message = error.response?.data ?? 'Error al comunicarse con catalog-service';
-            throw new HttpException(message, status);
-          }),
-        ),
+        .pipe(mapAxiosError("gateway-proxy")),
     );
-    return data;
+    // invalidar cache del item y listas
+    this.cache.del(`item:${id}`);
+    this.cache.del('list:');
+    return (res as any).data;
   }
 }
+
+
 
 

@@ -1,4 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from '../../generated/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,11 +9,16 @@ import { SafeUser, toSafeUser } from './entities/user.entity';
 /** Servicio de dominio de usuarios (alta, búsqueda y seeding de ADMIN). */
 @Injectable()
 export class UsersService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<SafeUser> {
     const normalizedEmail = dto.email.toLowerCase();
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const rounds = this.config.get<string>('BCRYPT_SALT_ROUNDS');
+    const cost = rounds ? parseInt(rounds, 10) : 10;
+    const passwordHash = await bcrypt.hash(dto.password, isFinite(cost) ? cost : 10);
 
     try {
       const user = await this.prisma.user.create({
@@ -69,7 +75,9 @@ export class UsersService {
       return toSafeUser(existing);
     }
 
-    const passwordHash = await bcrypt.hash(payload.password, 10);
+    const rounds = this.config.get<string>('BCRYPT_SALT_ROUNDS');
+    const cost = rounds ? parseInt(rounds, 10) : 10;
+    const passwordHash = await bcrypt.hash(payload.password, isFinite(cost) ? cost : 10);
     const admin = await this.prisma.user.create({
       data: {
         email: normalizedEmail,
@@ -82,6 +90,50 @@ export class UsersService {
     });
 
     return toSafeUser(admin);
+  }
+
+  async list(params: { q?: string; skip?: number; take?: number; onlyActive?: boolean }) {
+    const where: Prisma.UserWhereInput = {};
+    if (params.onlyActive) where.isActive = true;
+    if (params.q) {
+      const q = params.q.toLowerCase();
+      where.OR = [
+        { email: { contains: q } },
+        { firstName: { contains: q } },
+        { lastName: { contains: q } },
+      ];
+    }
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: params.skip ?? 0,
+        take: Math.min(params.take ?? 20, 100),
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+    return { items: items.map(toSafeUser), total };
+  }
+
+  async update(id: string, data: Partial<{ email: string; firstName: string; lastName: string; role: string; isActive: boolean; password: string }>): Promise<SafeUser> {
+    const payload: Prisma.UserUpdateInput = {};
+    if (typeof data.email === 'string') payload.email = data.email.toLowerCase();
+    if (typeof data.firstName === 'string') payload.firstName = data.firstName;
+    if (typeof data.lastName === 'string') payload.lastName = data.lastName;
+    if (typeof data.role === 'string') payload.role = data.role as any;
+    if (typeof data.isActive === 'boolean') payload.isActive = data.isActive;
+    if (typeof data.password === 'string' && data.password.length >= 8) {
+      const rounds = this.config.get<string>('BCRYPT_SALT_ROUNDS');
+      const cost = rounds ? parseInt(rounds, 10) : 10;
+      payload.passwordHash = await bcrypt.hash(data.password, isFinite(cost) ? cost : 10);
+    }
+    const user = await this.prisma.user.update({ where: { id }, data: payload });
+    return toSafeUser(user);
+  }
+
+  async deactivate(id: string): Promise<SafeUser> {
+    const user = await this.prisma.user.update({ where: { id }, data: { isActive: false } });
+    return toSafeUser(user);
   }
 }
 

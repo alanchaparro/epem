@@ -2,7 +2,11 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import './observability/otel';
 import { AppModule } from './app.module';
+import { randomUUID } from 'crypto';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * Bootstrap del API Gateway.
@@ -22,6 +26,34 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   app.use(helmet({ crossOriginResourcePolicy: false }));
+  // Request ID propagation
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const rid = (req.headers['x-request-id'] as string | undefined) || randomUUID();
+    (req as any).requestId = rid;
+    res.setHeader('x-request-id', rid);
+    next();
+  });
+  // Basic JSON request logging with requestId
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const t0 = Date.now();
+    res.on('finish', () => {
+      try {
+        const log = {
+          level: 'info',
+          msg: 'http',
+          method: req.method,
+          url: (req.originalUrl || req.url).split('?')[0],
+          status: res.statusCode,
+          durationMs: Date.now() - t0,
+          requestId: res.getHeader('x-request-id') || (req as any).requestId,
+          service: process.env.SERVICE_NAME || 'api-gateway',
+        };
+        // eslint-disable-next-line no-console
+        console.log(JSON.stringify(log));
+      } catch {}
+    });
+    next();
+  });
   app.enableCors({
     origin: (requestOrigin, callback) => {
       if (!requestOrigin) {
@@ -39,6 +71,18 @@ async function bootstrap() {
   });
 
   const port = process.env.API_GATEWAY_PORT ?? 4000;
+  // Swagger docs
+  try {
+    const cfg = new DocumentBuilder()
+      .setTitle('EPEM Gateway')
+      .setDescription('API Gateway de EPEM')
+      .setVersion('1.0.0')
+      .addBearerAuth()
+      .build();
+    const doc = SwaggerModule.createDocument(app, cfg);
+    SwaggerModule.setup('docs', app, doc);
+  } catch {}
+
   await app.listen(port);
   console.log(`API Gateway ready on port ${port}`);
 }

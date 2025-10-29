@@ -141,16 +141,11 @@ function Invoke-PrismaGenerateWithRetry {
 }
 
 Write-Host 'Ejecutando Prisma db push (crear/actualizar tablas)' -ForegroundColor Green
-# Exporta variables de entorno para prisma CLI
-$env:USERS_SERVICE_DATABASE_URL   = $envs['USERS_SERVICE_DATABASE_URL']
-$env:PATIENTS_SERVICE_DATABASE_URL = $envs['PATIENTS_SERVICE_DATABASE_URL']
-$env:CATALOG_SERVICE_DATABASE_URL  = $envs['CATALOG_SERVICE_DATABASE_URL']
-$env:BILLING_SERVICE_DATABASE_URL  = $envs['BILLING_SERVICE_DATABASE_URL']
-
-pushd "$root/services/users-service";    npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
-pushd "$root/services/patients-service"; npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
-pushd "$root/services/catalog-service";  npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
-pushd "$root/services/billing-service";  npx prisma db push --skip-generate --schema prisma/schema.prisma; popd
+# Usar scripts por paquete via pnpm --filter para evitar dependencias globales de npx
+pnpm --filter @epem/users-service prisma:push
+pnpm --filter @epem/patients-service prisma:push
+pnpm --filter @epem/catalog-service prisma:push
+pnpm --filter @epem/billing-service prisma:push
 
 # Generar clientes Prisma con retry (mitiga EPERM en Windows)
 Invoke-PrismaGenerateWithRetry -ServicePath (Join-Path $root 'services/users-service')

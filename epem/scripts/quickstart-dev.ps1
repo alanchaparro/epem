@@ -41,8 +41,19 @@ function Ensure-Dependencies{
 
   function Invoke-Install {
     param([switch]$Frozen)
-    if ($Frozen) { Run-Command 'Instalando dependencias (pnpm install --frozen-lockfile)' { pnpm install --frozen-lockfile } }
-    else { Run-Command 'Instalando dependencias (pnpm install)' { pnpm install } }
+    if ($Frozen) {
+      Info 'Instalando dependencias (pnpm install --frozen-lockfile)'
+      pnpm install --frozen-lockfile
+      if ($LASTEXITCODE -ne 0) {
+        Warn 'Install con --frozen-lockfile falló. Reintentando sin --frozen-lockfile...'
+        pnpm install --no-frozen-lockfile
+        if ($LASTEXITCODE -ne 0) { throw "Install falló (exit=$LASTEXITCODE)" }
+      } else { Ok 'Instalando dependencias (pnpm install --frozen-lockfile) completado' }
+    } else {
+      Info 'Instalando dependencias (pnpm install)'
+      pnpm install
+      if ($LASTEXITCODE -ne 0) { throw "Install falló (exit=$LASTEXITCODE)" } else { Ok 'Instalando dependencias (pnpm install) completado' }
+    }
   }
 
   if (-not (Test-Path $nm)){

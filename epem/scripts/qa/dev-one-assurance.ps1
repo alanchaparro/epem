@@ -41,7 +41,7 @@ function Run-DevOne([string]$label){
   Info "[$label] Stop + dev:one"
   pnpm dev:stop | Out-Null
   $t0 = Get-Date
-  $p = Start-Process -FilePath 'pnpm' -ArgumentList @('dev:one') -PassThru -WindowStyle Hidden
+  $p = Start-Process -FilePath 'pnpm' -ArgumentList @('dev') -PassThru -WindowStyle Hidden
   $deadline = (Get-Date).AddSeconds($TimeoutPerScenarioSec)
   while(-not $p.HasExited){ if ((Get-Date) -gt $deadline) { try { $p.Kill() } catch {}; break } Start-Sleep -Seconds 2 }
   $exit = if ($p.HasExited) { $p.ExitCode } else { 1 }

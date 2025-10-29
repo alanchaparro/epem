@@ -21,6 +21,23 @@ function Test-TcpPortOpen([string]$addr, [int]$port, [int]$timeoutMs=1000){
   } catch { return $false }
 }
 
+function Kill-Port {
+  param([int]$Port)
+  try {
+    $conns = Get-NetTCPConnection -LocalPort $Port -ErrorAction Stop
+    if ($conns) {
+      $pids = $conns.OwningProcess | Sort-Object -Unique
+      foreach ($pid in $pids) { try { Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue } catch {} }
+    }
+  } catch {
+    $lines = netstat -ano | Select-String ":$Port"
+    foreach ($line in $lines) {
+      $pid = ($line.ToString() -split '\s+')[-1]
+      if ($pid -match '^[0-9]+$') { try { taskkill /PID $pid /F | Out-Null } catch {} }
+    }
+  }
+}
+
 function Ensure-MySql {
   if (Test-TcpPortOpen -addr '127.0.0.1' -port 3306 -timeoutMs 800) { Write-Ok 'MySQL already listening on 127.0.0.1:3306'; return }
   $mysqlAdmin = $null
@@ -61,6 +78,8 @@ function Start-ServiceDev([string]$filter, [string]$healthUrl, [string]$name, [i
     $logFile = Join-Path $PSScriptRoot "../../.tmp/${safe}.log"
   }
   New-Item -Force -ItemType Directory -Path (Split-Path $logFile -Parent) | Out-Null
+  # Garantiza puerto libre antes de iniciar
+  try { $uri=[uri]$healthUrl; if ($uri.Port -gt 0) { Kill-Port -Port $uri.Port } } catch {}
   # Permite forzar modo estable (node dist) para servicios sensibles o todos
   $scriptToRun = if ($useStartScript) { 'start' } else { 'dev' }
   # Si vamos a usar start, hacemos build primero
